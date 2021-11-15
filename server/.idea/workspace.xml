@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="bac64b6a-a21a-4217-a8f0-c81bd8884776" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" path="/usr/local/go" />
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProjectId" id="1wd6yQVYPLtzSewp1rg1XK7b9lU" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/gloabl" />
+      <recent name="$PROJECT_DIR$/internal/app" />
+      <recent name="$PROJECT_DIR$/internal/model" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/internal/config" />
+      <recent name="$PROJECT_DIR$/internal/routers/api" />
+      <recent name="$PROJECT_DIR$/internal/routers/api/v1" />
+      <recent name="$PROJECT_DIR$/internal" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.go build blog-service">
+    <configuration name="go build blog-service" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <package value="blog-service" />
+      <directory value="$PROJECT_DIR$/" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestArticleTag_Delete in blog-service/internal/model" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <working_directory value="$PROJECT_DIR$/internal/model" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="blog-service/internal/model" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestArticleTag_Delete$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestArticleTag_DeleteByArticle in blog-service/internal/model" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <working_directory value="$PROJECT_DIR$/internal/model" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="blog-service/internal/model" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestArticleTag_DeleteByArticle$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestArticleTag_GetByArticle in blog-service/internal/model" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <working_directory value="$PROJECT_DIR$/internal/model" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="blog-service/internal/model" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestArticleTag_GetByArticle$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestAuth_Get in blog-service/internal/model" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <working_directory value="$PROJECT_DIR$/internal/model" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="blog-service/internal/model" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestAuth_Get$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build blog-service" />
+        <item itemvalue="Go Test.TestAuth_Get in blog-service/internal/model" />
+        <item itemvalue="Go Test.TestArticleTag_GetByArticle in blog-service/internal/model" />
+        <item itemvalue="Go Test.TestArticleTag_DeleteByArticle in blog-service/internal/model" />
+        <item itemvalue="Go Test.TestArticleTag_Delete in blog-service/internal/model" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+    <proxy>http://goproxy.cn</proxy>
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1280" height="238" key="GridCell.Tab.0.bottom" timestamp="1635344002766">
+      <screen x="0" y="25" width="1440" height="803" />
+    </state>
+    <state width="1280" height="211" key="GridCell.Tab.0.bottom/0.0.1440.830@0.0.1440.830" timestamp="1634641863485" />
+    <state width="1280" height="53" key="GridCell.Tab.0.bottom/0.0.1440.833@0.0.1440.833" timestamp="1634047425240" />
+    <state width="1280" height="192" key="GridCell.Tab.0.bottom/0.0.1440.835@0.0.1440.835" timestamp="1633869995163" />
+    <state width="1378" height="365" key="GridCell.Tab.0.bottom/0.0.1440.836@0.0.1440.836" timestamp="1628781611375" />
+    <state width="1378" height="365" key="GridCell.Tab.0.bottom/0.0.1440.837@0.0.1440.837" timestamp="1628782727948" />
+    <state width="1378" height="234" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1633522275750" />
+    <state width="1280" height="94" key="GridCell.Tab.0.bottom/0.23.1440.807@0.23.1440.807" timestamp="1635062662005" />
+    <state width="1280" height="172" key="GridCell.Tab.0.bottom/0.23.1440.810@0.23.1440.810" timestamp="1635064415606" />
+    <state width="1280" height="172" key="GridCell.Tab.0.bottom/0.23.1440.815@0.23.1440.815" timestamp="1635069218039" />
+    <state width="1280" height="179" key="GridCell.Tab.0.bottom/0.25.1440.800@0.25.1440.800" timestamp="1635169173130" />
+    <state width="1280" height="238" key="GridCell.Tab.0.bottom/0.25.1440.803@0.25.1440.803" timestamp="1635344002766" />
+    <state width="1280" height="238" key="GridCell.Tab.0.center" timestamp="1635344002766">
+      <screen x="0" y="25" width="1440" height="803" />
+    </state>
+    <state width="1280" height="211" key="GridCell.Tab.0.center/0.0.1440.830@0.0.1440.830" timestamp="1634641863485" />
+    <state width="1280" height="53" key="GridCell.Tab.0.center/0.0.1440.833@0.0.1440.833" timestamp="1634047425238" />
+    <state width="1280" height="192" key="GridCell.Tab.0.center/0.0.1440.835@0.0.1440.835" timestamp="1633869995162" />
+    <state width="1378" height="365" key="GridCell.Tab.0.center/0.0.1440.836@0.0.1440.836" timestamp="1628781611374" />
+    <state width="1378" height="365" key="GridCell.Tab.0.center/0.0.1440.837@0.0.1440.837" timestamp="1628782727947" />
+    <state width="1378" height="234" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1633522275749" />
+    <state width="1280" height="94" key="GridCell.Tab.0.center/0.23.1440.807@0.23.1440.807" timestamp="1635062662004" />
+    <state width="1280" height="172" key="GridCell.Tab.0.center/0.23.1440.810@0.23.1440.810" timestamp="1635064415606" />
+    <state width="1280" height="172" key="GridCell.Tab.0.center/0.23.1440.815@0.23.1440.815" timestamp="1635069218039" />
+    <state width="1280" height="179" key="GridCell.Tab.0.center/0.25.1440.800@0.25.1440.800" timestamp="1635169173130" />
+    <state width="1280" height="238" key="GridCell.Tab.0.center/0.25.1440.803@0.25.1440.803" timestamp="1635344002766" />
+    <state width="1280" height="238" key="GridCell.Tab.0.left" timestamp="1635344002765">
+      <screen x="0" y="25" width="1440" height="803" />
+    </state>
+    <state width="1280" height="211" key="GridCell.Tab.0.left/0.0.1440.830@0.0.1440.830" timestamp="1634641863484" />
+    <state width="1280" height="53" key="GridCell.Tab.0.left/0.0.1440.833@0.0.1440.833" timestamp="1634047425232" />
+    <state width="1280" height="192" key="GridCell.Tab.0.left/0.0.1440.835@0.0.1440.835" timestamp="1633869995161" />
+    <state width="1378" height="365" key="GridCell.Tab.0.left/0.0.1440.836@0.0.1440.836" timestamp="1628781611374" />
+    <state width="1378" height="365" key="GridCell.Tab.0.left/0.0.1440.837@0.0.1440.837" timestamp="1628782727947" />
+    <state width="1378" height="234" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1633522275748" />
+    <state width="1280" height="94" key="GridCell.Tab.0.left/0.23.1440.807@0.23.1440.807" timestamp="1635062662003" />
+    <state width="1280" height="172" key="GridCell.Tab.0.left/0.23.1440.810@0.23.1440.810" timestamp="1635064415605" />
+    <state width="1280" height="172" key="GridCell.Tab.0.left/0.23.1440.815@0.23.1440.815" timestamp="1635069218039" />
+    <state width="1280" height="179" key="GridCell.Tab.0.left/0.25.1440.800@0.25.1440.800" timestamp="1635169173129" />
+    <state width="1280" height="238" key="GridCell.Tab.0.left/0.25.1440.803@0.25.1440.803" timestamp="1635344002765" />
+    <state width="1280" height="238" key="GridCell.Tab.0.right" timestamp="1635344002766">
+      <screen x="0" y="25" width="1440" height="803" />
+    </state>
+    <state width="1280" height="211" key="GridCell.Tab.0.right/0.0.1440.830@0.0.1440.830" timestamp="1634641863485" />
+    <state width="1280" height="53" key="GridCell.Tab.0.right/0.0.1440.833@0.0.1440.833" timestamp="1634047425238" />
+    <state width="1280" height="192" key="GridCell.Tab.0.right/0.0.1440.835@0.0.1440.835" timestamp="1633869995163" />
+    <state width="1378" height="365" key="GridCell.Tab.0.right/0.0.1440.836@0.0.1440.836" timestamp="1628781611375" />
+    <state width="1378" height="365" key="GridCell.Tab.0.right/0.0.1440.837@0.0.1440.837" timestamp="1628782727948" />
+    <state width="1378" height="234" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1633522275750" />
+    <state width="1280" height="94" key="GridCell.Tab.0.right/0.23.1440.807@0.23.1440.807" timestamp="1635062662004" />
+    <state width="1280" height="172" key="GridCell.Tab.0.right/0.23.1440.810@0.23.1440.810" timestamp="1635064415606" />
+    <state width="1280" height="172" key="GridCell.Tab.0.right/0.23.1440.815@0.23.1440.815" timestamp="1635069218039" />
+    <state width="1280" height="179" key="GridCell.Tab.0.right/0.25.1440.800@0.25.1440.800" timestamp="1635169173130" />
+    <state width="1280" height="238" key="GridCell.Tab.0.right/0.25.1440.803@0.25.1440.803" timestamp="1635344002766" />
+    <state x="0" y="0" key="SettingsEditor" timestamp="1633876637546">
+      <screen x="0" y="0" width="1440" height="833" />
+    </state>
+    <state x="0" y="0" key="SettingsEditor/0.0.1440.833@0.0.1440.833" timestamp="1633876637546" />
+    <state x="273" y="0" width="1160" height="833" key="find.popup" timestamp="1633868731026">
+      <screen x="0" y="0" width="1440" height="833" />
+    </state>
+    <state x="273" y="0" width="1160" height="833" key="find.popup/0.0.1440.833@0.0.1440.833" timestamp="1633868731026" />
+    <state x="261" y="0" width="1005" height="1584" key="search.everywhere.popup" timestamp="1633522234727">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="261" y="0" width="1005" height="1466" key="search.everywhere.popup/0.0.1440.833@0.0.1440.833" timestamp="1633413399770" />
+    <state x="261" y="0" width="1005" height="1584" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1633522234727" />
+  </component>
+</project>

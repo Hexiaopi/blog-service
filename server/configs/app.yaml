@@ -1,0 +1,23 @@
+LogLevel: debug
+ServiceName: blog-service
+ServicePort: 8080
+ContextTimeout: 5s
+DefaultPageSize: 10
+MaxPageSize: 10
+DataBase:
+  dbType: mysql
+  username: root
+  password:
+  dbname: blog_service
+  host: 127.0.0.1
+  port: 3306
+  charset: utf8
+  parseTime: true
+  maxIdleConn: 10
+  maxOpenConn: 30
+  connMaxLifeTime: 1h
+JWT:
+  Secret: hexiaopi
+  Issuer: blog
+  Expire: 1h
+TraceAgent: 127.0.0.1:6831

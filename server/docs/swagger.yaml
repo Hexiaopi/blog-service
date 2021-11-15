@@ -1,0 +1,414 @@
+definitions:
+  api.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  app.CommResponse:
+    properties:
+      data: {}
+      ret_code:
+        type: string
+      ret_desc:
+        type: string
+    type: object
+  app.ErrResponse:
+    properties:
+      ret_code:
+        type: string
+      ret_desc:
+        type: string
+    type: object
+  app.ListResponse:
+    properties:
+      data: {}
+      ret_code:
+        type: string
+      ret_desc:
+        type: string
+      total_rows:
+        type: integer
+    type: object
+  service.CreateArticleRequest:
+    properties:
+      content:
+        type: string
+      cover_image_url:
+        type: string
+      create_by:
+        type: string
+      desc:
+        type: string
+      state:
+        type: integer
+      tag_id:
+        type: integer
+      title:
+        type: string
+    type: object
+  service.CreateTagRequest:
+    properties:
+      createdBy:
+        type: string
+      name:
+        type: string
+      state:
+        type: integer
+    type: object
+  service.UpdateArticleRequest:
+    properties:
+      content:
+        type: string
+      cover_image_url:
+        type: string
+      desc:
+        type: string
+      id:
+        type: integer
+      modified_by:
+        type: string
+      state:
+        type: integer
+      tag_id:
+        type: integer
+      title:
+        type: string
+    type: object
+  service.UpdateTagRequest:
+    properties:
+      id:
+        type: integer
+      modifiedBy:
+        type: string
+      name:
+        type: string
+      state:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: This is a blog server restful api docs.
+  title: Blog Service API
+  version: "1.0"
+paths:
+  /api/v1/articles:
+    get:
+      description: 根据条件获取多个文章详细信息
+      parameters:
+      - description: 文章名称
+        in: query
+        name: name
+        type: string
+      - description: 标签ID
+        in: query
+        name: tag_id
+        type: integer
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page_num
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.ListResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 获取多个文章
+      tags:
+      - Article
+    post:
+      consumes:
+      - application/json
+      description: 创建带标签的文章
+      parameters:
+      - description: 创建文章
+        in: body
+        name: CreateArticleRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 创建文章
+      tags:
+      - Article
+  /api/v1/articles/{id}:
+    delete:
+      description: 删除文章
+      parameters:
+      - description: 文章ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 删除文章
+      tags:
+      - Article
+    get:
+      consumes:
+      - application/json
+      description: 获取单个文章详细信息
+      parameters:
+      - description: 文章ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 获取单个文章
+      tags:
+      - Article
+    put:
+      consumes:
+      - application/json
+      description: 修改带标签的文章
+      parameters:
+      - description: 文章ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改文章
+        in: body
+        name: UpdateArticleRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdateArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 修改文章
+      tags:
+      - Article
+  /api/v1/tags:
+    get:
+      description: 获取多个标签
+      parameters:
+      - description: 标签名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page_num
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.ListResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 获取多个标签
+      tags:
+      - Tag
+    post:
+      consumes:
+      - application/json
+      description: 创建标签
+      parameters:
+      - description: 创建标签
+        in: body
+        name: CreateTagRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 创建标签
+      tags:
+      - Tag
+  /api/v1/tags/{id}:
+    delete:
+      description: 删除标签
+      parameters:
+      - description: 标签ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 删除标签
+      tags:
+      - Tag
+    put:
+      consumes:
+      - application/json
+      description: 修改标签
+      parameters:
+      - description: 标签ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改文章
+        in: body
+        name: UpdateTagRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdateTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 修改标签
+      tags:
+      - Tag
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: 请求鉴权获取Token
+      parameters:
+      - description: 用户信息
+        in: body
+        name: LoginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 鉴权接口
+      tags:
+      - Auth
+swagger: "2.0"
