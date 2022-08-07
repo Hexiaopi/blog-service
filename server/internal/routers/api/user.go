@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"blog-service/internal/app"
-	"blog-service/internal/retcode"
-	"blog-service/internal/service"
+	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/retcode"
+	"github.com/hexiaopi/blog-service/internal/service"
 )
 
 type LoginRequest struct {
@@ -61,6 +61,6 @@ func Info(writer http.ResponseWriter, request *http.Request) {
 	writer.Write([]byte(`{"ret_code":"000000","ret_desc":"Success","data":{"roles":["admin"],"introduction":"I am a super administrator","avatar":"https://img2.baidu.com/it/u=1314332406,1737009348&fm=26&fmt=auto","name":"Super Admin"}}`))
 }
 
-func Logout(writer http.ResponseWriter,request *http.Request){
+func Logout(writer http.ResponseWriter, request *http.Request) {
 	writer.Write([]byte(`{"ret_code":"000000","ret_desc":"Success"}`))
 }

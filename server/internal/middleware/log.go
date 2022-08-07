@@ -8,7 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"blog-service/internal/constant"
+	"github.com/hexiaopi/blog-service/internal/constant"
 )
 
 type ResponseWithRecorder struct {

@@ -1,8 +1,8 @@
 package service
 
 import (
-	"blog-service/internal/app"
-	"blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/model"
 )
 
 type CountTagRequest struct {

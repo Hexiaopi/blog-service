@@ -1,10 +1,11 @@
 package app
 
 import (
-	"blog-service/global"
-	"blog-service/internal/util"
-	"github.com/dgrijalva/jwt-go"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/hexiaopi/blog-service/global"
+	"github.com/hexiaopi/blog-service/internal/util"
 )
 
 type Claims struct {

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"blog-service/global"
-	"blog-service/internal/config"
 	"context"
 	"net/http"
 	"os"
@@ -12,7 +10,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"blog-service/internal/routers"
+	"github.com/hexiaopi/blog-service/global"
+	"github.com/hexiaopi/blog-service/internal/config"
+	"github.com/hexiaopi/blog-service/internal/routers"
 )
 
 func init() {

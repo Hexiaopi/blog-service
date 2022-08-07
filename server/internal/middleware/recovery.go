@@ -1,12 +1,13 @@
 package middleware
 
 import (
-	"blog-service/internal/app"
-	"blog-service/internal/retcode"
 	"net/http"
 	"runtime/debug"
 
 	log "github.com/sirupsen/logrus"
+
+	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/retcode"
 )
 
 // Recovery 捕获异常，统一返回错误码

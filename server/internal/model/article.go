@@ -64,6 +64,47 @@ type ArticleEntity struct {
 	TagName       string
 }
 
+func (a Article) List(db *gorm.DB, pageOffset, pageSize int) ([]*ArticleEntity, error) {
+	fields := []string{"ar.id AS article_id", "ar.title as article_title", "ar.desc AS article_desc", "ar.cover_image_url", "ar.content"}
+	fields = append(fields, []string{"t.id AS tag_id", "t.name AS tag_name"}...)
+
+	if pageOffset >= 0 && pageSize > 0 {
+		db = db.Offset(pageOffset).Limit(pageSize)
+	}
+	rows, err := db.Select(fields).Table(ArticleTag{}.TableName()+" AS at").
+		Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t ON at.tag_id = t.id").
+		Joins("LEFT JOIN `"+Article{}.TableName()+"` AS ar ON at.article_id = ar.id").
+		Where("ar.state = ? AND ar.is_del = ?", a.State, 0).
+		Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var articles []*ArticleEntity
+	for rows.Next() {
+		r := &ArticleEntity{}
+		if err := rows.Scan(&r.ArticleID, &r.ArticleTitle, &r.ArticleDesc, &r.CoverImageUrl, &r.Content, &r.TagID, &r.TagName); err != nil {
+			return nil, err
+		}
+		articles = append(articles, r)
+	}
+	return articles, nil
+}
+
+func (a Article) Count(db *gorm.DB) (int, error) {
+	var count int
+	err := db.Table(ArticleTag{}.TableName()+" AS at").
+		Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t ON at.tag_id = t.id").
+		Joins("LEFT JOIN `"+Article{}.TableName()+"` AS ar ON at.article_id = ar.id").
+		Where("ar.state = ? AND ar.is_del = ?", a.State, 0).
+		Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func (a Article) ListByTag(db *gorm.DB, tagID uint32, pageOffset, pageSize int) ([]*ArticleEntity, error) {
 	fields := []string{"ar.id AS article_id", "ar.title as article_title", "ar.desc AS article_desc", "ar.cover_image_url", "ar.content"}
 	fields = append(fields, []string{"t.id AS tag_id", "t.name AS tag_name"}...)

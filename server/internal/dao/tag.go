@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"blog-service/internal/app"
-	"blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/model"
 )
 
 func (d *Dao) GetTag(id uint32, state uint8) (model.Tag, error) {

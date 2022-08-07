@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"blog-service/internal/app"
-	"blog-service/internal/retcode"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/retcode"
 )
 
 // JWT 身份验证

@@ -1,12 +1,13 @@
 package middleware
 
 import (
-	"blog-service/global"
 	"context"
 	"net/http"
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
+
+	"github.com/hexiaopi/blog-service/global"
 )
 
 // Tracer 调用链追踪

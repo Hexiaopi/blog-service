@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"blog-service/global"
 	"context"
 	"net/http"
+
+	"github.com/hexiaopi/blog-service/global"
 )
 
 // Timeout 超时控制

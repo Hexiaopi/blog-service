@@ -1,9 +1,9 @@
 package service
 
 import (
-	"blog-service/internal/app"
-	"blog-service/internal/dao"
-	"blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/dao"
+	"github.com/hexiaopi/blog-service/internal/model"
 )
 
 type ArticleRequest struct {
@@ -54,12 +54,12 @@ type ArticleListRequest struct {
 }
 
 func (svc *Service) ListArticle(param *ArticleListRequest, page *app.Page) ([]*Article, int, error) {
-	articleTotal, err := svc.dao.CountArticlesByTag(param.TagID, param.State)
+	articleTotal, err := svc.dao.CountArticles(param.State)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	articles, err := svc.dao.ListArticlesByTag(param.TagID, param.State, page.PageNum, page.PageSize)
+	articles, err := svc.dao.ListArticles(param.State, page.PageNum, page.PageSize)
 	if err != nil {
 		return nil, 0, err
 	}

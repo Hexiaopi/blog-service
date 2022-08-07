@@ -1,8 +1,9 @@
 package model
 
 import (
-	"blog-service/internal/config"
 	"testing"
+
+	"github.com/hexiaopi/blog-service/internal/config"
 )
 
 func TestArticle_Create(t *testing.T) {

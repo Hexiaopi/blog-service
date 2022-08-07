@@ -1,6 +1,6 @@
 package app
 
-import "blog-service/global"
+import "github.com/hexiaopi/blog-service/global"
 
 type Page struct {
 	// 页码

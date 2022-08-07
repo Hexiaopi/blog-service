@@ -1,14 +1,16 @@
 package v1
 
 import (
-	"blog-service/internal/app"
-	"blog-service/internal/retcode"
-	"blog-service/internal/service"
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+
+	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/retcode"
+	"github.com/hexiaopi/blog-service/internal/service"
 )
 
 // @Summary 获取单个文章

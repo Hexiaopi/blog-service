@@ -1,6 +1,6 @@
 package dao
 
-import "blog-service/internal/model"
+import "github.com/hexiaopi/blog-service/internal/model"
 
 func (d *Dao) GetArticleTagByAID(articleID uint32) (model.ArticleTag, error) {
 	articleTag := model.ArticleTag{ArticleID: articleID}

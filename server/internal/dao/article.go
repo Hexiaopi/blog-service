@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"blog-service/internal/app"
-	"blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/model"
 )
 
 type Article struct {
@@ -59,6 +59,16 @@ func (d *Dao) GetArticle(id uint32, state uint8) (model.Article, error) {
 func (d *Dao) DeleteArticle(id uint32) error {
 	article := model.Article{ID: id}
 	return article.Delete(d.engine)
+}
+
+func (d *Dao) CountArticles(state uint8) (int, error) {
+	article := model.Article{State: state}
+	return article.Count(d.engine)
+}
+
+func (d *Dao) ListArticles(state uint8, pageNum, pageSize int) ([]*model.ArticleEntity, error) {
+	article := model.Article{State: state}
+	return article.List(d.engine, app.GetPageOffset(pageNum, pageSize), pageSize)
 }
 
 func (d *Dao) CountArticlesByTag(tagId uint32, state uint8) (int, error) {

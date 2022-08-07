@@ -1,12 +1,12 @@
 package service
 
 import (
-	"blog-service/global"
 	"context"
 
 	otgorm "github.com/eddycjy/opentracing-gorm"
 
-	"blog-service/internal/dao"
+	"github.com/hexiaopi/blog-service/global"
+	"github.com/hexiaopi/blog-service/internal/dao"
 )
 
 type Service struct {

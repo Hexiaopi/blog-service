@@ -7,11 +7,12 @@ import (
 	log "github.com/sirupsen/logrus"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	_ "blog-service/docs"
-	"blog-service/internal/middleware"
-	"blog-service/internal/retcode"
-	"blog-service/internal/routers/api"
-	v1 "blog-service/internal/routers/api/v1"
+	_ "github.com/hexiaopi/blog-service/docs"
+
+	"github.com/hexiaopi/blog-service/internal/middleware"
+	"github.com/hexiaopi/blog-service/internal/retcode"
+	"github.com/hexiaopi/blog-service/internal/routers/api"
+	v1 "github.com/hexiaopi/blog-service/internal/routers/api/v1"
 )
 
 func NewRouter() http.Handler {

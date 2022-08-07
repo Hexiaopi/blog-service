@@ -1,6 +1,6 @@
 package global
 
-import "blog-service/internal/config"
+import "github.com/hexiaopi/blog-service/internal/config"
 
 var (
 	AppConfig *config.AppConfig

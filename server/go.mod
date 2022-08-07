@@ -1,4 +1,4 @@
-module blog-service
+module github.com/hexiaopi/blog-service
 
 go 1.16
 
