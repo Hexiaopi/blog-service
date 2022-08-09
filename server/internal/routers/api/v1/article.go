@@ -8,9 +8,11 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/hexiaopi/blog-service/global"
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
+	"github.com/hexiaopi/blog-service/internal/store/dao"
 )
 
 // @Summary 获取单个文章
@@ -24,10 +26,10 @@ import (
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles/{id} [get]
 func GetArticle(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.ParseUint(mux.Vars(request)["id"], 10, 32)
-	param := service.ArticleRequest{ID: uint32(id), State: 1}
-	svc := service.New(request.Context())
-	article, err := svc.GetArticle(&param)
+	id, _ := strconv.Atoi(mux.Vars(request)["id"])
+	param := service.ArticleRequest{ID: id, State: 1}
+	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	article, err := svc.Get(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetArticleFail)
 		return
@@ -56,8 +58,8 @@ func ListArticle(writer http.ResponseWriter, request *http.Request) {
 	pageSize, _ := strconv.Atoi(values.Get("page_size"))
 	param := service.ArticleListRequest{TagID: uint32(tagId), State: uint8(state)}
 	page := app.CorrectPage(pageSize, pageNum)
-	svc := service.New(request.Context())
-	article, count, err := svc.ListArticle(&param, &page)
+	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	article, count, err := svc.List(request.Context(), &param, &page)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetArticlesFail)
 		return
@@ -83,8 +85,8 @@ func CreateArticle(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	svc := service.New(request.Context())
-	if err := svc.CreateArticle(&param); err != nil {
+	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	if err := svc.Create(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.CreateArticleFail)
 		return
 	}
@@ -110,11 +112,8 @@ func UpdateArticle(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	id, _ := strconv.ParseUint(mux.Vars(request)["id"], 10, 32)
-	param.ID = uint32(id)
-
-	svc := service.New(request.Context())
-	if err := svc.UpdateArticle(&param); err != nil {
+	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	if err := svc.Update(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.UpdateArticleFail)
 		return
 	}
@@ -131,9 +130,9 @@ func UpdateArticle(writer http.ResponseWriter, request *http.Request) {
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles/{id} [delete]
 func DeleteArticle(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.ParseUint(mux.Vars(request)["id"], 10, 32)
-	svc := service.New(request.Context())
-	if err := svc.DeleteArticle(uint32(id)); err != nil {
+	id, _ := strconv.Atoi(mux.Vars(request)["id"])
+	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	if err := svc.Delete(request.Context(), id); err != nil {
 		app.ToResponseCode(writer, retcode.DeleteArticleFail)
 		return
 	}

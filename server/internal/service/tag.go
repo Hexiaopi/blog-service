@@ -1,26 +1,47 @@
 package service
 
 import (
+	"context"
+
 	"github.com/hexiaopi/blog-service/internal/app"
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
+	"github.com/hexiaopi/blog-service/internal/store"
 )
 
-type CountTagRequest struct {
+type TagService struct {
+	store store.Factory
+}
+
+func NewTagService(factory store.Factory) TagService {
+	return TagService{
+		store: factory,
+	}
+}
+
+type TagListRequest struct {
 	Name  string
 	State uint8
 }
 
-func (svc *Service) CountTag(param *CountTagRequest) (int, error) {
-	return svc.dao.CountTag(param.Name, param.State)
-}
-
-type ListTagRequest struct {
-	Name  string
-	State uint8
-}
-
-func (svc *Service) ListTag(param *ListTagRequest, page *app.Page) ([]*model.Tag, error) {
-	return svc.dao.ListTag(param.Name, param.State, page.PageNum, page.PageSize)
+func (svc *TagService) List(ctx context.Context, param *TagListRequest, page *app.Page) ([]*entity.Tag, int64, error) {
+	opt := entity.ListOption{
+		State: param.State,
+		Page:  page,
+	}
+	tags, total, err := svc.store.Tags().List(ctx, &opt)
+	if err != nil {
+		return nil, 0, err
+	}
+	result := make([]*entity.Tag, len(tags))
+	for i, tag := range tags {
+		result[i] = &entity.Tag{
+			Id:        tag.ID,
+			Name:      tag.Name,
+			State:     tag.State,
+			CreatedBy: tag.CreatedBy,
+		}
+	}
+	return result, total, nil
 }
 
 type CreateTagRequest struct {
@@ -29,8 +50,16 @@ type CreateTagRequest struct {
 	State     uint8
 }
 
-func (svc *Service) CreateTag(param *CreateTagRequest) error {
-	return svc.dao.CreateTag(param.Name, param.State, param.CreatedBy)
+func (svc *TagService) Create(ctx context.Context, param *CreateTagRequest) error {
+	tag := entity.Tag{
+		Name:      param.Name,
+		State:     param.State,
+		CreatedBy: param.CreatedBy,
+	}
+	if err := svc.store.Tags().Create(ctx, &tag); err != nil {
+		return err
+	}
+	return nil
 }
 
 type UpdateTagRequest struct {
@@ -40,14 +69,22 @@ type UpdateTagRequest struct {
 	ModifiedBy string
 }
 
-func (svc *Service) UpdateTag(param *UpdateTagRequest) error {
-	return svc.dao.UpdateTag(param.ID, param.Name, param.State, param.ModifiedBy)
+func (svc *TagService) Update(ctx context.Context, param *UpdateTagRequest) error {
+	tag := entity.Tag{
+		Name:       param.Name,
+		State:      param.State,
+		ModifiedBy: param.ModifiedBy,
+	}
+	if err := svc.store.Tags().Update(ctx, &tag); err != nil {
+		return err
+	}
+	return nil
 }
 
 type DeleteTagRequest struct {
-	ID uint32
+	ID int
 }
 
-func (svc *Service) DeleteTag(param *DeleteTagRequest) error {
-	return svc.dao.DeleteTag(param.ID)
+func (svc *TagService) Delete(ctx context.Context, param *DeleteTagRequest) error {
+	return svc.store.Tags().Delete(ctx, param.ID)
 }

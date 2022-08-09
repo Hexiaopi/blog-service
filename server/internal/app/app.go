@@ -18,7 +18,7 @@ type ErrResponse struct {
 
 type ListResponse struct {
 	*retcode.Error
-	TotalRows int         `json:"total_rows"`
+	TotalRows int64       `json:"total_rows"`
 	Data      interface{} `json:"data,omitempty"`
 }
 
@@ -39,7 +39,7 @@ func ToResponseData(writer http.ResponseWriter, data interface{}) {
 	writer.Write(result)
 }
 
-func ToResponseList(writer http.ResponseWriter, total int, data interface{}) {
+func ToResponseList(writer http.ResponseWriter, total int64, data interface{}) {
 	response := ListResponse{
 		Error:     retcode.Success,
 		TotalRows: total,

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	otgorm "github.com/eddycjy/opentracing-gorm"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -58,6 +57,6 @@ func NewDBEngine(database *DatabaseSetting, runMode string) (*gorm.DB, error) {
 	db.DB().SetMaxIdleConns(database.MaxIdleConn)
 	db.DB().SetMaxOpenConns(database.MaxOpenConn)
 	db.DB().SetConnMaxLifetime(database.ConnMaxLifeTime)
-	otgorm.AddGormCallbacks(db)
+	//otgorm.AddGormCallbacks(db)
 	return db, nil
 }

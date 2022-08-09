@@ -5,9 +5,11 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/hexiaopi/blog-service/global"
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
+	"github.com/hexiaopi/blog-service/internal/store/dao"
 )
 
 type LoginRequest struct {
@@ -41,8 +43,8 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 		AppKey:    req.UserName,
 		AppSecret: req.PassWord,
 	}
-	svc := service.New(request.Context())
-	if err := svc.CheckAuth(&param); err != nil {
+	svc := service.NewAuthService(dao.NewDao(global.DBEngine))
+	if err := svc.CheckAuth(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.RequestAuthNotExists)
 		return
 	}

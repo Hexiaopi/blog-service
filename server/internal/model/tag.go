@@ -3,7 +3,7 @@ package model
 import "github.com/jinzhu/gorm"
 
 type Tag struct {
-	ID         uint32 `json:"id"`
+	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	State      uint8  `json:"state"`
 	CreatedBy  string `json:"created_by"`

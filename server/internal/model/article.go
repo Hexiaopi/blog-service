@@ -5,7 +5,7 @@ import (
 )
 
 type Article struct {
-	ID            uint32 `json:"id"`
+	ID            int    `json:"id"`
 	Title         string `json:"title"`
 	Desc          string `json:"desc"`
 	Content       string `json:"content"`
@@ -64,20 +64,22 @@ type ArticleEntity struct {
 	TagName       string
 }
 
-func (a Article) List(db *gorm.DB, pageOffset, pageSize int) ([]*ArticleEntity, error) {
+func (a Article) List(db *gorm.DB, pageOffset, pageSize int) ([]*ArticleEntity, int64, error) {
 	fields := []string{"ar.id AS article_id", "ar.title as article_title", "ar.desc AS article_desc", "ar.cover_image_url", "ar.content"}
 	fields = append(fields, []string{"t.id AS tag_id", "t.name AS tag_name"}...)
 
 	if pageOffset >= 0 && pageSize > 0 {
 		db = db.Offset(pageOffset).Limit(pageSize)
 	}
+	var count int64
 	rows, err := db.Select(fields).Table(ArticleTag{}.TableName()+" AS at").
 		Joins("LEFT JOIN `"+Tag{}.TableName()+"` AS t ON at.tag_id = t.id").
 		Joins("LEFT JOIN `"+Article{}.TableName()+"` AS ar ON at.article_id = ar.id").
 		Where("ar.state = ? AND ar.is_del = ?", a.State, 0).
+		Count(&count).
 		Rows()
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -85,11 +87,11 @@ func (a Article) List(db *gorm.DB, pageOffset, pageSize int) ([]*ArticleEntity, 
 	for rows.Next() {
 		r := &ArticleEntity{}
 		if err := rows.Scan(&r.ArticleID, &r.ArticleTitle, &r.ArticleDesc, &r.CoverImageUrl, &r.Content, &r.TagID, &r.TagName); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		articles = append(articles, r)
 	}
-	return articles, nil
+	return articles, count, nil
 }
 
 func (a Article) Count(db *gorm.DB) (int, error) {

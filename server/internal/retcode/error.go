@@ -12,7 +12,7 @@ type Error struct {
 
 var codes = map[string]string{}
 
-func NewError(code, desc string) *Error {
+func NewCode(code, desc string) *Error {
 	if v, ok := codes[code]; ok {
 		panic(fmt.Sprintf("错误码：%s已存在，对应描述为：%s，请更换！", code, v))
 	}

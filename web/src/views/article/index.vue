@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+
     <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" stripe fit highlight-current-row>
       <el-table-column label="ID" width="95" align="center">
         <template slot-scope="scope">
@@ -33,7 +34,7 @@
       </el-table-column>
       <el-table-column prop="tag" label="文章标签" width="200" align="center">
         <template slot-scope="scope">
-          <el-tag type="success">{{ scope.row.tag.name }}</el-tag>
+          <el-tag type="success">{{ scope.row.tags }}</el-tag>
         </template>
       </el-table-column>
     </el-table>
