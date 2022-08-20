@@ -10,6 +10,7 @@ import (
 
 	"github.com/hexiaopi/blog-service/global"
 	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store/dao"
@@ -31,14 +32,12 @@ func ListTag(writer http.ResponseWriter, request *http.Request) {
 	values := request.URL.Query()
 	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
-	state = 1
 	pageNum, _ := strconv.Atoi(values.Get("page_num"))
 	pageSize, _ := strconv.Atoi(values.Get("page_size"))
-	param := service.TagListRequest{Name: name, State: uint8(state)}
-	page := app.CorrectPage(pageSize, pageNum)
+	param := service.TagListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), PageSize: pageSize, PageNum: pageNum}}
 	svc := service.NewTagService(dao.NewDao(global.DBEngine))
 
-	tags, total, err := svc.List(request.Context(), &param, &page)
+	tags, total, err := svc.List(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetTagsFail)
 		return
@@ -91,8 +90,8 @@ func UpdateTag(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	id, _ := strconv.ParseUint(mux.Vars(request)["id"], 10, 32)
-	param.ID = uint32(id)
+	id, _ := strconv.Atoi(mux.Vars(request)["id"])
+	param.Id = id
 
 	svc := service.NewTagService(dao.NewDao(global.DBEngine))
 	if err := svc.Update(request.Context(), &param); err != nil {
@@ -113,7 +112,7 @@ func UpdateTag(writer http.ResponseWriter, request *http.Request) {
 // @Router /api/v1/tags/{id} [delete]
 func DeleteTag(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	param := service.DeleteTagRequest{ID: id}
+	param := service.DeleteTagRequest{OneOption: entity.OneOption{Id: id}}
 	svc := service.NewTagService(dao.NewDao(global.DBEngine))
 	if err := svc.Delete(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.DeleteTagFail)

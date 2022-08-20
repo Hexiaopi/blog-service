@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/store"
 )
@@ -19,42 +18,33 @@ func NewTagService(factory store.Factory) TagService {
 }
 
 type TagListRequest struct {
-	Name  string
-	State uint8
+	entity.ListOption
 }
 
-func (svc *TagService) List(ctx context.Context, param *TagListRequest, page *app.Page) ([]*entity.Tag, int64, error) {
+func (svc *TagService) List(ctx context.Context, param *TagListRequest) ([]entity.Tag, int64, error) {
 	opt := entity.ListOption{
-		State: param.State,
-		Page:  page,
+		State:    param.State,
+		PageSize: param.PageSize,
+		PageNum:  param.PageNum,
 	}
 	tags, total, err := svc.store.Tags().List(ctx, &opt)
 	if err != nil {
 		return nil, 0, err
 	}
-	result := make([]*entity.Tag, len(tags))
-	for i, tag := range tags {
-		result[i] = &entity.Tag{
-			Id:        tag.ID,
-			Name:      tag.Name,
-			State:     tag.State,
-			CreatedBy: tag.CreatedBy,
-		}
-	}
-	return result, total, nil
+	return tags, total, nil
 }
 
 type CreateTagRequest struct {
-	Name      string
-	CreatedBy string
-	State     uint8
+	Desc string
+	entity.OneOption
 }
 
 func (svc *TagService) Create(ctx context.Context, param *CreateTagRequest) error {
 	tag := entity.Tag{
-		Name:      param.Name,
-		State:     param.State,
-		CreatedBy: param.CreatedBy,
+		Name:     param.Name,
+		Desc:     param.Desc,
+		State:    param.State,
+		Operator: param.Operator,
 	}
 	if err := svc.store.Tags().Create(ctx, &tag); err != nil {
 		return err
@@ -63,17 +53,16 @@ func (svc *TagService) Create(ctx context.Context, param *CreateTagRequest) erro
 }
 
 type UpdateTagRequest struct {
-	ID         uint32
-	Name       string
-	State      uint8
-	ModifiedBy string
+	Desc string
+	entity.OneOption
 }
 
 func (svc *TagService) Update(ctx context.Context, param *UpdateTagRequest) error {
 	tag := entity.Tag{
-		Name:       param.Name,
-		State:      param.State,
-		ModifiedBy: param.ModifiedBy,
+		Name:     param.Name,
+		Desc:     param.Desc,
+		State:    param.State,
+		Operator: param.Operator,
 	}
 	if err := svc.store.Tags().Update(ctx, &tag); err != nil {
 		return err
@@ -82,9 +71,9 @@ func (svc *TagService) Update(ctx context.Context, param *UpdateTagRequest) erro
 }
 
 type DeleteTagRequest struct {
-	ID int
+	entity.OneOption
 }
 
 func (svc *TagService) Delete(ctx context.Context, param *DeleteTagRequest) error {
-	return svc.store.Tags().Delete(ctx, param.ID)
+	return svc.store.Tags().Delete(ctx, param.Id)
 }

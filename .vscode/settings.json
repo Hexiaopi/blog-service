@@ -1,0 +1,5 @@
+{
+  "files.autoSave": "afterDelay",
+  "go.autocompleteUnimportedPackages": false,
+  "window.autoDetectColorScheme": false
+}

@@ -1,13 +1,6 @@
 <template>
   <div class="app-container">
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      element-loading-text="Loading"
-      stripe
-      fit
-      highlight-current-row
-    >
+    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" stripe fit highlight-current-row>
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
           {{ scope.$index }}
@@ -18,25 +11,15 @@
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="作者" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.created_by }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="阅读数" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
-        </template>
-      </el-table-column>
       <el-table-column label="状态" width="110" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.state | statusTypeFilter">{{ scope.row.state | statusDisplayFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="创建时间" width="200">
+      <el-table-column align="center" prop="create_time" label="创建时间" width="200">
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{ scope.row.created_on }}</span>
+          <span>{{ scope.row.create_time }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -48,7 +31,7 @@ import { getList } from '@/api/tag'
 
 export default {
   filters: {
-    statusTypeFilter(status) {
+    statusTypeFilter (status) {
       const statusMap = {
         1: 'success',
         0: 'gray',
@@ -56,7 +39,7 @@ export default {
       }
       return statusMap[status]
     },
-    statusDisplayFilter(status) {
+    statusDisplayFilter (status) {
       const statusMap = {
         1: '有效',
         0: '删除',
@@ -65,19 +48,19 @@ export default {
       return statusMap[status]
     }
   },
-  data() {
+  data () {
     return {
       list: null,
       listLoading: true
     }
   },
-  created() {
+  created () {
     this.fetchData()
   },
   methods: {
-    fetchData() {
+    fetchData () {
       this.listLoading = true
-      getList().then(response => {
+      getList({ state: 1 }).then(response => {
         this.list = response.data
         this.listLoading = false
       })

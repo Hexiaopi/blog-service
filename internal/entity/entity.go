@@ -1,21 +1,24 @@
 package entity
 
 type Article struct {
-	ID            int    `json:"id"`
+	Id            int    `json:"id"`
 	Title         string `json:"title"`
 	Desc          string `json:"desc"`
 	Content       string `json:"content"`
 	CoverImageUrl string `json:"cover_image_url"`
-	CreatedBy     string `json:"created_by"`
-	ModifiedBy    string `json:"modified_by"`
 	State         uint8  `json:"state"`
+	CreateTime    string `json:"create_time"`
+	UpdateTime    string `json:"update_time"`
+	Operator      string `json:"operator"`
 	Tags          []Tag  `json:"tags"`
 }
 
 type Tag struct {
 	Id         int    `json:"id"`
 	Name       string `json:"name"`
-	CreatedBy  string `json:"created_by"`
-	ModifiedBy string `json:"modified_by"`
+	Desc       string `json:"desc"`
 	State      uint8  `json:"state"`
+	CreateTime string `json:"create_time"`
+	UpdateTime string `json:"update_time"`
+	Operator   string `json:"operator"`
 }

@@ -2,10 +2,11 @@ package dao
 
 import (
 	"context"
+	"time"
 
 	"github.com/jinzhu/gorm"
 
-	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/constant"
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/model"
 )
@@ -25,69 +26,120 @@ func (dao *ArticleDao) Create(ctx context.Context, param *entity.Article) error 
 		Content:       param.Content,
 		CoverImageUrl: param.CoverImageUrl,
 		State:         param.State,
-		CreatedBy:     param.CreatedBy,
+		Operator:      param.Operator,
+		CreateTime:    time.Now(),
+		UpdateTime:    time.Now(),
 	}
-	if err := dao.db.Create(&article).Error; err != nil {
-		return err
-	}
-	return nil
+	return dao.db.Create(&article).Error
 }
 
-func (d *ArticleDao) Update(ctx context.Context, param *entity.Article) error {
-	article := model.Article{ID: param.ID}
-	values := map[string]interface{}{
-		"modified_by": param.ModifiedBy,
-		"state":       param.State,
+func (dao *ArticleDao) Get(ctx context.Context, id int) (*entity.Article, error) {
+	var article model.Article
+	if err := dao.db.First(&article, id).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, nil
+		}
+		return nil, err
 	}
-	if param.Title != "" {
-		values["title"] = param.Title
+	result := entity.Article{
+		Id:            article.ID,
+		Title:         article.Title,
+		Desc:          article.Desc,
+		Content:       article.Content,
+		CoverImageUrl: article.CoverImageUrl,
+		State:         article.State,
+		CreateTime:    article.CreateTime.Format(constant.DefaultTimeFormat),
+		UpdateTime:    article.UpdateTime.Format(constant.DefaultTimeFormat),
+		Operator:      article.Operator,
 	}
-	if param.CoverImageUrl != "" {
-		values["cover_image_url"] = param.CoverImageUrl
-	}
-	if param.Desc != "" {
-		values["desc"] = param.Desc
-	}
-	if param.Content != "" {
-		values["content"] = param.Content
-	}
-
-	return article.Update(d.db, values)
-}
-
-func (d *ArticleDao) Get(ctx context.Context, id int) (*entity.Article, error) {
-	article := model.Article{ID: id}
-	a, err := article.Get(d.db)
+	tags, err := dao.getTags(article.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &entity.Article{
-		ID:      a.ID,
-		Title:   a.Title,
-		Desc:    a.Desc,
-		Content: a.Content,
-	}, nil
+	result.Tags = tags
+	return &result, nil
 }
 
-func (d *ArticleDao) Delete(ctx context.Context, id int) error {
-	article := model.Article{ID: id}
-	return article.Delete(d.db)
-}
-
-func (d *ArticleDao) List(ctx context.Context, opt *entity.ListOption) ([]*entity.Article, int64, error) {
-	article := model.Article{State: opt.State}
-	as, total, err := article.List(d.db, app.GetPageOffset(opt.PageNum, opt.PageSize), opt.PageSize)
-	if err != nil {
-		return nil, 0, err
+func (dao *ArticleDao) Update(ctx context.Context, param *entity.Article) error {
+	article := model.Article{
+		ID:            param.Id,
+		Title:         param.Title,
+		Desc:          param.Desc,
+		Content:       param.Content,
+		CoverImageUrl: param.CoverImageUrl,
+		State:         param.State,
+		Operator:      param.Operator,
+		UpdateTime:    time.Now(),
 	}
-	result := make([]*entity.Article, len(as))
-	for k, v := range as {
-		result[k] = &entity.Article{
-			ID:      int(v.ArticleID),
-			Title:   v.ArticleTitle,
-			Desc:    v.ArticleDesc,
-			Content: v.Content,
+	return dao.db.Model(&model.Article{}).Update(article).Error
+}
+
+func (dao *ArticleDao) Delete(ctx context.Context, id int) error {
+	article := model.Article{ID: id}
+	return dao.db.Delete(&article).Error
+}
+
+func (dao *ArticleDao) List(ctx context.Context, opt *entity.ListOption) ([]entity.Article, int64, error) {
+	query := dao.db
+	if opt.PageNum >= 0 && opt.PageSize > 0 {
+		query = dao.db.Offset(opt.GetPageOffset()).Limit(opt.PageSize)
+	}
+	var count int64
+	articles := make([]model.Article, 0)
+	if err := query.Model(&model.Article{}).
+		Where("state = ?", opt.State).
+		Count(&count).
+		Find(&articles).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, 0, nil
 		}
 	}
-	return result, total, nil
+	result := make([]entity.Article, len(articles))
+	for i, article := range articles {
+		result[i] = entity.Article{
+			Id:            article.ID,
+			Title:         article.Title,
+			Desc:          article.Desc,
+			Content:       article.Content,
+			CoverImageUrl: article.CoverImageUrl,
+			State:         article.State,
+			CreateTime:    article.CreateTime.Format(constant.DefaultTimeFormat),
+			UpdateTime:    article.UpdateTime.Format(constant.DefaultTimeFormat),
+			Operator:      article.Operator,
+			Tags:          make([]entity.Tag, 0),
+		}
+		tags, err := dao.getTags(article.ID)
+		if err != nil {
+			return nil, 0, err
+		}
+		if tags != nil {
+			result[i].Tags = tags
+		}
+	}
+	return result, count, nil
+}
+
+func (dao *ArticleDao) getTags(id int) ([]entity.Tag, error) {
+	tags := make([]model.Tag, 0)
+	if err := dao.db.Model(&model.Tag{}).
+		Joins("left join blog_article_tag on blog_tag.id = blog_article_tag.tag_id").
+		Where("blog_article_tag.article_id = ?", id).
+		Find(&tags).Error; err != nil {
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, err
+		}
+	}
+	result := make([]entity.Tag, len(tags))
+	for i, tag := range tags {
+		result[i] = entity.Tag{
+			Id:         tag.ID,
+			Name:       tag.Name,
+			Desc:       tag.Desc,
+			State:      tag.State,
+			CreateTime: tag.CreateTime.Format(constant.DefaultTimeFormat),
+			UpdateTime: tag.UpdateTime.Format(constant.DefaultTimeFormat),
+			Operator:   tag.Operator,
+		}
+	}
+	return result, nil
 }

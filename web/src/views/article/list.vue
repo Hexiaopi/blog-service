@@ -17,7 +17,7 @@
           <span>{{ scope.row.desc }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="内容" width="200" align="center">
+      <!-- <el-table-column label="内容" width="200" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.content }}</span>
         </template>
@@ -26,7 +26,7 @@
         <template slot-scope="scope">
           {{ scope.row.cover_image_url }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="状态" width="110" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.state | statusTypeFilter">{{ scope.row.state | statusDisplayFilter }}</el-tag>
@@ -34,7 +34,26 @@
       </el-table-column>
       <el-table-column prop="tag" label="文章标签" width="200" align="center">
         <template slot-scope="scope">
-          <el-tag type="success">{{ scope.row.tags }}</el-tag>
+          <el-tag v-for="tag in scope.row.tags" :key="tag.id">{{ tag.name }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" width="200" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.create_time }}
+        </template>
+      </el-table-column>
+      <el-table-column label="更新时间" width="200" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.update_time }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Actions" width="120">
+        <template slot-scope="scope">
+          <router-link :to="'/article/edit/' + scope.row.id">
+            <el-button type="primary" size="small" icon="el-icon-edit">
+              编辑
+            </el-button>
+          </router-link>
         </template>
       </el-table-column>
     </el-table>
@@ -49,16 +68,16 @@ export default {
     statusTypeFilter (status) {
       const statusMap = {
         1: 'success',
-        0: 'gray',
-        2: 'danger'
+        2: 'danger',
+        3: 'gray'
       }
       return statusMap[status]
     },
     statusDisplayFilter (status) {
       const statusMap = {
-        1: '有效',
-        0: '删除',
-        2: '无效'
+        1: '发布',
+        2: '草稿',
+        3: '删除'
       }
       return statusMap[status]
     }

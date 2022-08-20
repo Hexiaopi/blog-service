@@ -2,10 +2,11 @@ package dao
 
 import (
 	"context"
+	"time"
 
 	"github.com/jinzhu/gorm"
 
-	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/constant"
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/model"
 )
@@ -18,56 +19,80 @@ func NewTagDao(db *gorm.DB) *TagDao {
 	return &TagDao{db: db}
 }
 
-func (dao *TagDao) Get(ctx context.Context, id int) (*model.Tag, error) {
-	tag := model.Tag{
-		ID: id,
-	}
-	if err := dao.db.First(&tag).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
-	}
-	return &tag, nil
-}
-
 func (dao *TagDao) Create(ctx context.Context, param *entity.Tag) error {
 	tag := model.Tag{
-		Name:      param.Name,
-		State:     param.State,
-		CreatedBy: param.CreatedBy,
+		Name:       param.Name,
+		Desc:       param.Desc,
+		State:      param.State,
+		Operator:   param.Operator,
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
 	}
 	return dao.db.Create(&tag).Error
 }
 
+func (dao *TagDao) Get(ctx context.Context, id int) (*entity.Tag, error) {
+	var tag model.Tag
+	if err := dao.db.First(&tag, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	result := entity.Tag{
+		Id:         tag.ID,
+		Name:       tag.Name,
+		Desc:       tag.Desc,
+		State:      tag.State,
+		CreateTime: tag.CreateTime.Format(constant.DefaultTimeFormat),
+		UpdateTime: tag.UpdateTime.Format(constant.DefaultTimeFormat),
+		Operator:   tag.Operator,
+	}
+	return &result, nil
+}
+
 func (dao *TagDao) Update(ctx context.Context, param *entity.Tag) error {
 	tag := model.Tag{
-		ID:        param.Id,
-		Name:      param.Name,
-		CreatedBy: param.CreatedBy,
-		State:     param.State,
+		Name:       param.Name,
+		Desc:       param.Desc,
+		State:      param.State,
+		Operator:   param.Operator,
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
 	}
-	return dao.db.Save(tag).Error
+	return dao.db.Save(&tag).Error
 }
 
 func (dao *TagDao) Delete(ctx context.Context, id int) error {
 	tag := model.Tag{ID: id}
-	return dao.db.Where("is_del = ?", 0).Delete(&tag).Error
+	return dao.db.Delete(&tag).Error
 }
 
-func (dao *TagDao) List(ctx context.Context, opt *entity.ListOption) ([]model.Tag, int64, error) {
+func (dao *TagDao) List(ctx context.Context, opt *entity.ListOption) ([]entity.Tag, int64, error) {
+	query := dao.db
+	if opt.PageNum >= 0 && opt.PageSize > 0 {
+		query = dao.db.Offset(opt.GetPageOffset()).Limit(opt.PageSize)
+	}
 	var tags []model.Tag
 	var err error
 	var total int64
-	if opt.PageNum >= 0 && opt.PageSize > 0 {
-		dao.db = dao.db.Offset(app.GetPageOffset(opt.PageNum, opt.PageSize)).Limit(opt.PageSize)
-	}
 	if opt.Name != "" {
-		dao.db = dao.db.Where("name = ?", opt.Name)
+		query = query.Where("name = ?", opt.Name)
 	}
-	dao.db = dao.db.Where("state = ?", opt.State)
-	if err = dao.db.Where("is_del = ?", 0).Find(&tags).Count(&total).Error; err != nil {
+	if err = query.Where("state = ?", opt.State).Find(&tags).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
-
-	return tags, total, nil
+	result := make([]entity.Tag, len(tags))
+	for i, tag := range tags {
+		result[i] = entity.Tag{
+			Id:         tag.ID,
+			Name:       tag.Name,
+			Desc:       tag.Desc,
+			State:      tag.State,
+			CreateTime: tag.CreateTime.Format(constant.DefaultTimeFormat),
+			UpdateTime: tag.UpdateTime.Format(constant.DefaultTimeFormat),
+			Operator:   tag.Operator,
+		}
+	}
+	return result, total, nil
 }

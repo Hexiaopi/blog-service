@@ -11,5 +11,5 @@ type ArticleStore interface {
 	Update(ctx context.Context, article *entity.Article) error
 	Delete(ctx context.Context, id int) error
 	Get(ctx context.Context, id int) (*entity.Article, error)
-	List(ctx context.Context, opt *entity.ListOption) ([]*entity.Article, int64, error)
+	List(ctx context.Context, opt *entity.ListOption) ([]entity.Article, int64, error)
 }

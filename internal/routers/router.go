@@ -31,14 +31,14 @@ func NewRouter() http.Handler {
 	apiV1.Use(middleware.JWT)
 	{
 		apiV1.HandleFunc("/articles", v1.ListArticle).Methods(http.MethodGet)
-		apiV1.HandleFunc("/articles", v1.CreateArticle).Methods(http.MethodPost)
-		apiV1.HandleFunc("/articles/{id}", v1.GetArticle).Methods(http.MethodGet)
-		apiV1.HandleFunc("/articles/{id}", v1.UpdateArticle).Methods(http.MethodPut)
-		apiV1.HandleFunc("/articles/{id}", v1.DeleteArticle).Methods(http.MethodDelete)
+		apiV1.HandleFunc("/article", v1.CreateArticle).Methods(http.MethodPost)
+		apiV1.HandleFunc("/article", v1.GetArticle).Methods(http.MethodGet)
+		apiV1.HandleFunc("/article", v1.UpdateArticle).Methods(http.MethodPut)
+		apiV1.HandleFunc("/article", v1.DeleteArticle).Methods(http.MethodDelete)
 		apiV1.HandleFunc("/tags", v1.ListTag).Methods(http.MethodGet)
-		apiV1.HandleFunc("/tags", v1.CreateTag).Methods(http.MethodPost)
-		apiV1.HandleFunc("/tags/{id}", v1.UpdateTag).Methods(http.MethodPut)
-		apiV1.HandleFunc("/tags/{id}", v1.DeleteTag).Methods(http.MethodDelete)
+		apiV1.HandleFunc("/tag", v1.CreateTag).Methods(http.MethodPost)
+		apiV1.HandleFunc("/tag/{id}", v1.UpdateTag).Methods(http.MethodPut)
+		apiV1.HandleFunc("/tag/{id}", v1.DeleteTag).Methods(http.MethodDelete)
 	}
 	router.NotFoundHandler = pathNotFound{}
 	router.MethodNotAllowedHandler = methodNotAllow{}

@@ -56,17 +56,30 @@ export const constantRoutes = [
   },
 
   {
-    path: '/blog',
+    path: '/article',
     component: Layout,
-    redirect: '/blog/article',
+    redirect: '/article/list',
     name: 'Blog',
     meta: { title: '博客', icon: 'el-icon-collection' },
     children: [
       {
-        path: 'article',
+        path: 'list',
         name: 'Article',
-        component: () => import('@/views/article/index'),
-        meta: { title: '文章', icon: 'el-icon-document' }
+        component: () => import('@/views/article/list'),
+        meta: { title: '文章列表', icon: 'el-icon-document' }
+      },
+      {
+        path: 'create',
+        name: 'CreateArticle',
+        component: () => import('@/views/article/create'),
+        meta: { title: '创建文章', icon: 'el-icon-document' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/article/edit'),
+        name: 'EditArticle',
+        meta: { title: '编辑文章', noCache: true, activeMenu: '/article/list' },
+        hidden: true
       },
       {
         path: 'tag',
