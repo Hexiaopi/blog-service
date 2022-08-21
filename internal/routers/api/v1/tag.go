@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
-
 	"github.com/hexiaopi/blog-service/global"
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/entity"
@@ -32,9 +30,10 @@ func ListTag(writer http.ResponseWriter, request *http.Request) {
 	values := request.URL.Query()
 	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
-	pageNum, _ := strconv.Atoi(values.Get("page_num"))
-	pageSize, _ := strconv.Atoi(values.Get("page_size"))
-	param := service.TagListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), PageSize: pageSize, PageNum: pageNum}}
+	page, _ := strconv.Atoi(values.Get("page"))
+	limit, _ := strconv.Atoi(values.Get("limit"))
+	sort := values.Get("sort")
+	param := service.TagListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	svc := service.NewTagService(dao.NewDao(global.DBEngine))
 
 	tags, total, err := svc.List(request.Context(), &param)
@@ -54,7 +53,7 @@ func ListTag(writer http.ResponseWriter, request *http.Request) {
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
-// @Router /api/v1/tags [post]
+// @Router /api/v1/tag [post]
 func CreateTag(writer http.ResponseWriter, request *http.Request) {
 	var param service.CreateTagRequest
 	data, _ := ioutil.ReadAll(request.Body)
@@ -81,7 +80,7 @@ func CreateTag(writer http.ResponseWriter, request *http.Request) {
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
-// @Router /api/v1/tags/{id} [put]
+// @Router /api/v1/tag [put]
 func UpdateTag(writer http.ResponseWriter, request *http.Request) {
 	var param service.UpdateTagRequest
 	data, _ := ioutil.ReadAll(request.Body)
@@ -89,10 +88,6 @@ func UpdateTag(writer http.ResponseWriter, request *http.Request) {
 		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
 		return
 	}
-
-	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	param.Id = id
-
 	svc := service.NewTagService(dao.NewDao(global.DBEngine))
 	if err := svc.Update(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.UpdateTagFail)
@@ -109,9 +104,9 @@ func UpdateTag(writer http.ResponseWriter, request *http.Request) {
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
-// @Router /api/v1/tags/{id} [delete]
+// @Router /api/v1/tag [delete]
 func DeleteTag(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(mux.Vars(request)["id"])
+	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
 	param := service.DeleteTagRequest{OneOption: entity.OneOption{Id: id}}
 	svc := service.NewTagService(dao.NewDao(global.DBEngine))
 	if err := svc.Delete(request.Context(), &param); err != nil {

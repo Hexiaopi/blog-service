@@ -22,12 +22,7 @@ type TagListRequest struct {
 }
 
 func (svc *TagService) List(ctx context.Context, param *TagListRequest) ([]entity.Tag, int64, error) {
-	opt := entity.ListOption{
-		State:    param.State,
-		PageSize: param.PageSize,
-		PageNum:  param.PageNum,
-	}
-	tags, total, err := svc.store.Tags().List(ctx, &opt)
+	tags, total, err := svc.store.Tags().List(ctx, &param.ListOption)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -59,6 +54,7 @@ type UpdateTagRequest struct {
 
 func (svc *TagService) Update(ctx context.Context, param *UpdateTagRequest) error {
 	tag := entity.Tag{
+		Id:       param.Id,
 		Name:     param.Name,
 		Desc:     param.Desc,
 		State:    param.State,

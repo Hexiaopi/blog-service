@@ -37,8 +37,8 @@ func NewRouter() http.Handler {
 		apiV1.HandleFunc("/article", v1.DeleteArticle).Methods(http.MethodDelete)
 		apiV1.HandleFunc("/tags", v1.ListTag).Methods(http.MethodGet)
 		apiV1.HandleFunc("/tag", v1.CreateTag).Methods(http.MethodPost)
-		apiV1.HandleFunc("/tag/{id}", v1.UpdateTag).Methods(http.MethodPut)
-		apiV1.HandleFunc("/tag/{id}", v1.DeleteTag).Methods(http.MethodDelete)
+		apiV1.HandleFunc("/tag", v1.UpdateTag).Methods(http.MethodPut)
+		apiV1.HandleFunc("/tag", v1.DeleteTag).Methods(http.MethodDelete)
 	}
 	router.NotFoundHandler = pathNotFound{}
 	router.MethodNotAllowedHandler = methodNotAllow{}

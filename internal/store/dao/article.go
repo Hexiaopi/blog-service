@@ -81,8 +81,8 @@ func (dao *ArticleDao) Delete(ctx context.Context, id int) error {
 
 func (dao *ArticleDao) List(ctx context.Context, opt *entity.ListOption) ([]entity.Article, int64, error) {
 	query := dao.db
-	if opt.PageNum >= 0 && opt.PageSize > 0 {
-		query = dao.db.Offset(opt.GetPageOffset()).Limit(opt.PageSize)
+	if opt.Page >= 0 && opt.Limit > 0 {
+		query = dao.db.Offset(opt.GetPageOffset()).Limit(opt.Limit)
 	}
 	var count int64
 	articles := make([]model.Article, 0)

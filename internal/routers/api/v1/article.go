@@ -55,7 +55,7 @@ func ListArticle(writer http.ResponseWriter, request *http.Request) {
 	state, _ := strconv.Atoi(values.Get("state"))
 	pageNum, _ := strconv.Atoi(values.Get("page_num"))
 	pageSize, _ := strconv.Atoi(values.Get("page_size"))
-	param := service.ArticleListRequest{ListOption: entity.ListOption{State: uint8(state), PageSize: pageSize, PageNum: pageNum}}
+	param := service.ArticleListRequest{ListOption: entity.ListOption{State: uint8(state), Limit: pageSize, Page: pageNum}}
 	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
 	article, count, err := svc.List(request.Context(), &param)
 	if err != nil {

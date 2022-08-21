@@ -56,9 +56,9 @@ service.interceptors.response.use(
       // 000001: Illegal token; 000002: Other clients logged in; 000003: Token expired;
       if (res.ret_code === '020003' || res.ret_code === '020004' || res.ret_code === '020005') {
         // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
+        MessageBox.confirm('你已经退出, 你可以取消并停留在这个页面，或者重新登陆', '确认退出', {
+          confirmButtonText: '重新登陆',
+          cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           store.dispatch('user/resetToken').then(() => {

@@ -35,9 +35,9 @@ type ArticleListRequest struct {
 
 func (svc *ArticleService) List(ctx context.Context, param *ArticleListRequest) ([]entity.Article, int64, error) {
 	opt := entity.ListOption{
-		State:    param.State,
-		PageSize: param.PageSize,
-		PageNum:  param.PageNum,
+		State: param.State,
+		Limit: param.Limit,
+		Page:  param.Page,
 	}
 	articles, total, err := svc.store.Articles().List(ctx, &opt)
 	if err != nil {
