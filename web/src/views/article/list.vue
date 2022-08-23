@@ -1,6 +1,19 @@
 <template>
   <div class="app-container">
-
+    <div class="filter-container">
+      <el-input v-model="listQuery.name" placeholder="名称" style="width: 200px;" class="filter-item"
+        @keyup.enter.native="handleFilter" />
+      <el-select v-model="listQuery.state" placeholder="状态" style="width: 90px" class="filter-item"
+        @change="handleFilter">
+        <el-option v-for="item in stateOptions" :key="item" :label="item | statusDisplayFilter" :value="item" />
+      </el-select>
+      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+      </el-select>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+        搜索
+      </el-button>
+    </div>
     <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" stripe fit highlight-current-row>
       <el-table-column label="ID" width="95" align="center">
         <template slot-scope="scope">
@@ -9,7 +22,7 @@
       </el-table-column>
       <el-table-column label="标题" width="200" align="center">
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          {{ scope.row.name }}
         </template>
       </el-table-column>
       <el-table-column label="描述" width="200" align="center">
@@ -47,7 +60,7 @@
           {{ scope.row.update_time }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Actions" width="120">
+      <el-table-column align="center" label="操作" width="120">
         <template slot-scope="scope">
           <router-link :to="'/article/edit/' + scope.row.id">
             <el-button type="primary" size="small" icon="el-icon-edit">
@@ -62,8 +75,11 @@
 
 <script>
 import { listArticle } from '@/api/article'
+import waves from '@/directive/waves' // waves directive
 
 export default {
+  name: "Article",
+  directives: { waves },
   filters: {
     statusTypeFilter (status) {
       const statusMap = {
@@ -85,20 +101,48 @@ export default {
   data () {
     return {
       list: null,
-      listLoading: true
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 10,
+        name: undefined,
+        state: 1,
+        sort: '+id'
+      },
+      stateOptions: [1, 2, 3],
+      sortOptions: [{ label: 'ID升序', key: '+id' }, { label: 'ID降序', key: '-id' }],
     }
   },
   created () {
-    this.fetchData()
+    this.getList()
   },
   methods: {
-    fetchData () {
+    getList () {
       this.listLoading = true
-      listArticle({ state: 1 }).then(response => {
+      listArticle(this.listQuery).then(response => {
         this.list = response.data
+        this.total = response.total
         this.listLoading = false
       })
-    }
+    },
+    handleFilter () {
+      this.listQuery.page = 1
+      this.getList()
+    },
+    sortChange (data) {
+      const { prop, order } = data
+      if (prop === 'id') {
+        this.sortByID(order)
+      }
+    },
+    sortByID (order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = '+id'
+      } else {
+        this.listQuery.sort = '-id'
+      }
+      this.handleFilter()
+    },
   }
 }
 </script>

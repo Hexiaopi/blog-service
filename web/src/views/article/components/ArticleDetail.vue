@@ -13,8 +13,8 @@
       <div class="createPost-main-container">
         <el-row>
           <el-col :span="24">
-            <el-form-item style="margin-bottom: 40px;" prop="title">
-              <MDinput v-model="postForm.title" :maxlength="100" name="title" required>
+            <el-form-item style="margin-bottom: 40px;" prop="name">
+              <MDinput v-model="postForm.name" :maxlength="100" name="name" required>
                 标题
               </MDinput>
             </el-form-item>
@@ -49,7 +49,7 @@ import { listTag } from '@/api/tag'
 
 const defaultForm = {
   id: undefined,
-  title: '', // 文章题目
+  name: '', // 文章题目
   desc: '', // 文章描述
   content: '', // 文章内容
   cover_image_url: '', // 文章图片
@@ -95,7 +95,7 @@ export default {
       userListOptions: [],
       rules: {
         cover_image_url: [{ validator: validateRequire }],
-        title: [{ validator: validateRequire }],
+        name: [{ validator: validateRequire }],
         content: [{ validator: validateRequire }],
       },
       tempRoute: {}
@@ -175,7 +175,7 @@ export default {
       })
     },
     draftForm () {
-      if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
+      if (this.postForm.content.length === 0 || this.postForm.name.length === 0) {
         this.$message({
           message: '请填写必要的标题和内容',
           type: 'warning'

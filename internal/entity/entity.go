@@ -2,7 +2,7 @@ package entity
 
 type Article struct {
 	Id            int    `json:"id"`
-	Title         string `json:"title"`
+	Name          string `json:"name"`
 	Desc          string `json:"desc"`
 	Content       string `json:"content"`
 	CoverImageUrl string `json:"cover_image_url"`

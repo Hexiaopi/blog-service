@@ -34,12 +34,7 @@ type ArticleListRequest struct {
 }
 
 func (svc *ArticleService) List(ctx context.Context, param *ArticleListRequest) ([]entity.Article, int64, error) {
-	opt := entity.ListOption{
-		State: param.State,
-		Limit: param.Limit,
-		Page:  param.Page,
-	}
-	articles, total, err := svc.store.Articles().List(ctx, &opt)
+	articles, total, err := svc.store.Articles().List(ctx, &param.ListOption)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -52,7 +47,7 @@ type CreateArticleRequest struct {
 
 func (svc *ArticleService) Create(ctx context.Context, param *CreateArticleRequest) error {
 	article := entity.Article{
-		Title:         param.Title,
+		Name:          param.Name,
 		Desc:          param.Desc,
 		Content:       param.Content,
 		CoverImageUrl: param.CoverImageUrl,
@@ -67,13 +62,13 @@ func (svc *ArticleService) Create(ctx context.Context, param *CreateArticleReque
 
 type UpdateArticleRequest struct {
 	entity.Article
-	Tags []int `json:"tags"`
+	Tags []entity.Tag `json:"tags"`
 }
 
 func (svc *ArticleService) Update(ctx context.Context, param *UpdateArticleRequest) error {
 	article := entity.Article{
 		Id:            param.Id,
-		Title:         param.Title,
+		Name:          param.Name,
 		Desc:          param.Desc,
 		Content:       param.Content,
 		CoverImageUrl: param.CoverImageUrl,

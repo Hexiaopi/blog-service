@@ -21,7 +21,7 @@ func NewArticleDao(db *gorm.DB) *ArticleDao {
 
 func (dao *ArticleDao) Create(ctx context.Context, param *entity.Article) error {
 	article := model.Article{
-		Title:         param.Title,
+		Name:          param.Name,
 		Desc:          param.Desc,
 		Content:       param.Content,
 		CoverImageUrl: param.CoverImageUrl,
@@ -43,7 +43,7 @@ func (dao *ArticleDao) Get(ctx context.Context, id int) (*entity.Article, error)
 	}
 	result := entity.Article{
 		Id:            article.ID,
-		Title:         article.Title,
+		Name:          article.Name,
 		Desc:          article.Desc,
 		Content:       article.Content,
 		CoverImageUrl: article.CoverImageUrl,
@@ -63,7 +63,7 @@ func (dao *ArticleDao) Get(ctx context.Context, id int) (*entity.Article, error)
 func (dao *ArticleDao) Update(ctx context.Context, param *entity.Article) error {
 	article := model.Article{
 		ID:            param.Id,
-		Title:         param.Title,
+		Name:          param.Name,
 		Desc:          param.Desc,
 		Content:       param.Content,
 		CoverImageUrl: param.CoverImageUrl,
@@ -85,11 +85,14 @@ func (dao *ArticleDao) List(ctx context.Context, opt *entity.ListOption) ([]enti
 		query = dao.db.Offset(opt.GetPageOffset()).Limit(opt.Limit)
 	}
 	var count int64
+	if opt.Name != "" {
+		query = query.Where("name = ?", opt.Name)
+	}
+	if opt.Sort != "" {
+		query = query.Order(opt.GetSortType())
+	}
 	articles := make([]model.Article, 0)
-	if err := query.Model(&model.Article{}).
-		Where("state = ?", opt.State).
-		Count(&count).
-		Find(&articles).Error; err != nil {
+	if err := query.Model(&model.Article{}).Where("state = ?", opt.State).Find(&articles).Count(&count).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, 0, nil
 		}
@@ -98,7 +101,7 @@ func (dao *ArticleDao) List(ctx context.Context, opt *entity.ListOption) ([]enti
 	for i, article := range articles {
 		result[i] = entity.Article{
 			Id:            article.ID,
-			Title:         article.Title,
+			Name:          article.Name,
 			Desc:          article.Desc,
 			Content:       article.Content,
 			CoverImageUrl: article.CoverImageUrl,

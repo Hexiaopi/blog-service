@@ -2,7 +2,6 @@ package dao
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -81,7 +80,7 @@ func (dao *TagDao) List(ctx context.Context, opt *entity.ListOption) ([]entity.T
 		query = query.Where("name = ?", opt.Name)
 	}
 	if opt.Sort != "" {
-		query = query.Order(fmt.Sprintf("%s %s", opt.Sort, opt.GetSortType()))
+		query = query.Order(opt.GetSortType())
 	}
 	if err = query.Where("state = ?", opt.State).Find(&tags).Count(&total).Error; err != nil {
 		return nil, 0, err

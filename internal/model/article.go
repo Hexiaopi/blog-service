@@ -6,7 +6,7 @@ import (
 
 type Article struct {
 	ID            int       `gorm:"id"`
-	Title         string    `gorm:"title"`
+	Name          string    `gorm:"name"`
 	Desc          string    `gorm:"desc"`
 	Content       string    `gorm:"content"`
 	CoverImageUrl string    `gorm:"cover_image_url"`

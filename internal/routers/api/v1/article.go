@@ -44,18 +44,20 @@ func GetArticle(writer http.ResponseWriter, request *http.Request) {
 // @Produce json
 // @param name query string false "文章名称"
 // @param state query integer false "状态"
-// @param page_num query integer false "页码"
-// @param page_size query integer false "每页数量"
+// @param page query integer false "页码"
+// @param limit query integer false "每页数量"
 // @Success 200 {object} app.ListResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles [get]
 func ListArticle(writer http.ResponseWriter, request *http.Request) {
 	values := request.URL.Query()
+	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
-	pageNum, _ := strconv.Atoi(values.Get("page_num"))
-	pageSize, _ := strconv.Atoi(values.Get("page_size"))
-	param := service.ArticleListRequest{ListOption: entity.ListOption{State: uint8(state), Limit: pageSize, Page: pageNum}}
+	page, _ := strconv.Atoi(values.Get("page"))
+	limit, _ := strconv.Atoi(values.Get("limit"))
+	sort := values.Get("sort")
+	param := service.ArticleListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
 	article, count, err := svc.List(request.Context(), &param)
 	if err != nil {

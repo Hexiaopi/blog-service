@@ -21,15 +21,13 @@ func (option ListOption) GetPageOffset() int {
 	return (option.Page - 1) * option.Limit
 }
 
-func (option *ListOption) GetSortType() string {
+func (option ListOption) GetSortType() string {
 	sortType := ""
 	if strings.HasPrefix(option.Sort, "+") {
-		sortType = "asc"
-		option.Sort = strings.TrimPrefix(option.Sort, "+")
+		sortType = strings.TrimPrefix(option.Sort, "+") + " asc"
 	}
 	if strings.HasPrefix(option.Sort, "-") {
-		sortType = "desc"
-		option.Sort = strings.TrimPrefix(option.Sort, "-")
+		sortType = strings.TrimPrefix(option.Sort, "-") + " desc"
 	}
 	return sortType
 }
