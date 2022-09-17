@@ -8,12 +8,12 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/hexiaopi/blog-service/global"
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store/dao"
+	"github.com/hexiaopi/blog-service/internal/config"
 )
 
 // @Summary 获取单个文章
@@ -29,7 +29,7 @@ import (
 func GetArticle(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
 	param := service.ArticleRequest{OneOption: entity.OneOption{Id: id}}
-	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
 	article, err := svc.Get(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetArticleFail)
@@ -58,7 +58,7 @@ func ListArticle(writer http.ResponseWriter, request *http.Request) {
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
 	param := service.ArticleListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
-	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
 	article, count, err := svc.List(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetArticlesFail)
@@ -85,7 +85,7 @@ func CreateArticle(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
 	if err := svc.Create(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.CreateArticleFail)
 		return
@@ -112,7 +112,7 @@ func UpdateArticle(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
 	if err := svc.Update(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.UpdateArticleFail)
 		return
@@ -131,7 +131,7 @@ func UpdateArticle(writer http.ResponseWriter, request *http.Request) {
 // @Router /api/v1/articles/{id} [delete]
 func DeleteArticle(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	svc := service.NewArticleService(dao.NewDao(global.DBEngine))
+	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
 	if err := svc.Delete(request.Context(), id); err != nil {
 		app.ToResponseCode(writer, retcode.DeleteArticleFail)
 		return

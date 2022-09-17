@@ -8,6 +8,8 @@ import (
 	"github.com/uber/jaeger-client-go/config"
 )
 
+var Tracer opentracing.Tracer
+
 func NewJaegerTracer(serviceName, agentHostPort string) (opentracing.Tracer, io.Closer, error) {
 	cfg := &config.Configuration{
 		ServiceName: serviceName,

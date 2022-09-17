@@ -8,6 +8,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
+var DBEngine *gorm.DB
+
 type DatabaseSetting struct {
 	DBType          string        `yaml:"dbType"`
 	UserName        string        `yaml:"username"`

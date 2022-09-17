@@ -1,6 +1,8 @@
 package app
 
-import "github.com/hexiaopi/blog-service/global"
+import (
+	"github.com/hexiaopi/blog-service/internal/config"
+)
 
 type Page struct {
 	// 页码
@@ -15,10 +17,10 @@ func CorrectPage(size, num int) Page {
 		PageSize: size,
 	}
 	if size <= 0 {
-		page.PageSize = global.AppConfig.DefaultPageSize
+		page.PageSize = config.AppEngine.DefaultPageSize
 	}
-	if size > global.AppConfig.MaxPageSize {
-		page.PageSize = global.AppConfig.MaxPageSize
+	if size > config.AppEngine.MaxPageSize {
+		page.PageSize = config.AppEngine.MaxPageSize
 	}
 	if num <= 0 {
 		page.PageNum = 1

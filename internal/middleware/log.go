@@ -8,7 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/hexiaopi/blog-service/internal/constant"
+	"github.com/hexiaopi/blog-service/global"
 )
 
 type ResponseWithRecorder struct {
@@ -42,18 +42,18 @@ func Logger(handler http.Handler) http.Handler {
 		request.Body = rdr //rewrite
 
 		log.WithFields(log.Fields{
-			constant.Path:       request.URL.Path,
-			constant.QueryParam: request.URL.RawQuery,
-			constant.Method:     request.Method,
+			global.Path:       request.URL.Path,
+			global.QueryParam: request.URL.RawQuery,
+			global.Method:     request.Method,
 		}).Infof("receive request body:%s ", string(buf))
 
 		handler.ServeHTTP(writer, request)
 
 		defer func() { //日志记录扫尾工作
 			log.WithFields(log.Fields{
-				constant.Path:       request.URL.Path,
-				constant.QueryParam: request.URL.RawQuery,
-				constant.Method:     request.Method,
+				global.Path:       request.URL.Path,
+				global.QueryParam: request.URL.RawQuery,
+				global.Method:     request.Method,
 			}).Infof("done use time:%s", time.Since(start).String())
 		}()
 	})

@@ -6,7 +6,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 
-	"github.com/hexiaopi/blog-service/internal/constant"
+	"github.com/hexiaopi/blog-service/global"
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/model"
 )
@@ -48,8 +48,8 @@ func (dao *ArticleDao) Get(ctx context.Context, id int) (*entity.Article, error)
 		Content:       article.Content,
 		CoverImageUrl: article.CoverImageUrl,
 		State:         article.State,
-		CreateTime:    article.CreateTime.Format(constant.DefaultTimeFormat),
-		UpdateTime:    article.UpdateTime.Format(constant.DefaultTimeFormat),
+		CreateTime:    article.CreateTime.Format(global.DefaultTimeFormat),
+		UpdateTime:    article.UpdateTime.Format(global.DefaultTimeFormat),
 		Operator:      article.Operator,
 	}
 	tags, err := dao.getTags(article.ID)
@@ -106,8 +106,8 @@ func (dao *ArticleDao) List(ctx context.Context, opt *entity.ListOption) ([]enti
 			Content:       article.Content,
 			CoverImageUrl: article.CoverImageUrl,
 			State:         article.State,
-			CreateTime:    article.CreateTime.Format(constant.DefaultTimeFormat),
-			UpdateTime:    article.UpdateTime.Format(constant.DefaultTimeFormat),
+			CreateTime:    article.CreateTime.Format(global.DefaultTimeFormat),
+			UpdateTime:    article.UpdateTime.Format(global.DefaultTimeFormat),
 			Operator:      article.Operator,
 			Tags:          make([]entity.Tag, 0),
 		}
@@ -139,8 +139,8 @@ func (dao *ArticleDao) getTags(id int) ([]entity.Tag, error) {
 			Name:       tag.Name,
 			Desc:       tag.Desc,
 			State:      tag.State,
-			CreateTime: tag.CreateTime.Format(constant.DefaultTimeFormat),
-			UpdateTime: tag.UpdateTime.Format(constant.DefaultTimeFormat),
+			CreateTime: tag.CreateTime.Format(global.DefaultTimeFormat),
+			UpdateTime: tag.UpdateTime.Format(global.DefaultTimeFormat),
 			Operator:   tag.Operator,
 		}
 	}

@@ -2,12 +2,11 @@ package middleware
 
 import (
 	"context"
+	"github.com/hexiaopi/blog-service/internal/config"
 	"net/http"
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-
-	"github.com/hexiaopi/blog-service/global"
 )
 
 // Tracer 调用链追踪
@@ -20,12 +19,12 @@ func Tracer(handler http.Handler) http.Handler {
 		if err != nil {
 			span, ctx = opentracing.StartSpanFromContextWithTracer(
 				request.Context(),
-				global.Tracer,
+				config.Tracer,
 				request.URL.Path)
 		} else {
 			span, ctx = opentracing.StartSpanFromContextWithTracer(
 				request.Context(),
-				global.Tracer,
+				config.Tracer,
 				request.URL.Path,
 				opentracing.ChildOf(spanCtx),
 				opentracing.Tag{Key: string(ext.Component), Value: "HTTP"})

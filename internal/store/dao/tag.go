@@ -6,7 +6,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 
-	"github.com/hexiaopi/blog-service/internal/constant"
+	"github.com/hexiaopi/blog-service/global"
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/model"
 )
@@ -44,8 +44,8 @@ func (dao *TagDao) Get(ctx context.Context, id int) (*entity.Tag, error) {
 		Name:       tag.Name,
 		Desc:       tag.Desc,
 		State:      tag.State,
-		CreateTime: tag.CreateTime.Format(constant.DefaultTimeFormat),
-		UpdateTime: tag.UpdateTime.Format(constant.DefaultTimeFormat),
+		CreateTime: tag.CreateTime.Format(global.DefaultTimeFormat),
+		UpdateTime: tag.UpdateTime.Format(global.DefaultTimeFormat),
 		Operator:   tag.Operator,
 	}
 	return &result, nil
@@ -92,8 +92,8 @@ func (dao *TagDao) List(ctx context.Context, opt *entity.ListOption) ([]entity.T
 			Name:       tag.Name,
 			Desc:       tag.Desc,
 			State:      tag.State,
-			CreateTime: tag.CreateTime.Format(constant.DefaultTimeFormat),
-			UpdateTime: tag.UpdateTime.Format(constant.DefaultTimeFormat),
+			CreateTime: tag.CreateTime.Format(global.DefaultTimeFormat),
+			UpdateTime: tag.UpdateTime.Format(global.DefaultTimeFormat),
 			Operator:   tag.Operator,
 		}
 	}

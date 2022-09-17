@@ -101,6 +101,22 @@ export const constantRoutes = [
   },
 
   {
+    path: '/plan',
+    component: Layout,
+    redirect: '/plan/kanban',
+    name: 'Plan',
+    meta: { title: '计划', icon: 'el-icon-collection' },
+    children: [
+      {
+        path: 'kanban',
+        name: 'PlanKanBan',
+        component: () => import('@/views/plan/kanban'),
+        meta: { title: '计划看板', icon: 'el-icon-collection-tag' }
+      }
+    ]
+  },
+
+  {
     path: 'external-link',
     component: Layout,
     children: [

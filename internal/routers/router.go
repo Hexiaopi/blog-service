@@ -24,7 +24,6 @@ func NewRouter() http.Handler {
 	router.HandleFunc("/user/login", api.Login).Methods(http.MethodPost)
 	router.HandleFunc("/user/info", api.Info).Methods(http.MethodGet)
 	router.HandleFunc("/user/logout", api.Logout).Methods(http.MethodPost)
-	router.HandleFunc("/table/list", api.TableList).Methods(http.MethodGet)
 
 	apiV1 := router.PathPrefix("/api/v1").Subrouter()
 	apiV1.Use(middleware.Timeout)

@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/hexiaopi/blog-service/global"
+
+	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/util"
 )
 
@@ -15,18 +16,18 @@ type Claims struct {
 }
 
 func GetJWTSecret() []byte {
-	return []byte(global.AppConfig.JWT.Secret)
+	return []byte(config.AppEngine.JWT.Secret)
 }
 
 func GenerateToken(appKey, appSecret string) (string, error) {
 	nowTime := time.Now()
-	expireTime := nowTime.Add(global.AppConfig.JWT.Expire)
+	expireTime := nowTime.Add(config.AppEngine.JWT.Expire)
 	claims := Claims{
 		AppKey:    util.EncodeMD5(appKey),
 		AppSecret: util.EncodeMD5(appSecret),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
-			Issuer:    global.AppConfig.JWT.Issuer,
+			Issuer:    config.AppEngine.JWT.Issuer,
 		},
 	}
 

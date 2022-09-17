@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/hexiaopi/blog-service/global"
 	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
@@ -34,7 +34,7 @@ func ListTag(writer http.ResponseWriter, request *http.Request) {
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
 	param := service.TagListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
-	svc := service.NewTagService(dao.NewDao(global.DBEngine))
+	svc := service.NewTagService(dao.NewDao(config.DBEngine))
 
 	tags, total, err := svc.List(request.Context(), &param)
 	if err != nil {
@@ -62,7 +62,7 @@ func CreateTag(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	svc := service.NewTagService(dao.NewDao(global.DBEngine))
+	svc := service.NewTagService(dao.NewDao(config.DBEngine))
 	if err := svc.Create(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.CreateTagFail)
 		return
@@ -88,7 +88,7 @@ func UpdateTag(writer http.ResponseWriter, request *http.Request) {
 		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
 		return
 	}
-	svc := service.NewTagService(dao.NewDao(global.DBEngine))
+	svc := service.NewTagService(dao.NewDao(config.DBEngine))
 	if err := svc.Update(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.UpdateTagFail)
 		return
@@ -108,7 +108,7 @@ func UpdateTag(writer http.ResponseWriter, request *http.Request) {
 func DeleteTag(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
 	param := service.DeleteTagRequest{OneOption: entity.OneOption{Id: id}}
-	svc := service.NewTagService(dao.NewDao(global.DBEngine))
+	svc := service.NewTagService(dao.NewDao(config.DBEngine))
 	if err := svc.Delete(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.DeleteTagFail)
 		return

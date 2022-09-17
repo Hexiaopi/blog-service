@@ -19,6 +19,8 @@ type AppConfig struct {
 	TraceAgent      string          `yaml:"TraceAgent"`
 }
 
+var AppEngine *AppConfig
+
 func NewAppConfig(file string) (*AppConfig, error) {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
