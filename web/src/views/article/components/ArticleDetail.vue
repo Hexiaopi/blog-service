@@ -28,7 +28,8 @@
         </el-form-item>
 
         <el-form-item prop="content" style="margin-bottom: 30px;">
-          <Tinymce ref="editor" v-model="postForm.content" :height="400" />
+          <markdown-editor ref="editor" v-model="postForm.content"
+            :options="{ hideModeSwitch: true, previewStyle: 'tab' }" height="400px" />
         </el-form-item>
 
         <el-form-item prop="cover_image_url" style="margin-bottom: 30px;">
@@ -40,7 +41,7 @@
 </template>
 
 <script>
-import Tinymce from '@/components/Tinymce'
+import MarkdownEditor from '@/components/MarkdownEditor'
 import Upload from '@/components/Upload/SingleImage3'
 import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky' // 粘性header组件
@@ -60,7 +61,7 @@ const defaultForm = {
 
 export default {
   name: 'ArticleDetail',
-  components: { Tinymce, MDinput, Upload, Sticky },
+  components: { MarkdownEditor, MDinput, Upload, Sticky },
   props: {
     isEdit: {
       type: Boolean,
