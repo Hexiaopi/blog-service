@@ -6,7 +6,7 @@ import (
 
 func Init() {
 	var err error
-	AppEngine, err = NewAppConfig("../configs/app.yaml")
+	AppEngine, err = NewAppConfig("configs/app.yaml")
 	if err != nil {
 		log.Fatalf("init config fail %v", err)
 	}
