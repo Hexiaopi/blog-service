@@ -40,6 +40,8 @@ func NewRouter() http.Handler {
 		apiV1.HandleFunc("/tag", v1.UpdateTag).Methods(http.MethodPut)
 		apiV1.HandleFunc("/tag", v1.DeleteTag).Methods(http.MethodDelete)
 	}
+	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/dist"))))
+
 	router.NotFoundHandler = pathNotFound{}
 	router.MethodNotAllowedHandler = methodNotAllow{}
 	return router
