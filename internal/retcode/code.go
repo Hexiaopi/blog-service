@@ -8,7 +8,7 @@ var (
 	RequestIllegal          = NewCode("010002", "Request Illegal")
 	RequestUnMarshalError   = NewCode("010003", "Request Body UnMarshal Error")
 	RequestNoPermission     = NewCode("010004", "Request No Permission")
-	RequestAuthNotExists    = NewCode("020001", "Request Auth Not Exists")
+	RequestAuthCheckFail    = NewCode("020001", "Request Auth Check Fail")
 	GenerateAuthTokenFail   = NewCode("020002", "Generate Auth Token Fail")
 	RequestTokenEmpty       = NewCode("020003", "Request Token Empty")
 	RequestTokenAuthFail    = NewCode("020004", "Request Token Auth Fail")

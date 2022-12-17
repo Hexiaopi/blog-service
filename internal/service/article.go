@@ -7,12 +7,22 @@ import (
 	"github.com/hexiaopi/blog-service/internal/store"
 )
 
+type ArticleSrv interface {
+	Get(ctx context.Context, request *ArticleRequest) (*entity.Article, error)
+	List(ctx context.Context, param *ArticleListRequest) ([]entity.Article, int64, error)
+	Create(ctx context.Context, param *CreateArticleRequest) error
+	Update(ctx context.Context, param *UpdateArticleRequest) error
+	Delete(ctx context.Context, id int) error
+}
+
 type ArticleService struct {
 	store store.Factory
 }
 
-func NewArticleService(factory store.Factory) ArticleService {
-	return ArticleService{
+var _ ArticleSrv = (*ArticleService)(nil)
+
+func NewArticleService(factory store.Factory) *ArticleService {
+	return &ArticleService{
 		store: factory,
 	}
 }

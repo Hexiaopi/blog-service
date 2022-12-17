@@ -7,12 +7,21 @@ import (
 	"strconv"
 
 	"github.com/hexiaopi/blog-service/internal/app"
-	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
-	"github.com/hexiaopi/blog-service/internal/store/dao"
+	"github.com/hexiaopi/blog-service/internal/store"
 )
+
+type TagController struct {
+	srv service.Service
+}
+
+func NewTagController(store store.Factory) *TagController {
+	return &TagController{
+		srv: service.NewService(store),
+	}
+}
 
 // @Summary 获取多个标签
 // @Description 获取多个标签
@@ -26,7 +35,7 @@ import (
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/tags [get]
-func ListTag(writer http.ResponseWriter, request *http.Request) {
+func (c *TagController) List(writer http.ResponseWriter, request *http.Request) {
 	values := request.URL.Query()
 	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
@@ -34,9 +43,7 @@ func ListTag(writer http.ResponseWriter, request *http.Request) {
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
 	param := service.TagListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
-	svc := service.NewTagService(dao.NewDao(config.DBEngine))
-
-	tags, total, err := svc.List(request.Context(), &param)
+	tags, total, err := c.srv.Tags().List(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetTagsFail)
 		return
@@ -54,16 +61,14 @@ func ListTag(writer http.ResponseWriter, request *http.Request) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/tag [post]
-func CreateTag(writer http.ResponseWriter, request *http.Request) {
+func (c *TagController) Create(writer http.ResponseWriter, request *http.Request) {
 	var param service.CreateTagRequest
 	data, _ := ioutil.ReadAll(request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
 		return
 	}
-
-	svc := service.NewTagService(dao.NewDao(config.DBEngine))
-	if err := svc.Create(request.Context(), &param); err != nil {
+	if err := c.srv.Tags().Create(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.CreateTagFail)
 		return
 	}
@@ -81,15 +86,14 @@ func CreateTag(writer http.ResponseWriter, request *http.Request) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/tag [put]
-func UpdateTag(writer http.ResponseWriter, request *http.Request) {
+func (c *TagController) Update(writer http.ResponseWriter, request *http.Request) {
 	var param service.UpdateTagRequest
 	data, _ := ioutil.ReadAll(request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
 		return
 	}
-	svc := service.NewTagService(dao.NewDao(config.DBEngine))
-	if err := svc.Update(request.Context(), &param); err != nil {
+	if err := c.srv.Tags().Update(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.UpdateTagFail)
 		return
 	}
@@ -105,11 +109,10 @@ func UpdateTag(writer http.ResponseWriter, request *http.Request) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/tag [delete]
-func DeleteTag(writer http.ResponseWriter, request *http.Request) {
+func (c *TagController) Delete(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
 	param := service.DeleteTagRequest{OneOption: entity.OneOption{Id: id}}
-	svc := service.NewTagService(dao.NewDao(config.DBEngine))
-	if err := svc.Delete(request.Context(), &param); err != nil {
+	if err := c.srv.Tags().Delete(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.DeleteTagFail)
 		return
 	}

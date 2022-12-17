@@ -7,7 +7,7 @@ var client Factory
 type Factory interface {
 	Articles() ArticleStore
 	Tags() TagStore
-	Auths() AuthStore
+	Users() UserStore
 	Close() error
 }
 

@@ -24,8 +24,8 @@ func (ds *datastore) Tags() store.TagStore {
 	return NewTagDao(ds.db)
 }
 
-func (ds *datastore) Auths() store.AuthStore {
-	return NewAuthDao(ds.db)
+func (ds *datastore) Users() store.UserStore {
+	return NewUserDao(ds.db)
 }
 
 func (ds *datastore) Close() error {

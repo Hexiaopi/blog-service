@@ -7,12 +7,21 @@ import (
 	"github.com/hexiaopi/blog-service/internal/store"
 )
 
+type TagSrv interface {
+	List(ctx context.Context, param *TagListRequest) ([]entity.Tag, int64, error)
+	Create(ctx context.Context, param *CreateTagRequest) error
+	Update(ctx context.Context, param *UpdateTagRequest) error
+	Delete(ctx context.Context, param *DeleteTagRequest) error
+}
+
 type TagService struct {
 	store store.Factory
 }
 
-func NewTagService(factory store.Factory) TagService {
-	return TagService{
+var _ TagSrv = (*TagService)(nil)
+
+func NewTagService(factory store.Factory) *TagService {
+	return &TagService{
 		store: factory,
 	}
 }

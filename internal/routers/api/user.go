@@ -5,12 +5,23 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/hexiaopi/blog-service/internal/app"
-	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
-	"github.com/hexiaopi/blog-service/internal/store/dao"
+	"github.com/hexiaopi/blog-service/internal/store"
 )
+
+type UserController struct {
+	srv service.Service
+}
+
+func NewUserController(store store.Factory) *UserController {
+	return &UserController{
+		srv: service.NewService(store),
+	}
+}
 
 type LoginRequest struct {
 	UserName string `json:"username"`
@@ -31,7 +42,7 @@ type LoginResponse struct {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /user/login [post]
-func Login(writer http.ResponseWriter, request *http.Request) {
+func (c *UserController) Login(writer http.ResponseWriter, request *http.Request) {
 	var req LoginRequest
 
 	data, _ := ioutil.ReadAll(request.Body)
@@ -40,16 +51,16 @@ func Login(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	param := service.AuthRequest{
-		AppKey:    req.UserName,
-		AppSecret: req.PassWord,
+		UserName: req.UserName,
+		PassWord: req.PassWord,
 	}
-	svc := service.NewAuthService(dao.NewDao(config.DBEngine))
-	if err := svc.CheckAuth(request.Context(), &param); err != nil {
-		app.ToResponseCode(writer, retcode.RequestAuthNotExists)
+	if err := c.srv.Users().CheckAuth(request.Context(), &param); err != nil {
+		log.Errorf("check user auth err:%v", err)
+		app.ToResponseCode(writer, retcode.RequestAuthCheckFail)
 		return
 	}
 
-	token, err := app.GenerateToken(param.AppKey, param.AppSecret)
+	token, err := app.GenerateToken(param.UserName, param.PassWord)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GenerateAuthTokenFail)
 	}
