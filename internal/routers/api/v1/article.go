@@ -12,9 +12,18 @@ import (
 	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
-	"github.com/hexiaopi/blog-service/internal/store/dao"
-	"github.com/hexiaopi/blog-service/internal/config"
+	"github.com/hexiaopi/blog-service/internal/store"
 )
+
+type ArticleController struct {
+	srv service.Service
+}
+
+func NewArticleController(store store.Factory) *ArticleController {
+	return &ArticleController{
+		srv: service.NewService(store),
+	}
+}
 
 // @Summary 获取单个文章
 // @Description 获取单个文章详细信息
@@ -26,11 +35,10 @@ import (
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles/{id} [get]
-func GetArticle(writer http.ResponseWriter, request *http.Request) {
+func (c *ArticleController) Get(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
 	param := service.ArticleRequest{OneOption: entity.OneOption{Id: id}}
-	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
-	article, err := svc.Get(request.Context(), &param)
+	article, err := c.srv.Articles().Get(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetArticleFail)
 		return
@@ -50,7 +58,7 @@ func GetArticle(writer http.ResponseWriter, request *http.Request) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles [get]
-func ListArticle(writer http.ResponseWriter, request *http.Request) {
+func (c *ArticleController) List(writer http.ResponseWriter, request *http.Request) {
 	values := request.URL.Query()
 	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
@@ -58,8 +66,7 @@ func ListArticle(writer http.ResponseWriter, request *http.Request) {
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
 	param := service.ArticleListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
-	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
-	article, count, err := svc.List(request.Context(), &param)
+	article, count, err := c.srv.Articles().List(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetArticlesFail)
 		return
@@ -77,16 +84,14 @@ func ListArticle(writer http.ResponseWriter, request *http.Request) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles [post]
-func CreateArticle(writer http.ResponseWriter, request *http.Request) {
+func (c *ArticleController) Create(writer http.ResponseWriter, request *http.Request) {
 	var param service.CreateArticleRequest
 	data, _ := ioutil.ReadAll(request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
 		return
 	}
-
-	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
-	if err := svc.Create(request.Context(), &param); err != nil {
+	if err := c.srv.Articles().Create(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.CreateArticleFail)
 		return
 	}
@@ -104,16 +109,14 @@ func CreateArticle(writer http.ResponseWriter, request *http.Request) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles/{id} [put]
-func UpdateArticle(writer http.ResponseWriter, request *http.Request) {
+func (c *ArticleController) Update(writer http.ResponseWriter, request *http.Request) {
 	var param service.UpdateArticleRequest
 	data, _ := ioutil.ReadAll(request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
 		return
 	}
-
-	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
-	if err := svc.Update(request.Context(), &param); err != nil {
+	if err := c.srv.Articles().Update(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.UpdateArticleFail)
 		return
 	}
@@ -129,10 +132,9 @@ func UpdateArticle(writer http.ResponseWriter, request *http.Request) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles/{id} [delete]
-func DeleteArticle(writer http.ResponseWriter, request *http.Request) {
+func (c *ArticleController) Delete(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	svc := service.NewArticleService(dao.NewDao(config.DBEngine))
-	if err := svc.Delete(request.Context(), id); err != nil {
+	if err := c.srv.Articles().Delete(request.Context(), id); err != nil {
 		app.ToResponseCode(writer, retcode.DeleteArticleFail)
 		return
 	}
