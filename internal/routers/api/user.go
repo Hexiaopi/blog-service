@@ -41,7 +41,7 @@ type LoginResponse struct {
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
-// @Router /user/login [post]
+// @Router /auth/login [post]
 func (c *UserController) Login(writer http.ResponseWriter, request *http.Request) {
 	var req LoginRequest
 
@@ -70,8 +70,29 @@ func (c *UserController) Login(writer http.ResponseWriter, request *http.Request
 	app.ToResponseData(writer, res)
 }
 
-func Info(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte(`{"ret_code":"000000","ret_desc":"Success","data":{"roles":["admin"],"introduction":"I am a super administrator","avatar":"https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a426929fa654a9ab8a58015ea9f573f~tplv-k3u1fbpfcp-zoom-crop-mark:3024:3024:3024:1702.awebp?","name":"Super Admin"}}`))
+// @Summary 用户信息
+// @Description 获取登录用户信息
+// @Tags Auth
+// @Produce json
+// @Accept json
+// @param LoginRequest body LoginRequest true "用户信息"
+// @Success 200 {object} app.CommResponse "成功"
+// @Failure 400 {object} app.ErrResponse "请求错误"
+// @Failure 500 {object} app.ErrResponse "内部错误"
+// @Router /api/v1/user [get]
+func (c *UserController) Info(writer http.ResponseWriter, request *http.Request) {
+	name := request.Context().Value("name")
+	if name == nil {
+		app.ToResponseCode(writer, retcode.RequestTokenAuthFail)
+		return
+	}
+	user, err := c.srv.Users().GetUser(request.Context(), name.(string))
+	if err != nil {
+		app.ToResponseCode(writer, retcode.RequestUserGetFail)
+		return
+	}
+	user.Roles = []string{"admin"}
+	app.ToResponseData(writer, user)
 }
 
 func Logout(writer http.ResponseWriter, request *http.Request) {

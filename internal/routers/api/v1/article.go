@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/hexiaopi/blog-service/internal/app"
-	"github.com/hexiaopi/blog-service/internal/entity"
+	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -37,7 +37,7 @@ func NewArticleController(store store.Factory) *ArticleController {
 // @Router /api/v1/articles/{id} [get]
 func (c *ArticleController) Get(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
-	param := service.ArticleRequest{OneOption: entity.OneOption{Id: id}}
+	param := service.ArticleRequest{OneOption: model.OneOption{Id: id}}
 	article, err := c.srv.Articles().Get(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetArticleFail)
@@ -65,7 +65,7 @@ func (c *ArticleController) List(writer http.ResponseWriter, request *http.Reque
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
-	param := service.ArticleListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
+	param := service.ArticleListRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	article, count, err := c.srv.Articles().List(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetArticlesFail)

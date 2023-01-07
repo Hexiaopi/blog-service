@@ -1,9 +1,9 @@
-package dao
+package mysql
 
 import (
 	"errors"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 
 	"github.com/hexiaopi/blog-service/internal/store"
 )
@@ -29,7 +29,10 @@ func (ds *datastore) Users() store.UserStore {
 }
 
 func (ds *datastore) Close() error {
-	db := ds.db.DB()
+	db, err := ds.db.DB()
+	if err != nil {
+		return err
+	}
 	if db == nil {
 		return errors.New("get gorm db instance failed")
 	}

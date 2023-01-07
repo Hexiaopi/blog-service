@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 
-	"github.com/hexiaopi/blog-service/internal/entity"
+	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
 )
 
 type ArticleSrv interface {
-	Get(ctx context.Context, request *ArticleRequest) (*entity.Article, error)
-	List(ctx context.Context, param *ArticleListRequest) ([]entity.Article, int64, error)
+	Get(ctx context.Context, request *ArticleRequest) (*model.Article, error)
+	List(ctx context.Context, param *ArticleListRequest) ([]model.Article, int64, error)
 	Create(ctx context.Context, param *CreateArticleRequest) error
 	Update(ctx context.Context, param *UpdateArticleRequest) error
 	Delete(ctx context.Context, id int) error
@@ -28,10 +28,10 @@ func NewArticleService(factory store.Factory) *ArticleService {
 }
 
 type ArticleRequest struct {
-	entity.OneOption
+	model.OneOption
 }
 
-func (svc *ArticleService) Get(ctx context.Context, request *ArticleRequest) (*entity.Article, error) {
+func (svc *ArticleService) Get(ctx context.Context, request *ArticleRequest) (*model.Article, error) {
 	article, err := svc.store.Articles().Get(ctx, request.Id)
 	if err != nil {
 		return nil, err
@@ -40,10 +40,10 @@ func (svc *ArticleService) Get(ctx context.Context, request *ArticleRequest) (*e
 }
 
 type ArticleListRequest struct {
-	entity.ListOption
+	model.ListOption
 }
 
-func (svc *ArticleService) List(ctx context.Context, param *ArticleListRequest) ([]entity.Article, int64, error) {
+func (svc *ArticleService) List(ctx context.Context, param *ArticleListRequest) ([]model.Article, int64, error) {
 	articles, total, err := svc.store.Articles().List(ctx, &param.ListOption)
 	if err != nil {
 		return nil, 0, err
@@ -52,40 +52,22 @@ func (svc *ArticleService) List(ctx context.Context, param *ArticleListRequest) 
 }
 
 type CreateArticleRequest struct {
-	entity.Article
+	model.Article
 }
 
 func (svc *ArticleService) Create(ctx context.Context, param *CreateArticleRequest) error {
-	article := entity.Article{
-		Name:          param.Name,
-		Desc:          param.Desc,
-		Content:       param.Content,
-		CoverImageUrl: param.CoverImageUrl,
-		State:         param.State,
-		Operator:      param.Operator,
-	}
-	if err := svc.store.Articles().Create(ctx, &article); err != nil {
+	if err := svc.store.Articles().Create(ctx, &param.Article); err != nil {
 		return err
 	}
 	return nil
 }
 
 type UpdateArticleRequest struct {
-	entity.Article
-	Tags []entity.Tag `json:"tags"`
+	model.Article
 }
 
 func (svc *ArticleService) Update(ctx context.Context, param *UpdateArticleRequest) error {
-	article := entity.Article{
-		Id:            param.Id,
-		Name:          param.Name,
-		Desc:          param.Desc,
-		Content:       param.Content,
-		CoverImageUrl: param.CoverImageUrl,
-		State:         param.State,
-		Operator:      param.Operator,
-	}
-	err := svc.store.Articles().Update(ctx, &article)
+	err := svc.store.Articles().Update(ctx, &param.Article)
 	if err != nil {
 		return err
 	}

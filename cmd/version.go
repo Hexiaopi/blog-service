@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"runtime"
-	"encoding/json"
 
 	"github.com/spf13/cobra"
 )

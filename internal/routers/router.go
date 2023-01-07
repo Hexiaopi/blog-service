@@ -14,7 +14,7 @@ import (
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/routers/api"
 	v1 "github.com/hexiaopi/blog-service/internal/routers/api/v1"
-	"github.com/hexiaopi/blog-service/internal/store/dao"
+	dao "github.com/hexiaopi/blog-service/internal/store/mysql"
 )
 
 func NewRouter() http.Handler {
@@ -23,18 +23,18 @@ func NewRouter() http.Handler {
 	router := mux.NewRouter()
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 	router.PathPrefix("/drawio/").Handler(http.StripPrefix("/drawio/", http.FileServer(http.Dir("./drawio/src/main/webapp"))))
-	router.Use(middleware.Logger)
+	//router.Use(middleware.Logger)
 	router.Use(middleware.Recovery)
-	router.Use(middleware.Tracer)
-	userController := api.NewUserController(storeIns)
-	router.HandleFunc("/user/login", userController.Login).Methods(http.MethodPost)
-	router.HandleFunc("/user/info", api.Info).Methods(http.MethodGet)
-	router.HandleFunc("/user/logout", api.Logout).Methods(http.MethodPost)
 
+	userController := api.NewUserController(storeIns)
+	router.HandleFunc("/auth/login", userController.Login).Methods(http.MethodPost)
 	apiV1 := router.PathPrefix("/api/v1").Subrouter()
 	apiV1.Use(middleware.Timeout)
 	apiV1.Use(middleware.JWT)
+	apiV1.Use(middleware.Tracer)
 	{
+		apiV1.HandleFunc("/user", userController.Info).Methods(http.MethodGet)
+		apiV1.HandleFunc("/logout", api.Logout).Methods(http.MethodPost)
 		articleController := v1.NewArticleController(storeIns)
 		apiV1.HandleFunc("/articles", articleController.List).Methods(http.MethodGet)
 		apiV1.HandleFunc("/article", articleController.Create).Methods(http.MethodPost)

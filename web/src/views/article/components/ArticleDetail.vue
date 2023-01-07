@@ -55,8 +55,8 @@ const defaultForm = {
   content: '', // 文章内容
   cover_image_url: '', // 文章图片
   state: undefined,
-  create_time: '',
-  update_time: ''
+  create_time: null,
+  update_time: null
 }
 
 export default {
@@ -95,7 +95,7 @@ export default {
       loading: false,
       userListOptions: [],
       rules: {
-        cover_image_url: [{ validator: validateRequire }],
+        //cover_image_url: [{ validator: validateRequire }],
         name: [{ validator: validateRequire }],
         content: [{ validator: validateRequire }],
       },

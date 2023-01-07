@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -11,25 +12,24 @@ import (
 // JWT 身份验证
 func JWT(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		code := retcode.Success
 		token := request.Header.Get("X-Token")
 		if token == "" {
-			code = retcode.RequestTokenEmpty
-		} else {
-			_, err := app.ParseToken(token)
-			if err != nil {
-				switch err.(*jwt.ValidationError).Errors {
-				case jwt.ValidationErrorExpired:
-					code = retcode.RequestTokenAuthTimeout
-				default:
-					code = retcode.RequestTokenAuthFail
-				}
-			}
-		}
-		if code != retcode.Success {
-			app.ToResponseCode(writer, code)
+			app.ToResponseCode(writer, retcode.RequestTokenEmpty)
 			return
 		}
+		claims, err := app.ParseToken(token)
+		if err != nil {
+			switch err.(*jwt.ValidationError).Errors {
+			case jwt.ValidationErrorExpired:
+				app.ToResponseCode(writer, retcode.RequestTokenAuthTimeout)
+				return
+			default:
+				app.ToResponseCode(writer, retcode.RequestTokenAuthFail)
+				return
+			}
+		}
+		ctx := context.WithValue(request.Context(), "name", claims.UserName)
+		request = request.WithContext(ctx)
 		handler.ServeHTTP(writer, request)
 	})
 }

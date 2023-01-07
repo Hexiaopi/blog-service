@@ -2,8 +2,9 @@ package middleware
 
 import (
 	"context"
-	"github.com/hexiaopi/blog-service/internal/config"
 	"net/http"
+
+	"github.com/hexiaopi/blog-service/internal/config"
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
@@ -29,7 +30,10 @@ func Tracer(handler http.Handler) http.Handler {
 				opentracing.ChildOf(spanCtx),
 				opentracing.Tag{Key: string(ext.Component), Value: "HTTP"})
 		}
+		span.SetTag("http.method", request.Method)
+		span.SetTag("http.url", request.URL.String())
 		defer span.Finish()
-		handler.ServeHTTP(writer, request.WithContext(ctx))
+		ctxSpan := opentracing.ContextWithSpan(ctx, span)
+		handler.ServeHTTP(writer, request.WithContext(ctxSpan))
 	})
 }

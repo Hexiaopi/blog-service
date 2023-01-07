@@ -13,6 +13,7 @@ var (
 	RequestTokenEmpty       = NewCode("020003", "Request Token Empty")
 	RequestTokenAuthFail    = NewCode("020004", "Request Token Auth Fail")
 	RequestTokenAuthTimeout = NewCode("020005", "Request Token Auth Timeout")
+	RequestUserGetFail      = NewCode("020006", "Get User Fail")
 
 	//module
 	GetArticleFail    = NewCode("100001", "Get Article Fail")

@@ -19,12 +19,12 @@ func GetJWTSecret() []byte {
 	return []byte(config.AppEngine.JWT.Secret)
 }
 
-func GenerateToken(appKey, appSecret string) (string, error) {
+func GenerateToken(username, password string) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(config.AppEngine.JWT.Expire)
 	claims := Claims{
-		UserName: util.EncodeMD5(appKey),
-		PassWord: util.EncodeMD5(appSecret),
+		UserName: username,
+		PassWord: util.EncodeMD5(password),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
 			Issuer:    config.AppEngine.JWT.Issuer,

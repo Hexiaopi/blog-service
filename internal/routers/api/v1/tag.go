@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/hexiaopi/blog-service/internal/app"
-	"github.com/hexiaopi/blog-service/internal/entity"
+	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -42,7 +42,7 @@ func (c *TagController) List(writer http.ResponseWriter, request *http.Request) 
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
-	param := service.TagListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
+	param := service.TagListRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	tags, total, err := c.srv.Tags().List(request.Context(), &param)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GetTagsFail)
@@ -111,7 +111,7 @@ func (c *TagController) Update(writer http.ResponseWriter, request *http.Request
 // @Router /api/v1/tag [delete]
 func (c *TagController) Delete(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
-	param := service.DeleteTagRequest{OneOption: entity.OneOption{Id: id}}
+	param := service.DeleteTagRequest{OneOption: model.OneOption{Id: id}}
 	if err := c.srv.Tags().Delete(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.DeleteTagFail)
 		return
