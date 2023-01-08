@@ -12,6 +12,7 @@ type Tag struct {
 	CreateTime time.Time `gorm:"create_time" json:"create_time"`
 	UpdateTime time.Time `gorm:"update_time" json:"update_time"`
 	Operator   string    `gorm:"operator" json:"operator"`
+	Articles   int64     `gorm:"-" json:"articles"`
 }
 
 func (t Tag) TableName() string {

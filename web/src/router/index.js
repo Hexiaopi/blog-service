@@ -59,7 +59,7 @@ export const constantRoutes = [
     path: '/article',
     component: Layout,
     redirect: '/article/list',
-    name: 'Blog',
+    name: 'Article',
     meta: { title: '文章', icon: 'el-icon-collection' },
     children: [
       {
@@ -88,7 +88,7 @@ export const constantRoutes = [
     path: '/tag',
     component: Layout,
     redirect: '/tag/list',
-    name: 'Blog',
+    name: 'Tag',
     meta: { title: '标签', icon: 'el-icon-collection' },
     children: [
       {

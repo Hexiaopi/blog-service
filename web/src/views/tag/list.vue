@@ -40,6 +40,11 @@
           <el-tag :type="scope.row.state | statusTypeFilter">{{ scope.row.state | statusDisplayFilter }}</el-tag>
         </template>
       </el-table-column>
+      <el-table-column align="center" prop="articles" label="文章数" min-width="100px">
+        <template slot-scope="scope">
+          <el-tag>{{ scope.row.articles }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column align="center" prop="create_time" label="创建时间" min-width="100px">
         <template slot-scope="scope">
           {{ scope.row.create_time }}

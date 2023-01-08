@@ -61,5 +61,22 @@ func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag
 	if err = query.Where("state = ?", opt.State).Find(&tags).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
+	for i, tag := range tags {
+		count, err := dao.CountArticle(ctx, tag.ID)
+		if err != nil {
+			continue
+		}
+		tags[i].Articles = count
+	}
 	return tags, total, nil
+}
+
+func (dao *TagDao) CountArticle(ctx context.Context, id int) (int64, error) {
+	var count int64
+	if err := dao.db.Table("blog_article_tag").
+		Where("tag_id = ?", id).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }

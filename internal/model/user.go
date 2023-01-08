@@ -11,7 +11,7 @@ type User struct {
 	ID         uint32    `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"id"`
 	Name       string    `gorm:"column:name" json:"name"`
 	PassWord   string    `gorm:"column:password" json:"password"`
-	Avator     string    `gorm:"column:avator" json:"avator"`
+	Avatar     string    `gorm:"column:avatar" json:"avatar"`
 	CreateTime time.Time `gorm:"column:create_time" json:"create_time"`
 	UpdateTime time.Time `gorm:"column:update_time" json:"update_time"`
 	IsDel      uint8     `gorm:"column:is_del" json:"is_del"`
