@@ -22,7 +22,6 @@ func NewRouter() http.Handler {
 
 	router := mux.NewRouter()
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
-	router.PathPrefix("/drawio/").Handler(http.StripPrefix("/drawio/", http.FileServer(http.Dir("./drawio/src/main/webapp"))))
 	//router.Use(middleware.Logger)
 	router.Use(middleware.Recovery)
 
