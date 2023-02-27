@@ -19,7 +19,7 @@ func NewUserDao(db *gorm.DB) *UserDao {
 
 func (dao *UserDao) Get(ctx context.Context, name string) (*model.User, error) {
 	var user model.User
-	err := dao.db.Where("name = ?", name).First(&user).Error
+	err := dao.db.WithContext(ctx).Where("name = ?", name).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil

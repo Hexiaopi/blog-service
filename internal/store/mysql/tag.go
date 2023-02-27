@@ -20,12 +20,12 @@ func NewTagDao(db *gorm.DB) *TagDao {
 func (dao *TagDao) Create(ctx context.Context, tag *model.Tag) error {
 	tag.CreateTime = time.Now()
 	tag.UpdateTime = time.Now()
-	return dao.db.Create(tag).Error
+	return dao.db.WithContext(ctx).Create(tag).Error
 }
 
 func (dao *TagDao) Get(ctx context.Context, id int) (*model.Tag, error) {
 	var tag model.Tag
-	if err := dao.db.First(&tag, id).Error; err != nil {
+	if err := dao.db.WithContext(ctx).First(&tag, id).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}
@@ -36,18 +36,18 @@ func (dao *TagDao) Get(ctx context.Context, id int) (*model.Tag, error) {
 
 func (dao *TagDao) Update(ctx context.Context, tag *model.Tag) error {
 	tag.UpdateTime = time.Now()
-	return dao.db.Updates(tag).Error
+	return dao.db.WithContext(ctx).Updates(tag).Error
 }
 
 func (dao *TagDao) Delete(ctx context.Context, id int) error {
 	tag := model.Tag{ID: id}
-	return dao.db.Delete(&tag).Error
+	return dao.db.WithContext(ctx).Delete(&tag).Error
 }
 
 func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag, int64, error) {
-	query := dao.db
+	query := dao.db.WithContext(ctx)
 	if opt.Page >= 0 && opt.Limit > 0 {
-		query = dao.db.Offset(opt.GetPageOffset()).Limit(opt.Limit)
+		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
 	}
 	var tags []model.Tag
 	var err error
@@ -73,7 +73,7 @@ func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag
 
 func (dao *TagDao) CountArticle(ctx context.Context, id int) (int64, error) {
 	var count int64
-	if err := dao.db.Table("blog_article_tag").
+	if err := dao.db.WithContext(ctx).Table("blog_article_tag").
 		Where("tag_id = ?", id).
 		Count(&count).Error; err != nil {
 		return 0, err

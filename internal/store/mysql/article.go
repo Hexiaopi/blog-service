@@ -21,7 +21,7 @@ func NewArticleDao(db *gorm.DB) *ArticleDao {
 func (dao *ArticleDao) Create(ctx context.Context, article *model.Article) error {
 	article.CreateTime = time.Now()
 	article.UpdateTime = time.Now()
-	return dao.db.Create(article).Error
+	return dao.db.WithContext(ctx).Create(article).Error
 }
 
 func (dao *ArticleDao) Get(ctx context.Context, id int) (*model.Article, error) {
@@ -37,18 +37,18 @@ func (dao *ArticleDao) Get(ctx context.Context, id int) (*model.Article, error) 
 
 func (dao *ArticleDao) Update(ctx context.Context, article *model.Article) error {
 	article.UpdateTime = time.Now()
-	return dao.db.Updates(article).Error
+	return dao.db.WithContext(ctx).Updates(article).Error
 }
 
 func (dao *ArticleDao) Delete(ctx context.Context, id int) error {
 	article := model.Article{ID: id}
-	return dao.db.Delete(&article).Error
+	return dao.db.WithContext(ctx).Delete(&article).Error
 }
 
 func (dao *ArticleDao) List(ctx context.Context, opt *model.ListOption) ([]model.Article, int64, error) {
 	query := dao.db.WithContext(ctx)
 	if opt.Page >= 0 && opt.Limit > 0 {
-		query = dao.db.Offset(opt.GetPageOffset()).Limit(opt.Limit)
+		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
 	}
 	var count int64
 	if opt.Name != "" {
