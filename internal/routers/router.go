@@ -26,7 +26,12 @@ func NewRouter() http.Handler {
 	router.Use(middleware.Recovery)
 
 	userController := api.NewUserController(storeIns)
-	router.HandleFunc("/auth/login", userController.Login).Methods(http.MethodPost)
+
+	authRouter := router.PathPrefix("/auth").Subrouter()
+	authRouter.Use(middleware.Logger)
+	authRouter.Use(middleware.Tracer)
+	authRouter.HandleFunc("/login", userController.Login).Methods(http.MethodPost)
+
 	apiV1 := router.PathPrefix("/api/v1").Subrouter()
 	apiV1.Use(middleware.Timeout)
 	apiV1.Use(middleware.JWT)
