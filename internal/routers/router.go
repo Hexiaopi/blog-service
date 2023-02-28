@@ -27,18 +27,20 @@ func NewRouter() http.Handler {
 
 	userController := api.NewUserController(storeIns)
 
-	authRouter := router.PathPrefix("/auth").Subrouter()
-	authRouter.Use(middleware.Logger)
-	authRouter.Use(middleware.Tracer)
-	authRouter.HandleFunc("/login", userController.Login).Methods(http.MethodPost)
+	apiRouter := router.PathPrefix("/api").Subrouter()
+	apiRouter.Use(middleware.RequestId)
+	apiRouter.Use(middleware.Logger)
+	apiRouter.Use(middleware.Timeout)
+	apiRouter.Use(middleware.Tracer)
 
-	apiV1 := router.PathPrefix("/api/v1").Subrouter()
-	apiV1.Use(middleware.Timeout)
+	authRouter := apiRouter.PathPrefix("/auth").Subrouter()
+	authRouter.HandleFunc("/login", userController.Login).Methods(http.MethodPost)
+	authRouter.HandleFunc("/logout", api.Logout).Methods(http.MethodPost)
+
+	apiV1 := apiRouter.PathPrefix("/v1").Subrouter()
 	apiV1.Use(middleware.JWT)
-	apiV1.Use(middleware.Tracer)
 	{
 		apiV1.HandleFunc("/user", userController.Info).Methods(http.MethodGet)
-		apiV1.HandleFunc("/logout", api.Logout).Methods(http.MethodPost)
 		articleController := v1.NewArticleController(storeIns)
 		apiV1.HandleFunc("/articles", articleController.List).Methods(http.MethodGet)
 		apiV1.HandleFunc("/article", articleController.Create).Methods(http.MethodPost)

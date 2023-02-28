@@ -42,6 +42,7 @@ func Logger(handler http.Handler) http.Handler {
 		request.Body = rdr //rewrite
 
 		log.WithFields(log.Fields{
+			XRequestIDKey:     request.Context().Value(XRequestIDKey),
 			global.Path:       request.URL.Path,
 			global.QueryParam: request.URL.RawQuery,
 			global.Method:     request.Method,
@@ -51,6 +52,7 @@ func Logger(handler http.Handler) http.Handler {
 
 		defer func() { //日志记录扫尾工作
 			log.WithFields(log.Fields{
+				XRequestIDKey:     request.Context().Value(XRequestIDKey),
 				global.Path:       request.URL.Path,
 				global.QueryParam: request.URL.RawQuery,
 				global.Method:     request.Method,

@@ -21,7 +21,8 @@ func Tracer(handler http.Handler) http.Handler {
 			span, ctx = opentracing.StartSpanFromContextWithTracer(
 				request.Context(),
 				config.Tracer,
-				request.URL.Path)
+				request.URL.Path,
+				opentracing.Tag{Key: XRequestIDKey, Value: request.Context().Value(XRequestIDKey)})
 		} else {
 			span, ctx = opentracing.StartSpanFromContextWithTracer(
 				request.Context(),
