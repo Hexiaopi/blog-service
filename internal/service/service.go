@@ -1,6 +1,9 @@
 package service
 
-import "github.com/hexiaopi/blog-service/internal/store"
+import (
+	"github.com/hexiaopi/blog-service/internal/cache"
+	"github.com/hexiaopi/blog-service/internal/store"
+)
 
 type Service interface {
 	Articles() ArticleSrv
@@ -10,10 +13,11 @@ type Service interface {
 
 type service struct {
 	store store.Factory
+	cache cache.Factory
 }
 
 func (s *service) Articles() ArticleSrv {
-	return NewArticleService(s.store)
+	return NewArticleService(s.store, s.cache)
 }
 
 func (s *service) Tags() TagSrv {
@@ -24,8 +28,9 @@ func (s *service) Users() UserSrv {
 	return NewUserService(s.store)
 }
 
-func NewService(store store.Factory) Service {
+func NewService(store store.Factory, cache cache.Factory) Service {
 	return &service{
 		store: store,
+		cache: cache,
 	}
 }

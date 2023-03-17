@@ -19,7 +19,7 @@ type UserController struct {
 
 func NewUserController(store store.Factory) *UserController {
 	return &UserController{
-		srv: service.NewService(store),
+		srv: service.NewService(store, nil),
 	}
 }
 

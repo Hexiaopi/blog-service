@@ -21,3 +21,8 @@ JWT:
   Issuer: blog
   Expire: 1h
 TraceAgent: 127.0.0.1:6831
+Redis:
+  addr: "localhost:6379"
+  username: ""
+  password: ""
+  db: 0

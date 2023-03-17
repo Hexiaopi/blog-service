@@ -70,15 +70,19 @@
         </template>
       </el-table-column>
     </el-table>
+    <pagination v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+      @pagination="getList" />
   </div>
 </template>
 
 <script>
 import { listArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
   name: "Article",
+  components: { Pagination },
   directives: { waves },
   filters: {
     statusTypeFilter (status) {

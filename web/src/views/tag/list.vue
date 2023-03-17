@@ -40,9 +40,9 @@
           <el-tag :type="scope.row.state | statusTypeFilter">{{ scope.row.state | statusDisplayFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="articles" label="文章数" min-width="100px">
+      <el-table-column align="center" prop="article_total" label="文章数" min-width="100px">
         <template slot-scope="scope">
-          <el-tag>{{ scope.row.articles }}</el-tag>
+          <el-tag>{{ scope.row.article_total }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="create_time" label="创建时间" min-width="100px">

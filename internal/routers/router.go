@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/hexiaopi/blog-service/docs"
 
+	cache "github.com/hexiaopi/blog-service/internal/cache/redis"
 	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/middleware"
 	"github.com/hexiaopi/blog-service/internal/retcode"
@@ -19,6 +20,7 @@ import (
 
 func NewRouter() http.Handler {
 	storeIns := dao.NewDao(config.DBEngine)
+	cacheIns := cache.NewCache(config.RedisEngine)
 
 	router := mux.NewRouter()
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
@@ -41,7 +43,7 @@ func NewRouter() http.Handler {
 	apiV1.Use(middleware.JWT)
 	{
 		apiV1.HandleFunc("/user", userController.Info).Methods(http.MethodGet)
-		articleController := v1.NewArticleController(storeIns)
+		articleController := v1.NewArticleController(storeIns, cacheIns)
 		apiV1.HandleFunc("/articles", articleController.List).Methods(http.MethodGet)
 		apiV1.HandleFunc("/article", articleController.Create).Methods(http.MethodPost)
 		apiV1.HandleFunc("/article", articleController.Get).Methods(http.MethodGet)

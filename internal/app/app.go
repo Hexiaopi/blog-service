@@ -8,21 +8,21 @@ import (
 )
 
 type CommResponse struct {
-	*retcode.Error
+	*retcode.RetErr
 	Data interface{} `json:"data,omitempty"`
 }
 
 type ErrResponse struct {
-	*retcode.Error
+	*retcode.RetErr
 }
 
 type ListResponse struct {
-	*retcode.Error
+	*retcode.RetErr
 	Total int64       `json:"total"`
 	Data  interface{} `json:"data,omitempty"`
 }
 
-func ToResponseCode(writer http.ResponseWriter, code *retcode.Error) {
+func ToResponseCode(writer http.ResponseWriter, code *retcode.RetErr) {
 	response := ErrResponse{
 		code,
 	}
@@ -32,7 +32,7 @@ func ToResponseCode(writer http.ResponseWriter, code *retcode.Error) {
 
 func ToResponseData(writer http.ResponseWriter, data interface{}) {
 	response := CommResponse{
-		Error: retcode.Success,
+		RetErr: retcode.Success,
 		Data:  data,
 	}
 	result, _ := json.Marshal(response)
@@ -41,7 +41,7 @@ func ToResponseData(writer http.ResponseWriter, data interface{}) {
 
 func ToResponseList(writer http.ResponseWriter, total int64, data interface{}) {
 	response := ListResponse{
-		Error: retcode.Success,
+		RetErr: retcode.Success,
 		Total: total,
 		Data:  data,
 	}

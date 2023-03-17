@@ -2,9 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
+	"log"
 
+	"github.com/hexiaopi/blog-service/internal/cache"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
+	"github.com/redis/go-redis/v9"
 )
 
 type ArticleSrv interface {
@@ -17,13 +21,15 @@ type ArticleSrv interface {
 
 type ArticleService struct {
 	store store.Factory
+	cache cache.Factory
 }
 
 var _ ArticleSrv = (*ArticleService)(nil)
 
-func NewArticleService(factory store.Factory) *ArticleService {
+func NewArticleService(factory store.Factory, cache cache.Factory) *ArticleService {
 	return &ArticleService{
 		store: factory,
+		cache: cache,
 	}
 }
 
@@ -44,11 +50,36 @@ type ArticleListRequest struct {
 }
 
 func (svc *ArticleService) List(ctx context.Context, param *ArticleListRequest) ([]model.Article, int64, error) {
-	articles, total, err := svc.store.Articles().List(ctx, &param.ListOption)
+	articles, err := svc.store.Articles().List(ctx, &param.ListOption)
 	if err != nil {
 		return nil, 0, err
 	}
-	return articles, total, nil
+	var count int64
+	var set bool
+	if param.ListOption.Name == "" {
+		count, err = svc.cache.Articles().GetCount(ctx)
+		if err != nil {
+			if errors.Is(err, redis.Nil) {
+				set = true
+			} else {
+				log.Println(err)
+				return nil, 0, err
+			}
+		} else {
+			return articles, count, nil
+		}
+	}
+	count, err = svc.store.Articles().Count(ctx, &param.ListOption)
+	if err != nil {
+		log.Println(err)
+		return nil, 0, err
+	}
+	if set {
+		if err := svc.cache.Articles().SetCount(ctx, count); err != nil {
+			log.Println(err)
+		}
+	}
+	return articles, count, nil
 }
 
 type CreateArticleRequest struct {

@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/cache"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
@@ -19,9 +20,9 @@ type ArticleController struct {
 	srv service.Service
 }
 
-func NewArticleController(store store.Factory) *ArticleController {
+func NewArticleController(store store.Factory, cache cache.Factory) *ArticleController {
 	return &ArticleController{
-		srv: service.NewService(store),
+		srv: service.NewService(store, cache),
 	}
 }
 

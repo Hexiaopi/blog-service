@@ -15,6 +15,7 @@ type AppConfig struct {
 	DefaultPageSize int             `yaml:"DefaultPageSize"`
 	MaxPageSize     int             `yaml:"MaxPageSize"`
 	DataBase        DatabaseSetting `yaml:"DataBase"`
+	Redis           RedisSetting    `yaml:"Redis"`
 	JWT             JWTSetting      `yaml:"JWT"`
 	TraceAgent      string          `yaml:"TraceAgent"`
 }

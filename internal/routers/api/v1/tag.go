@@ -19,7 +19,7 @@ type TagController struct {
 
 func NewTagController(store store.Factory) *TagController {
 	return &TagController{
-		srv: service.NewService(store),
+		srv: service.NewService(store, nil),
 	}
 }
 

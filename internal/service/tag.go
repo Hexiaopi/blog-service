@@ -31,7 +31,11 @@ type TagListRequest struct {
 }
 
 func (svc *TagService) List(ctx context.Context, param *TagListRequest) ([]model.Tag, int64, error) {
-	tags, total, err := svc.store.Tags().List(ctx, &param.ListOption)
+	tags, err := svc.store.Tags().List(ctx, &param.ListOption)
+	if err != nil {
+		return nil, 0, err
+	}
+	total, err := svc.store.Tags().Count(ctx, &param.ListOption)
 	if err != nil {
 		return nil, 0, err
 	}

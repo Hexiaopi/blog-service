@@ -44,12 +44,40 @@ func (dao *TagDao) Delete(ctx context.Context, id int) error {
 	return dao.db.WithContext(ctx).Delete(&tag).Error
 }
 
-func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag, int64, error) {
+func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag, error) {
 	query := dao.db.WithContext(ctx)
 	if opt.Page >= 0 && opt.Limit > 0 {
 		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
 	}
 	var tags []model.Tag
+	var err error
+	if opt.Name != "" {
+		query = query.Where("name = ?", opt.Name)
+	}
+	if opt.Sort != "" {
+		query = query.Order(opt.GetSortType())
+	}
+	if err = query.Select("blog_tag.* ,count(blog_article_tag.article_id) as article_total").
+		Joins("left join blog_article_tag on blog_tag.id = blog_article_tag.tag_id").
+		Group("id").
+		Where("state = ?", opt.State).Find(&tags).Error; err != nil {
+		return nil, err
+	}
+	// for i, tag := range tags {
+	// 	count, err := dao.CountArticle(ctx, tag.ID)
+	// 	if err != nil {
+	// 		continue
+	// 	}
+	// 	tags[i].Articles = count
+	// }
+	return tags, nil
+}
+
+func (dao *TagDao) Count(ctx context.Context, opt *model.ListOption) (int64, error) {
+	query := dao.db.WithContext(ctx)
+	if opt.Page >= 0 && opt.Limit > 0 {
+		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
+	}
 	var err error
 	var total int64
 	if opt.Name != "" {
@@ -58,17 +86,10 @@ func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag
 	if opt.Sort != "" {
 		query = query.Order(opt.GetSortType())
 	}
-	if err = query.Where("state = ?", opt.State).Find(&tags).Count(&total).Error; err != nil {
-		return nil, 0, err
+	if err = query.Model(&model.Tag{}).Where("state = ?", opt.State).Count(&total).Error; err != nil {
+		return 0, err
 	}
-	for i, tag := range tags {
-		count, err := dao.CountArticle(ctx, tag.ID)
-		if err != nil {
-			continue
-		}
-		tags[i].Articles = count
-	}
-	return tags, total, nil
+	return total, nil
 }
 
 func (dao *TagDao) CountArticle(ctx context.Context, id int) (int64, error) {

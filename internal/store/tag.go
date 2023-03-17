@@ -11,5 +11,6 @@ type TagStore interface {
 	Update(ctx context.Context, tag *model.Tag) error
 	Delete(ctx context.Context, id int) error
 	Get(ctx context.Context, id int) (*model.Tag, error)
-	List(ctx context.Context, opt *model.ListOption) ([]model.Tag, int64, error)
+	List(ctx context.Context, opt *model.ListOption) ([]model.Tag, error)
+	Count(ctx context.Context, opt *model.ListOption) (int64, error)
 }

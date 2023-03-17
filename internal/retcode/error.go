@@ -5,22 +5,26 @@ import (
 	"fmt"
 )
 
-type Error struct {
+type RetErr struct {
 	RetCode string `json:"ret_code"`
 	RetDesc string `json:"ret_desc"`
 }
 
 var codes = map[string]string{}
 
-func NewCode(code, desc string) *Error {
+func NewCode(code, desc string) *RetErr {
 	if v, ok := codes[code]; ok {
-		panic(fmt.Sprintf("错误码：%s已存在，对应描述为：%s，请更换！", code, v))
+		panic(fmt.Sprintf("code:%s already exist with desc:%s", code, v))
 	}
 	codes[code] = desc
-	return &Error{RetCode: code, RetDesc: desc}
+	return &RetErr{RetCode: code, RetDesc: desc}
 }
 
-func (e Error) Marshal() []byte {
+func (e RetErr) Marshal() []byte {
 	data, _ := json.Marshal(e)
 	return data
+}
+
+func (e *RetErr) Error() string {
+	return fmt.Sprintf("code:%s desc:%s", e.RetCode, e.RetDesc)
 }
