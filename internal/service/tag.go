@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -33,10 +34,12 @@ type TagListRequest struct {
 func (svc *TagService) List(ctx context.Context, param *TagListRequest) ([]model.Tag, int64, error) {
 	tags, err := svc.store.Tags().List(ctx, &param.ListOption)
 	if err != nil {
+		log.Println(err)
 		return nil, 0, err
 	}
 	total, err := svc.store.Tags().Count(ctx, &param.ListOption)
 	if err != nil {
+		log.Println(err)
 		return nil, 0, err
 	}
 	return tags, total, nil
@@ -48,6 +51,7 @@ type CreateTagRequest struct {
 
 func (svc *TagService) Create(ctx context.Context, param *CreateTagRequest) error {
 	if err := svc.store.Tags().Create(ctx, &param.Tag); err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -59,6 +63,7 @@ type UpdateTagRequest struct {
 
 func (svc *TagService) Update(ctx context.Context, param *UpdateTagRequest) error {
 	if err := svc.store.Tags().Update(ctx, &param.Tag); err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil

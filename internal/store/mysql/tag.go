@@ -57,19 +57,22 @@ func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag
 	if opt.Sort != "" {
 		query = query.Order(opt.GetSortType())
 	}
-	if err = query.Select("blog_tag.* ,count(blog_article_tag.article_id) as article_total").
+	rows, err := query.Model(&model.Tag{}).Select("blog_tag.id,name,`desc`,`state`,create_time,update_time,operator,count(blog_article_tag.article_id) as article_total").
 		Joins("left join blog_article_tag on blog_tag.id = blog_article_tag.tag_id").
 		Group("id").
-		Where("state = ?", opt.State).Find(&tags).Error; err != nil {
+		Where("state = ?", opt.State).
+		Rows()
+	if err != nil {
 		return nil, err
 	}
-	// for i, tag := range tags {
-	// 	count, err := dao.CountArticle(ctx, tag.ID)
-	// 	if err != nil {
-	// 		continue
-	// 	}
-	// 	tags[i].Articles = count
-	// }
+	defer rows.Close()
+	for rows.Next() {
+		var tag model.Tag
+		if err := rows.Scan(&tag.ID, &tag.Name, &tag.Desc, &tag.State, &tag.CreateTime, &tag.UpdateTime, &tag.Operator, &tag.ArticleTotal); err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
 	return tags, nil
 }
 
@@ -90,14 +93,4 @@ func (dao *TagDao) Count(ctx context.Context, opt *model.ListOption) (int64, err
 		return 0, err
 	}
 	return total, nil
-}
-
-func (dao *TagDao) CountArticle(ctx context.Context, id int) (int64, error) {
-	var count int64
-	if err := dao.db.WithContext(ctx).Table("blog_article_tag").
-		Where("tag_id = ?", id).
-		Count(&count).Error; err != nil {
-		return 0, err
-	}
-	return count, nil
 }

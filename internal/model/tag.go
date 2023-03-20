@@ -12,7 +12,7 @@ type Tag struct {
 	CreateTime   time.Time `gorm:"create_time" json:"create_time"`
 	UpdateTime   time.Time `gorm:"update_time" json:"update_time"`
 	Operator     string    `gorm:"operator" json:"operator"`
-	ArticleTotal int       `gorm:"article_total" json:"article_total"`
+	ArticleTotal int       `gorm:"-" json:"article_total"`
 }
 
 func (t Tag) TableName() string {
