@@ -48,14 +48,21 @@ func Logger(handler http.Handler) http.Handler {
 			global.Method:     request.Method,
 		}).Infof("receive request body:%s ", string(buf))
 
-		handler.ServeHTTP(writer, request)
+		//记录返回包
+		wc := &ResponseWithRecorder{
+			ResponseWriter: writer,
+			statusCode:     http.StatusOK,
+			body:           bytes.Buffer{},
+		}
+
+		handler.ServeHTTP(wc, request)
 
 		defer func() { //日志记录扫尾工作
 			log.WithFields(log.Fields{
-				XRequestIDKey:     request.Context().Value(XRequestIDKey),
-				global.Path:       request.URL.Path,
-				global.QueryParam: request.URL.RawQuery,
-				global.Method:     request.Method,
+				XRequestIDKey: request.Context().Value(XRequestIDKey),
+				global.Path:   request.URL.Path,
+				global.Status: wc.statusCode,
+				global.ResPkg: wc.body.String(),
 			}).Infof("done use time:%s", time.Since(start).String())
 		}()
 	})

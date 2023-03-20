@@ -2,13 +2,14 @@ package routers
 
 import (
 	"net/http"
+	_ "net/http/pprof"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	httpSwagger "github.com/swaggo/http-swagger"
 
 	_ "github.com/hexiaopi/blog-service/docs"
-
 	cache "github.com/hexiaopi/blog-service/internal/cache/redis"
 	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/middleware"
@@ -23,7 +24,12 @@ func NewRouter() http.Handler {
 	cacheIns := cache.NewCache(config.RedisEngine)
 
 	router := mux.NewRouter()
+	// swagger
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
+	// profiling
+	router.PathPrefix("/debug/pprof").Handler(http.DefaultServeMux)
+	// metrics
+	router.Handle("/metrics", promhttp.Handler()).Methods("GET")
 	//router.Use(middleware.Logger)
 	router.Use(middleware.Recovery)
 
@@ -32,6 +38,7 @@ func NewRouter() http.Handler {
 	apiRouter := router.PathPrefix("/api").Subrouter()
 	apiRouter.Use(middleware.RequestId)
 	apiRouter.Use(middleware.Logger)
+	apiRouter.Use(middleware.Metrics)
 	apiRouter.Use(middleware.Timeout)
 	apiRouter.Use(middleware.Tracer)
 

@@ -6,6 +6,9 @@ const (
 	Path       = "path"
 	QueryParam = "param"
 	Method     = "method"
+	Status     = "status"
+	ReqPkg     = "reqpkg"
+	ResPkg     = "respkg"
 )
 
 const (
