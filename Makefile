@@ -38,7 +38,7 @@ fmt: ## golang format
 	gofmt -s -w $(GOFILES)
 
 swagger: ## swagger init
-	swag init
+	swag init -g cmd/root.go
 
 init: install-swagger postgres redis ## install all dependencies and init config
 	git config core.hooksPath .githooks
