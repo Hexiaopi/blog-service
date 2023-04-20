@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   api.LoginRequest:
     properties:
@@ -28,8 +29,52 @@ definitions:
         type: string
       ret_desc:
         type: string
-      total_rows:
+      total:
         type: integer
+    type: object
+  model.Article:
+    properties:
+      content:
+        type: string
+      cover_image_url:
+        type: string
+      create_time:
+        type: string
+      desc:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      operator:
+        type: string
+      state:
+        type: integer
+      tags:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      update_time:
+        type: string
+    type: object
+  model.Tag:
+    properties:
+      article_total:
+        type: integer
+      create_time:
+        type: string
+      desc:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      operator:
+        type: string
+      state:
+        type: integer
+      update_time:
+        type: string
     type: object
   service.CreateArticleRequest:
     properties:
@@ -37,25 +82,43 @@ definitions:
         type: string
       cover_image_url:
         type: string
-      create_by:
+      create_time:
         type: string
       desc:
         type: string
+      id:
+        type: integer
+      name:
+        type: string
+      operator:
+        type: string
       state:
         type: integer
-      tag_id:
-        type: integer
-      title:
+      tags:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      update_time:
         type: string
     type: object
   service.CreateTagRequest:
     properties:
-      createdBy:
+      article_total:
+        type: integer
+      create_time:
         type: string
+      desc:
+        type: string
+      id:
+        type: integer
       name:
+        type: string
+      operator:
         type: string
       state:
         type: integer
+      update_time:
+        type: string
     type: object
   service.UpdateArticleRequest:
     properties:
@@ -63,33 +126,51 @@ definitions:
         type: string
       cover_image_url:
         type: string
+      create_time:
+        type: string
       desc:
         type: string
       id:
         type: integer
-      modified_by:
+      name:
+        type: string
+      operator:
         type: string
       state:
         type: integer
-      tag_id:
-        type: integer
-      title:
+      tags:
+        items:
+          $ref: '#/definitions/model.Tag'
+        type: array
+      update_time:
         type: string
     type: object
   service.UpdateTagRequest:
     properties:
+      article_total:
+        type: integer
+      create_time:
+        type: string
+      desc:
+        type: string
       id:
         type: integer
-      modifiedBy:
-        type: string
       name:
+        type: string
+      operator:
         type: string
       state:
         type: integer
+      update_time:
+        type: string
     type: object
+host: localhost:8080
 info:
   contact: {}
   description: This is a blog server restful api docs.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Blog Service API
   version: "1.0"
 paths:
@@ -101,21 +182,17 @@ paths:
         in: query
         name: name
         type: string
-      - description: 标签ID
-        in: query
-        name: tag_id
-        type: integer
       - description: 状态
         in: query
         name: state
         type: integer
       - description: 页码
         in: query
-        name: page_num
+        name: page
         type: integer
       - description: 每页数量
         in: query
-        name: page_size
+        name: limit
         type: integer
       produces:
       - application/json
@@ -123,7 +200,14 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.ListResponse'
+            allOf:
+            - $ref: '#/definitions/app.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Article'
+                  type: array
+              type: object
         "400":
           description: 请求错误
           schema:
@@ -132,6 +216,8 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
       summary: 获取多个文章
       tags:
       - Article
@@ -161,6 +247,8 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
       summary: 创建文章
       tags:
       - Article
@@ -188,6 +276,8 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
       summary: 删除文章
       tags:
       - Article
@@ -207,7 +297,12 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.CommResponse'
+            allOf:
+            - $ref: '#/definitions/app.CommResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Article'
+              type: object
         "400":
           description: 请求错误
           schema:
@@ -216,6 +311,8 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
       summary: 获取单个文章
       tags:
       - Article
@@ -250,28 +347,19 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
       summary: 修改文章
       tags:
       - Article
-  /api/v1/tags:
-    get:
-      description: 获取多个标签
+  /api/v1/tag:
+    delete:
+      description: 删除标签
       parameters:
-      - description: 标签名称
-        in: query
-        name: name
-        type: string
-      - description: 状态
-        in: query
-        name: state
-        type: integer
-      - description: 页码
-        in: query
-        name: page_num
-        type: integer
-      - description: 每页数量
-        in: query
-        name: page_size
+      - description: 标签ID
+        in: path
+        name: id
+        required: true
         type: integer
       produces:
       - application/json
@@ -279,7 +367,7 @@ paths:
         "200":
           description: 成功
           schema:
-            $ref: '#/definitions/app.ListResponse'
+            $ref: '#/definitions/app.CommResponse'
         "400":
           description: 请求错误
           schema:
@@ -288,7 +376,9 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/app.ErrResponse'
-      summary: 获取多个标签
+      security:
+      - JWT: []
+      summary: 删除标签
       tags:
       - Tag
     post:
@@ -317,34 +407,9 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
       summary: 创建标签
-      tags:
-      - Tag
-  /api/v1/tags/{id}:
-    delete:
-      description: 删除标签
-      parameters:
-      - description: 标签ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/app.CommResponse'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/app.ErrResponse'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/app.ErrResponse'
-      summary: 删除标签
       tags:
       - Tag
     put:
@@ -378,10 +443,91 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
       summary: 修改标签
       tags:
       - Tag
-  /user/login:
+  /api/v1/tags:
+    get:
+      description: 获取多个标签
+      parameters:
+      - description: 标签名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page_num
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Tag'
+                  type: array
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 获取多个标签
+      tags:
+      - Tag
+  /api/v1/user:
+    get:
+      consumes:
+      - application/json
+      description: 获取登录用户信息
+      parameters:
+      - description: 用户信息
+        in: body
+        name: LoginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 用户信息
+      tags:
+      - Auth
+  /auth/login:
     post:
       consumes:
       - application/json
@@ -411,4 +557,9 @@ paths:
       summary: 鉴权接口
       tags:
       - Auth
+securityDefinitions:
+  JWT:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

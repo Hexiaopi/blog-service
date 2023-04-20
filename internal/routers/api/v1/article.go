@@ -31,8 +31,9 @@ func NewArticleController(store store.Factory, cache cache.Factory) *ArticleCont
 // @Tags Article
 // @Accept  json
 // @Produce  json
+// @Security JWT
 // @Param id path integer true "文章ID"
-// @Success 200 {object} app.CommResponse "成功"
+// @Success 200 {object} app.CommResponse{data=model.Article} "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles/{id} [get]
@@ -51,11 +52,12 @@ func (c *ArticleController) Get(writer http.ResponseWriter, request *http.Reques
 // @Description 根据条件获取多个文章详细信息
 // @Tags Article
 // @Produce json
+// @Security JWT
 // @param name query string false "文章名称"
 // @param state query integer false "状态"
 // @param page query integer false "页码"
 // @param limit query integer false "每页数量"
-// @Success 200 {object} app.ListResponse "成功"
+// @Success 200 {object} app.ListResponse{data=[]model.Article} "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles [get]
@@ -80,6 +82,7 @@ func (c *ArticleController) List(writer http.ResponseWriter, request *http.Reque
 // @Tags Article
 // @Produce json
 // @Accept json
+// @Security JWT
 // @param CreateArticleRequest body service.CreateArticleRequest true "创建文章"
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
@@ -104,6 +107,7 @@ func (c *ArticleController) Create(writer http.ResponseWriter, request *http.Req
 // @Tags Article
 // @Produce json
 // @Accept json
+// @Security JWT
 // @Param id path integer true "文章ID"
 // @param UpdateArticleRequest body service.UpdateArticleRequest true "修改文章"
 // @Success 200 {object} app.CommResponse "成功"
@@ -128,6 +132,7 @@ func (c *ArticleController) Update(writer http.ResponseWriter, request *http.Req
 // @Description 删除文章
 // @Tags Article
 // @Produce json
+// @Security JWT
 // @Param id path integer true "文章ID"
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"

@@ -18,6 +18,10 @@ var doc = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {},
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -25,6 +29,11 @@ var doc = `{
     "paths": {
         "/api/v1/articles": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "根据条件获取多个文章详细信息",
                 "produces": [
                     "application/json"
@@ -42,12 +51,6 @@ var doc = `{
                     },
                     {
                         "type": "integer",
-                        "description": "标签ID",
-                        "name": "tag_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
                         "description": "状态",
                         "name": "state",
                         "in": "query"
@@ -55,13 +58,13 @@ var doc = `{
                     {
                         "type": "integer",
                         "description": "页码",
-                        "name": "page_num",
+                        "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "description": "每页数量",
-                        "name": "page_size",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
@@ -69,7 +72,22 @@ var doc = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.ListResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Article"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -87,6 +105,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "创建带标签的文章",
                 "consumes": [
                     "application/json"
@@ -133,6 +156,11 @@ var doc = `{
         },
         "/api/v1/articles/{id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "获取单个文章详细信息",
                 "consumes": [
                     "application/json"
@@ -157,7 +185,19 @@ var doc = `{
                     "200": {
                         "description": "成功",
                         "schema": {
-                            "$ref": "#/definitions/app.CommResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.CommResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Article"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -175,6 +215,11 @@ var doc = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "修改带标签的文章",
                 "consumes": [
                     "application/json"
@@ -226,6 +271,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "删除文章",
                 "produces": [
                     "application/json"
@@ -265,110 +315,13 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/tags": {
-            "get": {
-                "description": "获取多个标签",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tag"
-                ],
-                "summary": "获取多个标签",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "标签名称",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "状态",
-                        "name": "state",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page_num",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数量",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/app.ListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/app.ErrResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/app.ErrResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "创建标签",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tag"
-                ],
-                "summary": "创建标签",
-                "parameters": [
-                    {
-                        "description": "创建标签",
-                        "name": "CreateTagRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/service.CreateTagRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/app.CommResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/app.ErrResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/app.ErrResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/tags/{id}": {
+        "/api/v1/tag": {
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "修改标签",
                 "consumes": [
                     "application/json"
@@ -419,7 +372,61 @@ var doc = `{
                     }
                 }
             },
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "创建标签",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tag"
+                ],
+                "summary": "创建标签",
+                "parameters": [
+                    {
+                        "description": "创建标签",
+                        "name": "CreateTagRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.CreateTagRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "删除标签",
                 "produces": [
                     "application/json"
@@ -459,7 +466,136 @@ var doc = `{
                 }
             }
         },
-        "/user/login": {
+        "/api/v1/tags": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取多个标签",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tag"
+                ],
+                "summary": "获取多个标签",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "标签名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_num",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Tag"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取登录用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "用户信息",
+                "parameters": [
+                    {
+                        "description": "用户信息",
+                        "name": "LoginRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
             "post": {
                 "description": "请求鉴权获取Token",
                 "consumes": [
@@ -551,8 +687,75 @@ var doc = `{
                 "ret_desc": {
                     "type": "string"
                 },
-                "total_rows": {
+                "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.Article": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "cover_image_url": {
+                    "type": "string"
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operator": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tag"
+                    }
+                },
+                "update_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Tag": {
+            "type": "object",
+            "properties": {
+                "article_total": {
+                    "type": "integer"
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operator": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "integer"
+                },
+                "update_time": {
+                    "type": "string"
                 }
             }
         },
@@ -565,19 +768,31 @@ var doc = `{
                 "cover_image_url": {
                     "type": "string"
                 },
-                "create_by": {
+                "create_time": {
                     "type": "string"
                 },
                 "desc": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operator": {
+                    "type": "string"
+                },
                 "state": {
                     "type": "integer"
                 },
-                "tag_id": {
-                    "type": "integer"
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tag"
+                    }
                 },
-                "title": {
+                "update_time": {
                     "type": "string"
                 }
             }
@@ -585,14 +800,29 @@ var doc = `{
         "service.CreateTagRequest": {
             "type": "object",
             "properties": {
-                "createdBy": {
+                "article_total": {
+                    "type": "integer"
+                },
+                "create_time": {
                     "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
+                "operator": {
+                    "type": "string"
+                },
                 "state": {
                     "type": "integer"
+                },
+                "update_time": {
+                    "type": "string"
                 }
             }
         },
@@ -605,22 +835,31 @@ var doc = `{
                 "cover_image_url": {
                     "type": "string"
                 },
+                "create_time": {
+                    "type": "string"
+                },
                 "desc": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "modified_by": {
+                "name": {
+                    "type": "string"
+                },
+                "operator": {
                     "type": "string"
                 },
                 "state": {
                     "type": "integer"
                 },
-                "tag_id": {
-                    "type": "integer"
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Tag"
+                    }
                 },
-                "title": {
+                "update_time": {
                     "type": "string"
                 }
             }
@@ -628,19 +867,38 @@ var doc = `{
         "service.UpdateTagRequest": {
             "type": "object",
             "properties": {
-                "id": {
+                "article_total": {
                     "type": "integer"
                 },
-                "modifiedBy": {
+                "create_time": {
                     "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
+                "operator": {
+                    "type": "string"
+                },
                 "state": {
                     "type": "integer"
+                },
+                "update_time": {
+                    "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "JWT": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -657,8 +915,8 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "",
-	BasePath:    "",
+	Host:        "localhost:8080",
+	BasePath:    "/",
 	Schemes:     []string{},
 	Title:       "Blog Service API",
 	Description: "This is a blog server restful api docs.",

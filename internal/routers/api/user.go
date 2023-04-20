@@ -75,6 +75,7 @@ func (c *UserController) Login(writer http.ResponseWriter, request *http.Request
 // @Tags Auth
 // @Produce json
 // @Accept json
+// @Security JWT
 // @param LoginRequest body LoginRequest true "用户信息"
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"

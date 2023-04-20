@@ -13,18 +13,6 @@ import (
 	"github.com/hexiaopi/blog-service/internal/routers"
 )
 
-// @title Blog Service API
-// @version 1.0
-// @description This is a blog server restful api docs.
-
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-// @host      localhost:8080
-// @BasePath  /
-
-// @securityDefinitions.apikey JWT
-// @in header
-// @name Authorization
 func Run() {
 	router := routers.NewRouter()
 	s := &http.Server{
