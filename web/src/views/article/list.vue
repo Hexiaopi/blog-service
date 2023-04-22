@@ -105,6 +105,7 @@ export default {
   data () {
     return {
       list: null,
+      total: 0,
       listLoading: true,
       listQuery: {
         page: 1,

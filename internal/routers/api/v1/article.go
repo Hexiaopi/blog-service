@@ -26,28 +26,6 @@ func NewArticleController(store store.Factory, cache cache.Factory) *ArticleCont
 	}
 }
 
-// @Summary 获取单个文章
-// @Description 获取单个文章详细信息
-// @Tags Article
-// @Accept  json
-// @Produce  json
-// @Security JWT
-// @Param id path integer true "文章ID"
-// @Success 200 {object} app.CommResponse{data=model.Article} "成功"
-// @Failure 400 {object} app.ErrResponse "请求错误"
-// @Failure 500 {object} app.ErrResponse "内部错误"
-// @Router /api/v1/articles/{id} [get]
-func (c *ArticleController) Get(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
-	param := service.ArticleRequest{OneOption: model.OneOption{Id: id}}
-	article, err := c.srv.Articles().Get(request.Context(), &param)
-	if err != nil {
-		app.ToResponseCode(writer, retcode.GetArticleFail)
-		return
-	}
-	app.ToResponseData(writer, article)
-}
-
 // @Summary 获取多个文章
 // @Description 根据条件获取多个文章详细信息
 // @Tags Article
@@ -100,6 +78,28 @@ func (c *ArticleController) Create(writer http.ResponseWriter, request *http.Req
 		return
 	}
 	app.ToResponseData(writer, nil)
+}
+
+// @Summary 获取单个文章
+// @Description 获取单个文章详细信息
+// @Tags Article
+// @Accept  json
+// @Produce  json
+// @Security JWT
+// @Param id path integer true "文章ID"
+// @Success 200 {object} app.CommResponse{data=model.Article} "成功"
+// @Failure 400 {object} app.ErrResponse "请求错误"
+// @Failure 500 {object} app.ErrResponse "内部错误"
+// @Router /api/v1/articles/{id} [get]
+func (c *ArticleController) Get(writer http.ResponseWriter, request *http.Request) {
+	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
+	param := service.ArticleRequest{OneOption: model.OneOption{Id: id}}
+	article, err := c.srv.Articles().Get(request.Context(), &param)
+	if err != nil {
+		app.ToResponseCode(writer, retcode.GetArticleFail)
+		return
+	}
+	app.ToResponseData(writer, article)
 }
 
 // @Summary 修改文章

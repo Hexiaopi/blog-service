@@ -1,39 +1,47 @@
 <template>
   <div class="createPost-container">
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
-      <sticky :z-index="10" :class-name="'sub-navbar ' + postForm.state | statusTypeFilter">
-        <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
-          发布
-        </el-button>
-        <el-button v-loading="loading" type="warning" @click="draftForm">
-          草稿
-        </el-button>
-      </sticky>
+
 
       <div class="createPost-main-container">
         <el-row>
-          <el-col :span="24">
+          <el-col :span="6">
             <el-form-item style="margin-bottom: 40px;" prop="name">
-              <MDinput v-model="postForm.name" :maxlength="100" name="name" required>
+              <MDinput v-model="postForm.name" :maxlength="20" name="name" required>
                 标题
               </MDinput>
             </el-form-item>
           </el-col>
+
+          <el-col :span="6">
+            <el-form-item style="margin-bottom: 40px;" label="标签">
+              <el-select v-model="postForm.tags" value-key="id" multiple filterable clearable placeholder="请选择">
+                <el-option v-for="item in tags" :key="item.id" :label="item.name" :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="6">
+            <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
+              发布
+            </el-button>
+            <el-button v-loading="loading" type="warning" @click="draftForm">
+              草稿
+            </el-button>
+          </el-col>
         </el-row>
 
-        <el-form-item style="margin-bottom: 40px;" label-width="70px" label="描述:">
-          <el-input v-model="postForm.desc" :rows="1" type="textarea" class="article-textarea" autosize
-            placeholder="Please enter the content" />
-          <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}字符</span>
+        <el-form-item style="margin-bottom: 40px;" prop="desc">
+          <MDinput v-model="postForm.desc" :maxlength="100" name="name" required>
+            描述
+          </MDinput>
         </el-form-item>
 
-        <el-form-item prop="content" style="margin-bottom: 30px;">
+        <el-form-item prop="content">
           <markdown-editor ref="editor" v-model="postForm.content"
-            :options="{ hideModeSwitch: true, previewStyle: 'tab' }" height="400px" />
-        </el-form-item>
-
-        <el-form-item prop="cover_image_url" style="margin-bottom: 30px;">
-          <Upload v-model="postForm.cover_image_url" />
+            :options="{ hideModeSwitch: true, previewStyle: 'tab' }" height="600px" />
+          <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}</span>
         </el-form-item>
       </div>
     </el-form>
@@ -42,9 +50,7 @@
 
 <script>
 import MarkdownEditor from '@/components/MarkdownEditor'
-import Upload from '@/components/Upload/SingleImage3'
 import MDinput from '@/components/MDinput'
-import Sticky from '@/components/Sticky' // 粘性header组件
 import { getArticle, createArticle, updateArticle } from '@/api/article'
 import { listTag } from '@/api/tag'
 
@@ -53,15 +59,15 @@ const defaultForm = {
   name: '', // 文章题目
   desc: '', // 文章描述
   content: '', // 文章内容
-  cover_image_url: '', // 文章图片
   state: undefined,
+  tags: [],
   create_time: null,
   update_time: null
 }
 
 export default {
   name: 'ArticleDetail',
-  components: { MarkdownEditor, MDinput, Upload, Sticky },
+  components: { MarkdownEditor, MDinput },
   props: {
     isEdit: {
       type: Boolean,
@@ -94,6 +100,7 @@ export default {
       postForm: Object.assign({}, defaultForm),
       loading: false,
       userListOptions: [],
+      tags: [],
       rules: {
         //cover_image_url: [{ validator: validateRequire }],
         name: [{ validator: validateRequire }],
@@ -104,13 +111,14 @@ export default {
   },
   computed: {
     contentShortLength () {
-      return this.postForm.desc.length
+      return this.postForm.content.length
     },
   },
   created () {
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
+      this.getTags()
     }
 
     // Why need to make a copy of this.$route here?
@@ -122,7 +130,6 @@ export default {
     fetchData (id) {
       getArticle(id).then(response => {
         this.postForm = response.data
-
         // set tagsview title
         this.setTagsViewTitle()
 
@@ -130,6 +137,11 @@ export default {
         this.setPageTitle()
       }).catch(err => {
         console.log(err)
+      })
+    },
+    getTags () {
+      listTag({ state: 1 }).then(response => {
+        this.tags = response.data
       })
     },
     setTagsViewTitle () {
