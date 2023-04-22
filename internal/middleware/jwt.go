@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/hexiaopi/blog-service/internal/app"
@@ -12,12 +13,17 @@ import (
 // JWT 身份验证
 func JWT(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		token := request.Header.Get("X-Token")
-		if token == "" {
+		auth := request.Header.Get("Authorization")
+		if auth == "" {
 			app.ToResponseCode(writer, retcode.RequestTokenEmpty)
 			return
 		}
-		claims, err := app.ParseToken(token)
+		token := strings.Split(auth, " ")
+		if len(token) != 2 || token[0] != "bearer" {
+			app.ToResponseCode(writer, retcode.RequestTokenEmpty)
+			return
+		}
+		claims, err := app.ParseToken(token[1])
 		if err != nil {
 			switch err.(*jwt.ValidationError).Errors {
 			case jwt.ValidationErrorExpired:
