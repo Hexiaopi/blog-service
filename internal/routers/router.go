@@ -15,6 +15,7 @@ import (
 	"github.com/hexiaopi/blog-service/internal/middleware"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/routers/api"
+	"github.com/hexiaopi/blog-service/internal/routers/api/sys"
 	v1 "github.com/hexiaopi/blog-service/internal/routers/api/v1"
 	dao "github.com/hexiaopi/blog-service/internal/store/mysql"
 )
@@ -34,6 +35,8 @@ func NewRouter() http.Handler {
 	router.Use(middleware.Recovery)
 
 	userController := api.NewUserController(storeIns)
+	systemController := sys.NewSystemController(storeIns)
+	captchaController := sys.NewCaptchaController()
 
 	apiRouter := router.PathPrefix("/api").Subrouter()
 	apiRouter.Use(middleware.RequestId)
@@ -41,6 +44,10 @@ func NewRouter() http.Handler {
 	apiRouter.Use(middleware.Metrics)
 	apiRouter.Use(middleware.Timeout)
 	apiRouter.Use(middleware.Tracer)
+
+	sysRouter := apiRouter.PathPrefix("/sys").Subrouter()
+	sysRouter.HandleFunc("/config", systemController.Get).Methods(http.MethodGet)
+	sysRouter.HandleFunc("/captcha", captchaController.Get).Methods(http.MethodGet)
 
 	authRouter := apiRouter.PathPrefix("/auth").Subrouter()
 	authRouter.HandleFunc("/login", userController.Login).Methods(http.MethodPost)

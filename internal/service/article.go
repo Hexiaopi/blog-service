@@ -5,10 +5,12 @@ import (
 	"errors"
 	"log"
 
+	"github.com/redis/go-redis/v9"
+
 	"github.com/hexiaopi/blog-service/internal/cache"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
-	"github.com/redis/go-redis/v9"
+
 )
 
 type ArticleSrv interface {

@@ -8,6 +8,7 @@ type Factory interface {
 	Articles() ArticleStore
 	Tags() TagStore
 	Users() UserStore
+	Systems() SystemConfigStore
 	Close() error
 }
 

@@ -26,6 +26,8 @@ func NewUserController(store store.Factory) *UserController {
 type LoginRequest struct {
 	UserName string `json:"username"`
 	PassWord string `json:"password"`
+	Captcha  string `json:"captcha"`
+	Cid      string `json:"cid"`
 }
 
 type LoginResponse struct {
@@ -53,6 +55,8 @@ func (c *UserController) Login(writer http.ResponseWriter, request *http.Request
 	param := service.AuthRequest{
 		UserName: req.UserName,
 		PassWord: req.PassWord,
+		Captcha:  req.Captcha,
+		Cid:      req.Cid,
 	}
 	if err := c.srv.Users().CheckAuth(request.Context(), &param); err != nil {
 		log.Errorf("check user auth err:%v", err)

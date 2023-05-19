@@ -9,6 +9,7 @@ type Service interface {
 	Articles() ArticleSrv
 	Tags() TagSrv
 	Users() UserSrv
+	Systems() SystemSrv
 }
 
 type service struct {
@@ -26,6 +27,10 @@ func (s *service) Tags() TagSrv {
 
 func (s *service) Users() UserSrv {
 	return NewUserService(s.store)
+}
+
+func (s *service) Systems() SystemSrv {
+	return NewSystemService(s.store)
 }
 
 func NewService(store store.Factory, cache cache.Factory) Service {

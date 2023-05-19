@@ -11,6 +11,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/mojocn/base64Captcha v1.3.5
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/prometheus/client_golang v1.14.0
 	github.com/redis/go-redis/v9 v9.0.2

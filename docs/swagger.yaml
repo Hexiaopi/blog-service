@@ -36,8 +36,6 @@ definitions:
     properties:
       content:
         type: string
-      cover_image_url:
-        type: string
       create_time:
         type: string
       desc:
@@ -49,6 +47,7 @@ definitions:
       operator:
         type: string
       state:
+        description: CoverImageUrl string    `gorm:"cover_image_url" json:"cover_image_url"`
         type: integer
       tags:
         items:
@@ -80,8 +79,6 @@ definitions:
     properties:
       content:
         type: string
-      cover_image_url:
-        type: string
       create_time:
         type: string
       desc:
@@ -93,6 +90,7 @@ definitions:
       operator:
         type: string
       state:
+        description: CoverImageUrl string    `gorm:"cover_image_url" json:"cover_image_url"`
         type: integer
       tags:
         items:
@@ -124,8 +122,6 @@ definitions:
     properties:
       content:
         type: string
-      cover_image_url:
-        type: string
       create_time:
         type: string
       desc:
@@ -137,6 +133,7 @@ definitions:
       operator:
         type: string
       state:
+        description: CoverImageUrl string    `gorm:"cover_image_url" json:"cover_image_url"`
         type: integer
       tags:
         items:
@@ -174,6 +171,32 @@ info:
   title: Blog Service API
   version: "1.0"
 paths:
+  /api/sys/config:
+    get:
+      description: 获取系统配置项，一般是key-value格式
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 获取系统配置项
+      tags:
+      - Tag
   /api/v1/articles:
     get:
       description: 根据条件获取多个文章详细信息

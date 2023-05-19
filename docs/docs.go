@@ -27,6 +27,46 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/sys/config": {
+            "get": {
+                "description": "获取系统配置项，一般是key-value格式",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tag"
+                ],
+                "summary": "获取系统配置项",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/articles": {
             "get": {
                 "security": [
@@ -698,9 +738,6 @@ var doc = `{
                 "content": {
                     "type": "string"
                 },
-                "cover_image_url": {
-                    "type": "string"
-                },
                 "create_time": {
                     "type": "string"
                 },
@@ -717,6 +754,7 @@ var doc = `{
                     "type": "string"
                 },
                 "state": {
+                    "description": "CoverImageUrl string    ` + "`" + `gorm:\"cover_image_url\" json:\"cover_image_url\"` + "`" + `",
                     "type": "integer"
                 },
                 "tags": {
@@ -765,9 +803,6 @@ var doc = `{
                 "content": {
                     "type": "string"
                 },
-                "cover_image_url": {
-                    "type": "string"
-                },
                 "create_time": {
                     "type": "string"
                 },
@@ -784,6 +819,7 @@ var doc = `{
                     "type": "string"
                 },
                 "state": {
+                    "description": "CoverImageUrl string    ` + "`" + `gorm:\"cover_image_url\" json:\"cover_image_url\"` + "`" + `",
                     "type": "integer"
                 },
                 "tags": {
@@ -832,9 +868,6 @@ var doc = `{
                 "content": {
                     "type": "string"
                 },
-                "cover_image_url": {
-                    "type": "string"
-                },
                 "create_time": {
                     "type": "string"
                 },
@@ -851,6 +884,7 @@ var doc = `{
                     "type": "string"
                 },
                 "state": {
+                    "description": "CoverImageUrl string    ` + "`" + `gorm:\"cover_image_url\" json:\"cover_image_url\"` + "`" + `",
                     "type": "integer"
                 },
                 "tags": {
