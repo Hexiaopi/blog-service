@@ -14,3 +14,18 @@ export function getCaptcha () {
     method: 'get'
   })
 }
+
+export function login (data) {
+  return request({
+    url: '/api/sys/login',
+    method: 'post',
+    data
+  })
+}
+
+export function logout () {
+  return request({
+    url: '/api/sys/logout',
+    method: 'post'
+  })
+}

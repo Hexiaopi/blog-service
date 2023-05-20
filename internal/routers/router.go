@@ -14,7 +14,6 @@ import (
 	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/middleware"
 	"github.com/hexiaopi/blog-service/internal/retcode"
-	"github.com/hexiaopi/blog-service/internal/routers/api"
 	"github.com/hexiaopi/blog-service/internal/routers/api/sys"
 	v1 "github.com/hexiaopi/blog-service/internal/routers/api/v1"
 	dao "github.com/hexiaopi/blog-service/internal/store/mysql"
@@ -34,7 +33,7 @@ func NewRouter() http.Handler {
 	//router.Use(middleware.Logger)
 	router.Use(middleware.Recovery)
 
-	userController := api.NewUserController(storeIns)
+	loginController := sys.NewLoginController(storeIns)
 	systemController := sys.NewSystemController(storeIns)
 	captchaController := sys.NewCaptchaController()
 
@@ -48,15 +47,13 @@ func NewRouter() http.Handler {
 	sysRouter := apiRouter.PathPrefix("/sys").Subrouter()
 	sysRouter.HandleFunc("/config", systemController.Get).Methods(http.MethodGet)
 	sysRouter.HandleFunc("/captcha", captchaController.Get).Methods(http.MethodGet)
-
-	authRouter := apiRouter.PathPrefix("/auth").Subrouter()
-	authRouter.HandleFunc("/login", userController.Login).Methods(http.MethodPost)
-	authRouter.HandleFunc("/logout", api.Logout).Methods(http.MethodPost)
+	sysRouter.HandleFunc("/login", loginController.Login).Methods(http.MethodPost)
+	sysRouter.HandleFunc("/logout", loginController.Logout).Methods(http.MethodPost)
 
 	apiV1 := apiRouter.PathPrefix("/v1").Subrouter()
 	apiV1.Use(middleware.JWT)
 	{
-		apiV1.HandleFunc("/user", userController.Info).Methods(http.MethodGet)
+		apiV1.HandleFunc("/user", loginController.Info).Methods(http.MethodGet)
 		articleController := v1.NewArticleController(storeIns, cacheIns)
 		apiV1.HandleFunc("/articles", articleController.List).Methods(http.MethodGet)
 		apiV1.HandleFunc("/article", articleController.Create).Methods(http.MethodPost)

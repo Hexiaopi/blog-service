@@ -1,4 +1,4 @@
-package api
+package sys
 
 import (
 	"encoding/json"
@@ -13,12 +13,12 @@ import (
 	"github.com/hexiaopi/blog-service/internal/store"
 )
 
-type UserController struct {
+type LoginController struct {
 	srv service.Service
 }
 
-func NewUserController(store store.Factory) *UserController {
-	return &UserController{
+func NewLoginController(store store.Factory) *LoginController {
+	return &LoginController{
 		srv: service.NewService(store, nil),
 	}
 }
@@ -34,8 +34,8 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-// @Summary 鉴权接口
-// @Description 请求鉴权获取Token
+// @Summary 登录接口
+// @Description 用户登录生成Token
 // @Tags Auth
 // @Produce json
 // @Accept json
@@ -43,8 +43,8 @@ type LoginResponse struct {
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
-// @Router /auth/login [post]
-func (c *UserController) Login(writer http.ResponseWriter, request *http.Request) {
+// @Router /api/sys/login [post]
+func (c *LoginController) Login(writer http.ResponseWriter, request *http.Request) {
 	var req LoginRequest
 
 	data, _ := ioutil.ReadAll(request.Body)
@@ -85,7 +85,7 @@ func (c *UserController) Login(writer http.ResponseWriter, request *http.Request
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/user [get]
-func (c *UserController) Info(writer http.ResponseWriter, request *http.Request) {
+func (c *LoginController) Info(writer http.ResponseWriter, request *http.Request) {
 	name := request.Context().Value("name")
 	if name == nil {
 		app.ToResponseCode(writer, retcode.RequestTokenAuthFail)
@@ -100,6 +100,15 @@ func (c *UserController) Info(writer http.ResponseWriter, request *http.Request)
 	app.ToResponseData(writer, user)
 }
 
-func Logout(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte(`{"ret_code":"000000","ret_desc":"Success"}`))
+// @Summary 退出接口
+// @Description 用户退出清除cookie
+// @Tags System
+// @Produce json
+// @Accept json
+// @Success 200 {object} app.CommResponse "成功"
+// @Failure 400 {object} app.ErrResponse "请求错误"
+// @Failure 500 {object} app.ErrResponse "内部错误"
+// @Router /api/sys/logout [post]
+func (c *LoginController) Logout(writer http.ResponseWriter, request *http.Request) {
+	app.ToResponseCode(writer, retcode.Success)
 }
