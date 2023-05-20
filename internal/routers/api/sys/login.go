@@ -8,6 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/app"
+	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/pkg/captcha"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -36,7 +38,7 @@ type LoginResponse struct {
 
 // @Summary 登录接口
 // @Description 用户登录生成Token
-// @Tags Auth
+// @Tags System
 // @Produce json
 // @Accept json
 // @param LoginRequest body LoginRequest true "用户信息"
@@ -62,6 +64,20 @@ func (c *LoginController) Login(writer http.ResponseWriter, request *http.Reques
 		log.Errorf("check user auth err:%v", err)
 		app.ToResponseCode(writer, retcode.RequestAuthCheckFail)
 		return
+	}
+
+	config, err := c.srv.Systems().Get(request.Context(), &service.SystemGetRequest{OneOption: model.OneOption{Name: "EnableLoginCaptcha"}})
+	if err != nil {
+		log.Errorf("get system config err:%v", err)
+		app.ToResponseCode(writer, retcode.RequestAuthCheckFail)
+		return
+	}
+	if config != nil && config.Value == "1" {
+		if !captcha.Verify(param.Cid, param.Captcha) {
+			log.Errorf("check user auth err:%v", err)
+			app.ToResponseCode(writer, retcode.RequestAuthCheckFail)
+			return
+		}
 	}
 
 	token, err := app.GenerateToken(param.UserName, param.PassWord)

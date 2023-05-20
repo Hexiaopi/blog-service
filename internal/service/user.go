@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/hexiaopi/blog-service/internal/model"
-	"github.com/hexiaopi/blog-service/internal/pkg/captcha"
 	"github.com/hexiaopi/blog-service/internal/store"
 )
 
@@ -43,11 +42,6 @@ func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error
 	}
 	if err := user.Compare(param.PassWord); err != nil {
 		return err
-	}
-	if param.Captcha != "" && param.Cid != "" {
-		if !captcha.Verify(param.Cid, param.Captcha) {
-			return errors.New("captcha veriify fail")
-		}
 	}
 	return nil
 }

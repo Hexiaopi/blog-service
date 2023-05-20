@@ -32,10 +32,10 @@
             <el-input type="text" maxlength="6" placeholder="请输入验证码" prefix-icon="position" v-model="loginForm.captcha"
               clearable autocomplete="off" @keyup.enter="login"></el-input>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="4">
             <div class="login-content-code">
-              <img class="login-content-code-img" @click="getCaptcha" width="130px" height="40px" :src="captchaImage"
-                style="cursor: pointer" />
+              <img class="login-content-code-img" @click="getCaptcha" width="130px" :src="captchaImage"
+                style="cursor: pointer;background-color: white;" />
             </div>
           </el-col>
         </el-row>
@@ -80,7 +80,8 @@ export default {
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
       },
       loading: false,
       passwordType: 'password',
