@@ -27,6 +27,46 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/sys/captcha": {
+            "get": {
+                "description": "获取验证码",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "获取验证码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/sys/config": {
             "get": {
                 "description": "获取系统配置项，一般是key-value格式",
@@ -34,7 +74,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Tag"
+                    "System"
                 ],
                 "summary": "获取系统配置项",
                 "parameters": [
@@ -50,6 +90,148 @@ var doc = `{
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sys/login": {
+            "post": {
+                "description": "用户登录生成Token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "登录接口",
+                "parameters": [
+                    {
+                        "description": "用户信息",
+                        "name": "LoginRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/sys.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/sys/logout": {
+            "post": {
+                "description": "用户退出清除cookie",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "退出接口",
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/article/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取单个文章详细信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Article"
+                ],
+                "summary": "获取单个文章",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "文章ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.CommResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Article"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -195,65 +377,6 @@ var doc = `{
             }
         },
         "/api/v1/articles/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "获取单个文章详细信息",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Article"
-                ],
-                "summary": "获取单个文章",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "文章ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/app.CommResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.Article"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/app.ErrResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/app.ErrResponse"
-                        }
-                    }
-                }
-            },
             "put": {
                 "security": [
                     {
@@ -338,6 +461,296 @@ var doc = `{
                         "description": "成功",
                         "schema": {
                             "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resource": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "修改资源",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "修改资源",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改资源",
+                        "name": "UpdateResourceRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.UpdateResourceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "创建资源",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "创建资源",
+                "parameters": [
+                    {
+                        "description": "创建标签",
+                        "name": "CreateResourceRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.CreateResourceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "删除资源",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resource/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取单个资源详细信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "获取单个资源",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "资源ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.CommResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Resource"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resources": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取多个资源",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "获取多个资源",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "标签名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_num",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Tag"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -609,53 +1022,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/app.CommResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/app.ErrResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/app.ErrResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/login": {
-            "post": {
-                "description": "请求鉴权获取Token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "鉴权接口",
-                "parameters": [
-                    {
-                        "description": "用户信息",
-                        "name": "LoginRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.LoginRequest"
+                            "$ref": "#/definitions/sys.LoginRequest"
                         }
                     }
                 ],
@@ -683,17 +1050,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "api.LoginRequest": {
-            "type": "object",
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
         "app.CommResponse": {
             "type": "object",
             "properties": {
@@ -768,6 +1124,41 @@ var doc = `{
                 }
             }
         },
+        "model.Resource": {
+            "type": "object",
+            "properties": {
+                "blob": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operator": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "update_time": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Tag": {
             "type": "object",
             "properties": {
@@ -827,6 +1218,41 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/model.Tag"
                     }
+                },
+                "update_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.CreateResourceRequest": {
+            "type": "object",
+            "properties": {
+                "blob": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operator": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
                 },
                 "update_time": {
                     "type": "string"
@@ -898,6 +1324,41 @@ var doc = `{
                 }
             }
         },
+        "service.UpdateResourceRequest": {
+            "type": "object",
+            "properties": {
+                "blob": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operator": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "update_time": {
+                    "type": "string"
+                }
+            }
+        },
         "service.UpdateTagRequest": {
             "type": "object",
             "properties": {
@@ -923,6 +1384,23 @@ var doc = `{
                     "type": "integer"
                 },
                 "update_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "sys.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "captcha": {
+                    "type": "string"
+                },
+                "cid": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

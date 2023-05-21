@@ -32,6 +32,10 @@ func (ds *datastore) Systems() store.SystemConfigStore {
 	return NewSystemConfigDao(ds.db)
 }
 
+func (ds *datastore) Resources() store.ResourceStore {
+	return NewResourceDao(ds.db)
+}
+
 func (ds *datastore) Close() error {
 	db, err := ds.db.DB()
 	if err != nil {

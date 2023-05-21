@@ -9,6 +9,7 @@ type Factory interface {
 	Tags() TagStore
 	Users() UserStore
 	Systems() SystemConfigStore
+	Resources() ResourceStore
 	Close() error
 }
 

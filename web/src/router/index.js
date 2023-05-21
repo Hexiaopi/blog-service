@@ -97,6 +97,20 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/resource',
+    component: Layout,
+    redirect: '/resource/list',
+    meta: { title: '资源', icon: 'el-icon-suitcase' },
+    children: [
+      {
+        path: 'list',
+        name: 'Resource',
+        component: () => import('@/views/resource/list'),
+        meta: { title: '资源列表', icon: 'el-icon-files' }
+      }
+    ]
+  },
 
   {
     path: '/plan',

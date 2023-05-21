@@ -65,6 +65,13 @@ func NewRouter() http.Handler {
 		apiV1.HandleFunc("/tag", tagController.Create).Methods(http.MethodPost)
 		apiV1.HandleFunc("/tag", tagController.Update).Methods(http.MethodPut)
 		apiV1.HandleFunc("/tag", tagController.Delete).Methods(http.MethodDelete)
+		resourceController := v1.NewResourceController(storeIns)
+		apiV1.HandleFunc("/resources", resourceController.List).Methods(http.MethodGet)
+		apiV1.HandleFunc("/resource", resourceController.Create).Methods(http.MethodPost)
+		apiV1.HandleFunc("/resource", resourceController.Get).Methods(http.MethodGet)
+		apiV1.HandleFunc("/resource", resourceController.Update).Methods(http.MethodPut)
+		apiV1.HandleFunc("/resource", resourceController.Delete).Methods(http.MethodDelete)
+
 	}
 	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/dist"))))
 

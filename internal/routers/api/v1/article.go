@@ -90,7 +90,7 @@ func (c *ArticleController) Create(writer http.ResponseWriter, request *http.Req
 // @Success 200 {object} app.CommResponse{data=model.Article} "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
-// @Router /api/v1/articles/{id} [get]
+// @Router /api/v1/article/{id} [get]
 func (c *ArticleController) Get(writer http.ResponseWriter, request *http.Request) {
 	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
 	param := service.ArticleRequest{OneOption: model.OneOption{Id: id}}

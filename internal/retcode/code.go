@@ -28,7 +28,13 @@ var (
 	UpdateTagFail = NewCode("200003", "Update Tag Fail")
 	DeleteTagFail = NewCode("200004", "Delete Tag Fail")
 
-	GetSystemConfigFail = NewCode("300001", "Get System Config Fail")
+	GetResourceFail    = NewCode("300001", "Get Resource Fail")
+	GetResourcesFail   = NewCode("300002", "Get Resources Fail")
+	CreateResourceFail = NewCode("300003", "Create Resource Fail")
+	UpdateResourceFail = NewCode("300004", "Update Resource Fail")
+	DeleteResourceFail = NewCode("300005", "Delete Resource Fail")
+
+	GetSystemConfigFail = NewCode("400001", "Get System Config Fail")
 
 	UnknownError = NewCode("999999", "Unknown Error")
 )

@@ -1,12 +1,5 @@
 basePath: /
 definitions:
-  api.LoginRequest:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    type: object
   app.CommResponse:
     properties:
       data: {}
@@ -56,6 +49,29 @@ definitions:
       update_time:
         type: string
     type: object
+  model.Resource:
+    properties:
+      blob:
+        items:
+          type: integer
+        type: array
+      create_time:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      operator:
+        type: string
+      size:
+        type: integer
+      state:
+        type: integer
+      type:
+        type: string
+      update_time:
+        type: string
+    type: object
   model.Tag:
     properties:
       article_total:
@@ -96,6 +112,29 @@ definitions:
         items:
           $ref: '#/definitions/model.Tag'
         type: array
+      update_time:
+        type: string
+    type: object
+  service.CreateResourceRequest:
+    properties:
+      blob:
+        items:
+          type: integer
+        type: array
+      create_time:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      operator:
+        type: string
+      size:
+        type: integer
+      state:
+        type: integer
+      type:
+        type: string
       update_time:
         type: string
     type: object
@@ -142,6 +181,29 @@ definitions:
       update_time:
         type: string
     type: object
+  service.UpdateResourceRequest:
+    properties:
+      blob:
+        items:
+          type: integer
+        type: array
+      create_time:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      operator:
+        type: string
+      size:
+        type: integer
+      state:
+        type: integer
+      type:
+        type: string
+      update_time:
+        type: string
+    type: object
   service.UpdateTagRequest:
     properties:
       article_total:
@@ -161,6 +223,17 @@ definitions:
       update_time:
         type: string
     type: object
+  sys.LoginRequest:
+    properties:
+      captcha:
+        type: string
+      cid:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -171,6 +244,32 @@ info:
   title: Blog Service API
   version: "1.0"
 paths:
+  /api/sys/captcha:
+    get:
+      description: 获取验证码
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 获取验证码
+      tags:
+      - System
   /api/sys/config:
     get:
       description: 获取系统配置项，一般是key-value格式
@@ -196,7 +295,96 @@ paths:
             $ref: '#/definitions/app.ErrResponse'
       summary: 获取系统配置项
       tags:
-      - Tag
+      - System
+  /api/sys/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录生成Token
+      parameters:
+      - description: 用户信息
+        in: body
+        name: LoginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/sys.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 登录接口
+      tags:
+      - System
+  /api/sys/logout:
+    post:
+      consumes:
+      - application/json
+      description: 用户退出清除cookie
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      summary: 退出接口
+      tags:
+      - System
+  /api/v1/article/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取单个文章详细信息
+      parameters:
+      - description: 文章ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.CommResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Article'
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 获取单个文章
+      tags:
+      - Article
   /api/v1/articles:
     get:
       description: 根据条件获取多个文章详细信息
@@ -304,41 +492,6 @@ paths:
       summary: 删除文章
       tags:
       - Article
-    get:
-      consumes:
-      - application/json
-      description: 获取单个文章详细信息
-      parameters:
-      - description: 文章ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功
-          schema:
-            allOf:
-            - $ref: '#/definitions/app.CommResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.Article'
-              type: object
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/app.ErrResponse'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/app.ErrResponse'
-      security:
-      - JWT: []
-      summary: 获取单个文章
-      tags:
-      - Article
     put:
       consumes:
       - application/json
@@ -375,6 +528,185 @@ paths:
       summary: 修改文章
       tags:
       - Article
+  /api/v1/resource:
+    delete:
+      description: 删除资源
+      parameters:
+      - description: 标签ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 删除资源
+      tags:
+      - Resource
+    post:
+      consumes:
+      - application/json
+      description: 创建资源
+      parameters:
+      - description: 创建标签
+        in: body
+        name: CreateResourceRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateResourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 创建资源
+      tags:
+      - Resource
+    put:
+      consumes:
+      - application/json
+      description: 修改资源
+      parameters:
+      - description: 标签ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改资源
+        in: body
+        name: UpdateResourceRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdateResourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 修改资源
+      tags:
+      - Resource
+  /api/v1/resource/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取单个资源详细信息
+      parameters:
+      - description: 资源ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.CommResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Resource'
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 获取单个资源
+      tags:
+      - Resource
+  /api/v1/resources:
+    get:
+      description: 获取多个资源
+      parameters:
+      - description: 标签名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page_num
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Tag'
+                  type: array
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 获取多个资源
+      tags:
+      - Resource
   /api/v1/tag:
     delete:
       description: 删除标签
@@ -529,7 +861,7 @@ paths:
         name: LoginRequest
         required: true
         schema:
-          $ref: '#/definitions/api.LoginRequest'
+          $ref: '#/definitions/sys.LoginRequest'
       produces:
       - application/json
       responses:
@@ -548,36 +880,6 @@ paths:
       security:
       - JWT: []
       summary: 用户信息
-      tags:
-      - Auth
-  /auth/login:
-    post:
-      consumes:
-      - application/json
-      description: 请求鉴权获取Token
-      parameters:
-      - description: 用户信息
-        in: body
-        name: LoginRequest
-        required: true
-        schema:
-          $ref: '#/definitions/api.LoginRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功
-          schema:
-            $ref: '#/definitions/app.CommResponse'
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/app.ErrResponse'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/app.ErrResponse'
-      summary: 鉴权接口
       tags:
       - Auth
 securityDefinitions:
