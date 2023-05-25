@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -77,7 +76,7 @@ func (c *ResourceController) Get(writer http.ResponseWriter, request *http.Reque
 // @Summary 创建资源
 // @Description 创建资源
 // @Tags Resource
-// @Produce json
+// @Produce form-data
 // @Accept json
 // @Security JWT
 // @param CreateResourceRequest body service.CreateResourceRequest true "创建标签"
@@ -86,11 +85,26 @@ func (c *ResourceController) Get(writer http.ResponseWriter, request *http.Reque
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource [post]
 func (c *ResourceController) Create(writer http.ResponseWriter, request *http.Request) {
-	var param service.CreateResourceRequest
-	data, _ := ioutil.ReadAll(request.Body)
-	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
+	file, fileHeader, err := request.FormFile("file")
+	if err != nil {
+		app.ToResponseCode(writer, retcode.RequestIllegal)
 		return
+	}
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		app.ToResponseCode(writer, retcode.RequestIllegal)
+		return
+	}
+	stateValue := request.FormValue("state")
+	state, _ := strconv.Atoi(stateValue)
+	param := service.CreateResourceRequest{
+		Resource: model.Resource{
+			Name:  fileHeader.Filename,
+			Blob:  data,
+			Type:  fileHeader.Header.Get("Content-Type"),
+			Size:  fileHeader.Size,
+			State: uint8(state),
+		},
 	}
 	if err := c.srv.Resources().Create(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.CreateResourceFail)
@@ -112,11 +126,28 @@ func (c *ResourceController) Create(writer http.ResponseWriter, request *http.Re
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource [put]
 func (c *ResourceController) Update(writer http.ResponseWriter, request *http.Request) {
-	var param service.UpdateResourceRequest
-	data, _ := ioutil.ReadAll(request.Body)
-	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
+	file, fileHeader, err := request.FormFile("file")
+	if err != nil {
+		app.ToResponseCode(writer, retcode.RequestIllegal)
 		return
+	}
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		app.ToResponseCode(writer, retcode.RequestIllegal)
+		return
+	}
+	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
+	stateValue := request.FormValue("state")
+	state, _ := strconv.Atoi(stateValue)
+	param := service.UpdateResourceRequest{
+		Resource: model.Resource{
+			ID:    id,
+			Name:  fileHeader.Filename,
+			Blob:  data,
+			Type:  fileHeader.Header.Get("Content-Type"),
+			Size:  fileHeader.Size,
+			State: uint8(state),
+		},
 	}
 	if err := c.srv.Resources().Update(request.Context(), &param); err != nil {
 		app.ToResponseCode(writer, retcode.UpdateResourceFail)

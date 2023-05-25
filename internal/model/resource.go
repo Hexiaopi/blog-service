@@ -5,7 +5,8 @@ import "time"
 type Resource struct {
 	ID         int       `gorm:"primaryKey;autoIncrement;id" json:"id"`
 	Name       string    `gorm:"name" json:"name"`
-	Blob       string    `gorm:"blob" json:"blob"`
+	Blob       []byte    `gorm:"blob" json:"blob"`
+	Base64     string    `gorm:"-" json:"base64"`
 	Type       string    `gorm:"type" json:"type"`
 	Size       int64     `gorm:"size" json:"size"`
 	State      uint8     `gorm:"state" json:"state"`

@@ -46,7 +46,7 @@ func Logger(handler http.Handler) http.Handler {
 			global.Path:       request.URL.Path,
 			global.QueryParam: request.URL.RawQuery,
 			global.Method:     request.Method,
-		}).Infof("receive request body:%s ", string(buf))
+		}).Infof("receive request body:%d ", len(buf))
 
 		//记录返回包
 		wc := &ResponseWithRecorder{

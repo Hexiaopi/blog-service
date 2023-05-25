@@ -20,15 +20,22 @@ export function createResource (data) {
   return request({
     url: '/api/v1/resource',
     method: 'post',
-    data
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 
-export function updateResource (data) {
+export function updateResource (id, data) {
   return request({
     url: '/api/v1/resource',
     method: 'put',
-    data
+    params: { id },
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 

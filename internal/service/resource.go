@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/base64"
 	"log"
 
 	"github.com/hexiaopi/blog-service/internal/model"
@@ -37,6 +38,7 @@ func (svc *ResourceService) Get(ctx context.Context, request *ResourceRequest) (
 	if err != nil {
 		return nil, err
 	}
+	resource.Base64 = "data:image/png;base64," + base64.StdEncoding.EncodeToString(resource.Blob)
 	return resource, nil
 }
 
@@ -48,6 +50,9 @@ func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest
 	resources, err := svc.store.Resources().List(ctx, &param.ListOption)
 	if err != nil {
 		return nil, 0, err
+	}
+	for i := range resources {
+		resources[i].Base64 = "data:image/png;base64," + base64.RawStdEncoding.EncodeToString(resources[i].Blob)
 	}
 	count, err := svc.store.Resources().Count(ctx, &param.ListOption)
 	if err != nil {

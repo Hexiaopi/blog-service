@@ -31,7 +31,7 @@
       </el-table-column>
       <el-table-column label="资源内容" align="center" width="100px">
         <template slot-scope="scope">
-          <el-image :src="scope.row.blob" lazy></el-image>
+          <el-image :src="scope.row.base64" lazy></el-image>
         </template>
       </el-table-column>
       <el-table-column label="资源类型" align="center" min-width="100px">
@@ -78,30 +78,19 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px"
         style="width: 400px; margin-left:50px;">
-        <el-form-item label="资源名称" prop="title">
-          <el-input v-model="temp.name" />
-        </el-form-item>
-        <el-form-item label="资源内容">
-          <el-upload :multiple="false" :on-success="handleImageSuccess" :before-upload="beforeImageUpload"
-            :show-file-list="false" drag action="https://httpbin.org/post">
-            <el-image v-if="temp.blob" :src="temp.blob" tyle="width: 100px; height: 100px"></el-image>
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
-        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="temp.state" class="filter-item" placeholder="请选择">
             <el-option v-for="item in stateOptions" :key="item" :label="item | statusDisplayFilter" :value="item" />
           </el-select>
         </el-form-item>
+        <el-form-item label="资源内容">
+          <el-upload :multiple="false" :on-success="handleImageSuccess" :before-upload="beforeImageUpload"
+            :http-request="submitUpload" :show-file-list="false" drag action="/">
+            <el-image v-if="temp.blob" :src="temp.base64" tyle="width: 100px; height: 100px"></el-image>
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">
-          确认
-        </el-button>
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -147,9 +136,10 @@ export default {
       stateOptions: [0, 1],
       sortOptions: [{ label: 'ID升序', key: '+id' }, { label: 'ID降序', key: '-id' }],
       temp: {
-        id: undefined,
+        id: 0,
         name: '',
         blob: undefined,
+        base64: '',
         type: '',
         size: 0,
         state: 1
@@ -198,9 +188,10 @@ export default {
     },
     resetTemp () {
       this.temp = {
-        id: undefined,
+        id: 0,
         name: '',
         blob: undefined,
+        base64: '',
         type: '',
         size: 0,
         state: 1
@@ -214,46 +205,12 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData () {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          createResource(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
     handleUpdate (row) {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData () {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          updateResource(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
       })
     },
     handleDelete (row, index) {
@@ -274,6 +231,32 @@ export default {
       this.temp.size = file.size;
       this.temp.type = file.type;
       return true
+    },
+    submitUpload (content) {
+      const formData = new FormData()
+      formData.append('file', content.file)
+      formData.append('state', this.temp.state)
+      if (this.temp.id == 0) {
+        createResource(formData).then(() => {
+          this.dialogFormVisible = false
+          this.$notify({
+            title: 'Success',
+            message: '创建成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      } else {
+        updateResource(this.temp.id, formData).then(() => {
+          this.dialogFormVisible = false
+          this.$notify({
+            title: 'Success',
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      }
     }
   }
 }
