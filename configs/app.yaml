@@ -1,7 +1,7 @@
 LogLevel: debug
 ServiceName: blog-service
 ServicePort: 8080
-ContextTimeout: 5s
+ContextTimeout: 10s
 DefaultPageSize: 10
 MaxPageSize: 10
 DataBase:

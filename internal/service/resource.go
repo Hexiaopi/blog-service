@@ -53,6 +53,7 @@ func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest
 	}
 	for i := range resources {
 		resources[i].Base64 = "data:image/png;base64," + base64.RawStdEncoding.EncodeToString(resources[i].Blob)
+		resources[i].Blob = nil
 	}
 	count, err := svc.store.Resources().Count(ctx, &param.ListOption)
 	if err != nil {
