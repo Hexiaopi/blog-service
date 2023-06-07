@@ -36,6 +36,10 @@ func (ds *datastore) Resources() store.ResourceStore {
 	return NewResourceDao(ds.db)
 }
 
+func (ds *datastore) Operations() store.OperationStore {
+	return NewOperationDao(ds.db)
+}
+
 func (ds *datastore) Close() error {
 	db, err := ds.db.DB()
 	if err != nil {

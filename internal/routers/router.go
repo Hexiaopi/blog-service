@@ -52,6 +52,7 @@ func NewRouter() http.Handler {
 
 	apiV1 := apiRouter.PathPrefix("/v1").Subrouter()
 	apiV1.Use(middleware.JWT)
+	apiV1.Use(middleware.NewOperation(storeIns).RecordOperation)
 	{
 		apiV1.HandleFunc("/user", loginController.Info).Methods(http.MethodGet)
 		articleController := v1.NewArticleController(storeIns, cacheIns)
@@ -71,7 +72,11 @@ func NewRouter() http.Handler {
 		apiV1.HandleFunc("/resource", resourceController.Get).Methods(http.MethodGet)
 		apiV1.HandleFunc("/resource", resourceController.Update).Methods(http.MethodPut)
 		apiV1.HandleFunc("/resource", resourceController.Delete).Methods(http.MethodDelete)
-
+		operationController := v1.NewOperationController(storeIns)
+		apiV1.HandleFunc("/operations", operationController.List).Methods(http.MethodGet)
+		apiV1.HandleFunc("/operation", operationController.Create).Methods(http.MethodPost)
+		apiV1.HandleFunc("/operation", operationController.Update).Methods(http.MethodPut)
+		apiV1.HandleFunc("/operation", operationController.Delete).Methods(http.MethodDelete)
 	}
 	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/dist"))))
 

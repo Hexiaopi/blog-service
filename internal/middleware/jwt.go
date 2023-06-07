@@ -27,7 +27,7 @@ func JWT(handler http.Handler) http.Handler {
 		if err != nil {
 			switch err.(*jwt.ValidationError).Errors {
 			case jwt.ValidationErrorExpired:
-				app.ToResponseCode(writer, retcode.RequestTokenAuthTimeout)
+				app.ToResponseCode(writer, retcode.RequestTokenAuthExpire)
 				return
 			default:
 				app.ToResponseCode(writer, retcode.RequestTokenAuthFail)
@@ -35,6 +35,7 @@ func JWT(handler http.Handler) http.Handler {
 			}
 		}
 		ctx := context.WithValue(request.Context(), "name", claims.UserName)
+		ctx = context.WithValue(ctx, "userid", claims.UserId)
 		request = request.WithContext(ctx)
 		handler.ServeHTTP(writer, request)
 	})

@@ -10,6 +10,7 @@ type Factory interface {
 	Users() UserStore
 	Systems() SystemConfigStore
 	Resources() ResourceStore
+	Operations() OperationStore
 	Close() error
 }
 

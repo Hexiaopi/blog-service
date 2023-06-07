@@ -26,6 +26,7 @@ func NewUserService(factory store.Factory) *UserService {
 }
 
 type AuthRequest struct {
+	UserId   int    `json:"user_id"`
 	UserName string `json:"username"`
 	PassWord string `json:"password"`
 	Captcha  string `json:"captcha"`
@@ -40,6 +41,7 @@ func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error
 	if user == nil {
 		return errors.New("user not exists")
 	}
+	param.UserId = user.ID
 	if err := user.Compare(param.PassWord); err != nil {
 		return err
 	}

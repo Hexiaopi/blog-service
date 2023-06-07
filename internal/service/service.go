@@ -11,6 +11,7 @@ type Service interface {
 	Users() UserSrv
 	Systems() SystemSrv
 	Resources() ResourceSrv
+	Operations() OperationSrv
 }
 
 type service struct {
@@ -36,6 +37,10 @@ func (s *service) Systems() SystemSrv {
 
 func (s *service) Resources() ResourceSrv {
 	return NewResourceService(s.store)
+}
+
+func (s *service) Operations() OperationSrv {
+	return NewOperationService(s.store)
 }
 
 func NewService(store store.Factory, cache cache.Factory) Service {

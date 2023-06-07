@@ -80,7 +80,7 @@ func (c *LoginController) Login(writer http.ResponseWriter, request *http.Reques
 		}
 	}
 
-	token, err := app.GenerateToken(param.UserName, param.PassWord)
+	token, err := app.GenerateToken(param.UserId, param.UserName, param.PassWord)
 	if err != nil {
 		app.ToResponseCode(writer, retcode.GenerateAuthTokenFail)
 	}

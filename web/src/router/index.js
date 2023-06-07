@@ -113,6 +113,20 @@ export const constantRoutes = [
   },
 
   {
+    path: '/operation',
+    component: Layout,
+    redirect: '/operation/list',
+    meta: { title: '操作日志', icon: 'el-icon-edit' },
+    children: [
+      {
+        path: 'list',
+        name: 'Operation',
+        component: () => import('@/views/operation/list'),
+        meta: { title: '操作日志列表', icon: 'el-icon-edit' }
+      }
+    ]
+  },
+  {
     path: '/plan',
     component: Layout,
     redirect: '/plan/kanban',
