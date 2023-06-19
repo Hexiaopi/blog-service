@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"net/http"
 	"runtime/debug"
 
+	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/app"
@@ -11,16 +11,16 @@ import (
 )
 
 // Recovery 捕获异常，统一返回错误码
-func Recovery(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+func Recovery() gin.HandlerFunc {
+	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
 				log.Printf("panic error %v", err)
 				log.Printf(string(debug.Stack()))
-				app.ToResponseCode(writer, retcode.UnknownError)
-				return
+				app.ToResponseCode(c.Writer, retcode.UnknownError)
+				c.Abort()
 			}
 		}()
-		handler.ServeHTTP(writer, request)
-	})
+		c.Next()
+	}
 }

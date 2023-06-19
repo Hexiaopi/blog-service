@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -34,23 +35,23 @@ func init() {
 	}, []string{"path", "method"})
 }
 
-func Metrics(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		path := request.URL.Path
-		method := request.Method
+func Metrics() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		path := c.Request.URL.Path
+		method := c.Request.Method
 		start := time.Now()
 		HttpRequestConcurrency.WithLabelValues(path, method).Inc()
 		defer func() {
 			HttpRequestConcurrency.WithLabelValues(path, method).Dec()
 		}()
 		wc := &ResponseWithRecorder{
-			ResponseWriter: writer,
+			ResponseWriter: c.Writer,
 			statusCode:     http.StatusOK,
 			body:           bytes.Buffer{},
 		}
-		next.ServeHTTP(wc, request)
+		c.Next()
 		duration := time.Since(start)
 		HttpRequestLatency.WithLabelValues(path, method).Observe(duration.Seconds())
 		HttpRequestCounter.WithLabelValues(path, method, strconv.Itoa(wc.statusCode))
-	})
+	}
 }

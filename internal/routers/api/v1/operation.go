@@ -3,9 +3,9 @@ package v1
 import (
 	"encoding/json"
 	"io/ioutil"
-	"net/http"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
@@ -36,8 +36,8 @@ func NewOperationController(store store.Factory) *OperationController {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/operation [get]
-func (c *OperationController) List(writer http.ResponseWriter, request *http.Request) {
-	values := request.URL.Query()
+func (c *OperationController) List(ctx *gin.Context) {
+	values := ctx.Request.URL.Query()
 	object := values.Get("object")
 	action := values.Get("action")
 	userId, _ := strconv.Atoi(values.Get("user_id"))
@@ -45,12 +45,12 @@ func (c *OperationController) List(writer http.ResponseWriter, request *http.Req
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
 	param := service.OperationListRequest{ListOption: model.ListOption{UserId: userId, Object: object, Action: action, Limit: limit, Page: page, Sort: sort}}
-	logs, total, err := c.srv.Operations().List(request.Context(), &param)
+	logs, total, err := c.srv.Operations().List(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(writer, retcode.GetOperationsFail)
+		app.ToResponseCode(ctx.Writer, retcode.GetOperationsFail)
 		return
 	}
-	app.ToResponseList(writer, total, logs)
+	app.ToResponseList(ctx.Writer, total, logs)
 }
 
 // @Summary 创建操作日志
@@ -64,18 +64,18 @@ func (c *OperationController) List(writer http.ResponseWriter, request *http.Req
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/operation [post]
-func (c *OperationController) Create(writer http.ResponseWriter, request *http.Request) {
+func (c *OperationController) Create(ctx *gin.Context) {
 	var param service.CreateOperationRequest
-	data, _ := ioutil.ReadAll(request.Body)
+	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
+		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return
 	}
-	if err := c.srv.Operations().Create(request.Context(), &param); err != nil {
-		app.ToResponseCode(writer, retcode.CreateOperationFail)
+	if err := c.srv.Operations().Create(ctx.Request.Context(), &param); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.CreateOperationFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }
 
 // @Summary 修改操作日志
@@ -90,18 +90,18 @@ func (c *OperationController) Create(writer http.ResponseWriter, request *http.R
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/operation [put]
-func (c *OperationController) Update(writer http.ResponseWriter, request *http.Request) {
+func (c *OperationController) Update(ctx *gin.Context) {
 	var param service.UpdateOperationRequest
-	data, _ := ioutil.ReadAll(request.Body)
+	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
+		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return
 	}
-	if err := c.srv.Operations().Update(request.Context(), &param); err != nil {
-		app.ToResponseCode(writer, retcode.UpdateOperationFail)
+	if err := c.srv.Operations().Update(ctx.Request.Context(), &param); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.UpdateOperationFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }
 
 // @Summary 删除操作日志
@@ -114,12 +114,12 @@ func (c *OperationController) Update(writer http.ResponseWriter, request *http.R
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/operation [delete]
-func (c *OperationController) Delete(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
+func (c *OperationController) Delete(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
 	param := service.DeleteOperationRequest{OneOption: model.OneOption{Id: id}}
-	if err := c.srv.Operations().Delete(request.Context(), &param); err != nil {
-		app.ToResponseCode(writer, retcode.DeleteOperationFail)
+	if err := c.srv.Operations().Delete(ctx.Request.Context(), &param); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.DeleteOperationFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }

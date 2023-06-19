@@ -3,10 +3,9 @@ package v1
 import (
 	"encoding/json"
 	"io/ioutil"
-	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/cache"
@@ -39,20 +38,20 @@ func NewArticleController(store store.Factory, cache cache.Factory) *ArticleCont
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles [get]
-func (c *ArticleController) List(writer http.ResponseWriter, request *http.Request) {
-	values := request.URL.Query()
+func (c *ArticleController) List(ctx *gin.Context) {
+	values := ctx.Request.URL.Query()
 	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
 	param := service.ArticleListRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
-	article, count, err := c.srv.Articles().List(request.Context(), &param)
+	article, count, err := c.srv.Articles().List(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(writer, retcode.GetArticlesFail)
+		app.ToResponseCode(ctx.Writer, retcode.GetArticlesFail)
 		return
 	}
-	app.ToResponseList(writer, count, article)
+	app.ToResponseList(ctx.Writer, count, article)
 }
 
 // @Summary 创建文章
@@ -66,18 +65,18 @@ func (c *ArticleController) List(writer http.ResponseWriter, request *http.Reque
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles [post]
-func (c *ArticleController) Create(writer http.ResponseWriter, request *http.Request) {
+func (c *ArticleController) Create(ctx *gin.Context) {
 	var param service.CreateArticleRequest
-	data, _ := ioutil.ReadAll(request.Body)
+	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
+		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return
 	}
-	if err := c.srv.Articles().Create(request.Context(), &param); err != nil {
-		app.ToResponseCode(writer, retcode.CreateArticleFail)
+	if err := c.srv.Articles().Create(ctx.Request.Context(), &param); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.CreateArticleFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }
 
 // @Summary 获取单个文章
@@ -91,15 +90,15 @@ func (c *ArticleController) Create(writer http.ResponseWriter, request *http.Req
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/article/{id} [get]
-func (c *ArticleController) Get(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
+func (c *ArticleController) Get(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
 	param := service.ArticleRequest{OneOption: model.OneOption{Id: id}}
-	article, err := c.srv.Articles().Get(request.Context(), &param)
+	article, err := c.srv.Articles().Get(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(writer, retcode.GetArticleFail)
+		app.ToResponseCode(ctx.Writer, retcode.GetArticleFail)
 		return
 	}
-	app.ToResponseData(writer, article)
+	app.ToResponseData(ctx.Writer, article)
 }
 
 // @Summary 修改文章
@@ -114,18 +113,18 @@ func (c *ArticleController) Get(writer http.ResponseWriter, request *http.Reques
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles/{id} [put]
-func (c *ArticleController) Update(writer http.ResponseWriter, request *http.Request) {
+func (c *ArticleController) Update(ctx *gin.Context) {
 	var param service.UpdateArticleRequest
-	data, _ := ioutil.ReadAll(request.Body)
+	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(writer, retcode.RequestUnMarshalError)
+		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return
 	}
-	if err := c.srv.Articles().Update(request.Context(), &param); err != nil {
-		app.ToResponseCode(writer, retcode.UpdateArticleFail)
+	if err := c.srv.Articles().Update(ctx.Request.Context(), &param); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.UpdateArticleFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }
 
 // @Summary 删除文章
@@ -138,11 +137,11 @@ func (c *ArticleController) Update(writer http.ResponseWriter, request *http.Req
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/articles/{id} [delete]
-func (c *ArticleController) Delete(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(mux.Vars(request)["id"])
-	if err := c.srv.Articles().Delete(request.Context(), id); err != nil {
-		app.ToResponseCode(writer, retcode.DeleteArticleFail)
+func (c *ArticleController) Delete(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Param("id"))
+	if err := c.srv.Articles().Delete(ctx.Request.Context(), id); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.DeleteArticleFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }

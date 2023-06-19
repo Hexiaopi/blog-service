@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/global"
@@ -32,38 +33,38 @@ func (rec *ResponseWithRecorder) Write(d []byte) (n int, err error) {
 }
 
 // Logger 日志记录
-func Logger(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+func Logger() gin.HandlerFunc {
+	return func(c *gin.Context) {
 		start := time.Now()
 
 		//记录请求包
-		buf, _ := ioutil.ReadAll(request.Body)
+		buf, _ := ioutil.ReadAll(c.Request.Body)
 		rdr := ioutil.NopCloser(bytes.NewBuffer(buf))
-		request.Body = rdr //rewrite
+		c.Request.Body = rdr //rewrite
 
 		log.WithFields(log.Fields{
-			XRequestIDKey:     request.Context().Value(XRequestIDKey),
-			global.Path:       request.URL.Path,
-			global.QueryParam: request.URL.RawQuery,
-			global.Method:     request.Method,
+			XRequestIDKey:     c.GetString(XRequestIDKey),
+			global.Path:       c.Request.URL.Path,
+			global.QueryParam: c.Request.URL.RawQuery,
+			global.Method:     c.Request.Method,
 		}).Infof("receive request body:%d ", len(buf))
 
 		//记录返回包
 		wc := &ResponseWithRecorder{
-			ResponseWriter: writer,
+			ResponseWriter: c.Writer,
 			statusCode:     http.StatusOK,
 			body:           bytes.Buffer{},
 		}
 
-		handler.ServeHTTP(wc, request)
+		c.Next()
 
 		defer func() { //日志记录扫尾工作
 			log.WithFields(log.Fields{
-				XRequestIDKey: request.Context().Value(XRequestIDKey),
-				global.Path:   request.URL.Path,
+				XRequestIDKey: c.GetString(XRequestIDKey),
+				global.Path:   c.Request.URL.Path,
 				global.Status: wc.statusCode,
 				global.ResPkg: wc.body.String(),
 			}).Infof("done use time:%s", time.Since(start).String())
 		}()
-	})
+	}
 }

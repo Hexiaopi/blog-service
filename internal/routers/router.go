@@ -4,10 +4,11 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
-	httpSwagger "github.com/swaggo/http-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "github.com/hexiaopi/blog-service/docs"
 	cache "github.com/hexiaopi/blog-service/internal/cache/redis"
@@ -19,69 +20,69 @@ import (
 	dao "github.com/hexiaopi/blog-service/internal/store/mysql"
 )
 
-func NewRouter() http.Handler {
+func NewRouter() *gin.Engine {
 	storeIns := dao.NewDao(config.DBEngine)
 	cacheIns := cache.NewCache(config.RedisEngine)
 
-	router := mux.NewRouter()
+	router := gin.New()
 	// swagger
-	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// profiling
-	router.PathPrefix("/debug/pprof").Handler(http.DefaultServeMux)
+	router.GET("/debug/pprof/*any", gin.WrapH(http.DefaultServeMux))
 	// metrics
-	router.Handle("/metrics", promhttp.Handler()).Methods("GET")
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+	router.StaticFS("/static", http.Dir("./web/dist"))
 	//router.Use(middleware.Logger)
-	router.Use(middleware.Recovery)
+	router.Use(middleware.Recovery())
 
 	loginController := sys.NewLoginController(storeIns)
 	systemController := sys.NewSystemController(storeIns)
 	captchaController := sys.NewCaptchaController()
 
-	apiRouter := router.PathPrefix("/api").Subrouter()
-	apiRouter.Use(middleware.RequestId)
-	apiRouter.Use(middleware.Logger)
-	apiRouter.Use(middleware.Metrics)
-	apiRouter.Use(middleware.Timeout)
-	apiRouter.Use(middleware.Tracer)
+	apiRouter := router.Group("/api")
+	apiRouter.Use(middleware.RequestId())
+	apiRouter.Use(middleware.Logger())
+	apiRouter.Use(middleware.Metrics())
+	apiRouter.Use(middleware.Timeout())
+	apiRouter.Use(middleware.Tracer())
 
-	sysRouter := apiRouter.PathPrefix("/sys").Subrouter()
-	sysRouter.HandleFunc("/config", systemController.Get).Methods(http.MethodGet)
-	sysRouter.HandleFunc("/captcha", captchaController.Get).Methods(http.MethodGet)
-	sysRouter.HandleFunc("/login", loginController.Login).Methods(http.MethodPost)
-	sysRouter.HandleFunc("/logout", loginController.Logout).Methods(http.MethodPost)
+	sysRouter := apiRouter.Group("/sys")
+	sysRouter.GET("/config", systemController.Get)
+	sysRouter.GET("/captcha", captchaController.Get)
+	sysRouter.POST("/login", loginController.Login)
+	sysRouter.POST("/logout", loginController.Logout)
 
-	apiV1 := apiRouter.PathPrefix("/v1").Subrouter()
-	apiV1.Use(middleware.JWT)
-	apiV1.Use(middleware.NewOperation(storeIns).RecordOperation)
+	apiV1 := apiRouter.Group("/v1")
+	apiV1.Use(middleware.JWT())
+	apiV1.Use(middleware.NewOperation(storeIns).RecordOperation())
 	{
-		apiV1.HandleFunc("/user", loginController.Info).Methods(http.MethodGet)
+		apiV1.GET("/user", loginController.Info)
 		articleController := v1.NewArticleController(storeIns, cacheIns)
-		apiV1.HandleFunc("/articles", articleController.List).Methods(http.MethodGet)
-		apiV1.HandleFunc("/article", articleController.Create).Methods(http.MethodPost)
-		apiV1.HandleFunc("/article", articleController.Get).Methods(http.MethodGet)
-		apiV1.HandleFunc("/article", articleController.Update).Methods(http.MethodPut)
-		apiV1.HandleFunc("/article", articleController.Delete).Methods(http.MethodDelete)
+		apiV1.GET("/articles", articleController.List)
+		apiV1.POST("/article", articleController.Create)
+		apiV1.GET("/article", articleController.Get)
+		apiV1.PUT("/article", articleController.Update)
+		apiV1.DELETE("/article", articleController.Delete)
 		tagController := v1.NewTagController(storeIns)
-		apiV1.HandleFunc("/tags", tagController.List).Methods(http.MethodGet)
-		apiV1.HandleFunc("/tag", tagController.Create).Methods(http.MethodPost)
-		apiV1.HandleFunc("/tag", tagController.Update).Methods(http.MethodPut)
-		apiV1.HandleFunc("/tag", tagController.Delete).Methods(http.MethodDelete)
+		apiV1.GET("/tags", tagController.List)
+		apiV1.POST("/tag", tagController.Create)
+		apiV1.PUT("/tag", tagController.Update)
+		apiV1.DELETE("/tag", tagController.Delete)
 		resourceController := v1.NewResourceController(storeIns)
-		apiV1.HandleFunc("/resources", resourceController.List).Methods(http.MethodGet)
-		apiV1.HandleFunc("/resource", resourceController.Create).Methods(http.MethodPost)
-		apiV1.HandleFunc("/resource", resourceController.Get).Methods(http.MethodGet)
-		apiV1.HandleFunc("/resource", resourceController.Update).Methods(http.MethodPut)
-		apiV1.HandleFunc("/resource", resourceController.Delete).Methods(http.MethodDelete)
+		apiV1.GET("/resources", resourceController.List)
+		apiV1.POST("/resource", resourceController.Create)
+		apiV1.GET("/resource", resourceController.Get)
+		apiV1.PUT("/resource", resourceController.Update)
+		apiV1.DELETE("/resource", resourceController.Delete)
 		operationController := v1.NewOperationController(storeIns)
-		apiV1.HandleFunc("/operations", operationController.List).Methods(http.MethodGet)
-		apiV1.HandleFunc("/operation", operationController.Create).Methods(http.MethodPost)
-		apiV1.HandleFunc("/operation", operationController.Update).Methods(http.MethodPut)
-		apiV1.HandleFunc("/operation", operationController.Delete).Methods(http.MethodDelete)
+		apiV1.GET("/operations", operationController.List)
+		apiV1.POST("/operation", operationController.Create)
+		apiV1.PUT("/operation", operationController.Update)
+		apiV1.DELETE("/operation", operationController.Delete)
 	}
-	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/dist"))))
 
-	router.NotFoundHandler = pathNotFound{}
-	router.MethodNotAllowedHandler = methodNotAllow{}
+	//router.NotFoundHandler = pathNotFound{}
+	//router.MethodNotAllowedHandler = methodNotAllow{}
 	return router
 }
 

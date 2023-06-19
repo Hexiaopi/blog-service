@@ -2,9 +2,9 @@ package v1
 
 import (
 	"io/ioutil"
-	"net/http"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
@@ -35,20 +35,20 @@ func NewResourceController(store store.Factory) *ResourceController {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resources [get]
-func (c *ResourceController) List(writer http.ResponseWriter, request *http.Request) {
-	values := request.URL.Query()
+func (c *ResourceController) List(ctx *gin.Context) {
+	values := ctx.Request.URL.Query()
 	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
 	param := service.ResourceListRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
-	resources, total, err := c.srv.Resources().List(request.Context(), &param)
+	resources, total, err := c.srv.Resources().List(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(writer, retcode.GetResourcesFail)
+		app.ToResponseCode(ctx.Writer, retcode.GetResourcesFail)
 		return
 	}
-	app.ToResponseList(writer, total, resources)
+	app.ToResponseList(ctx.Writer, total, resources)
 }
 
 // @Summary 获取单个资源
@@ -62,15 +62,15 @@ func (c *ResourceController) List(writer http.ResponseWriter, request *http.Requ
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource/{id} [get]
-func (c *ResourceController) Get(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
+func (c *ResourceController) Get(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
 	param := service.ResourceRequest{OneOption: model.OneOption{Id: id}}
-	resource, err := c.srv.Resources().Get(request.Context(), &param)
+	resource, err := c.srv.Resources().Get(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(writer, retcode.GetResourceFail)
+		app.ToResponseCode(ctx.Writer, retcode.GetResourceFail)
 		return
 	}
-	app.ToResponseData(writer, resource)
+	app.ToResponseData(ctx.Writer, resource)
 }
 
 // @Summary 创建资源
@@ -84,18 +84,18 @@ func (c *ResourceController) Get(writer http.ResponseWriter, request *http.Reque
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource [post]
-func (c *ResourceController) Create(writer http.ResponseWriter, request *http.Request) {
-	file, fileHeader, err := request.FormFile("file")
+func (c *ResourceController) Create(ctx *gin.Context) {
+	file, fileHeader, err := ctx.Request.FormFile("file")
 	if err != nil {
-		app.ToResponseCode(writer, retcode.RequestIllegal)
+		app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
 		return
 	}
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		app.ToResponseCode(writer, retcode.RequestIllegal)
+		app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
 		return
 	}
-	stateValue := request.FormValue("state")
+	stateValue := ctx.Request.FormValue("state")
 	state, _ := strconv.Atoi(stateValue)
 	param := service.CreateResourceRequest{
 		Resource: model.Resource{
@@ -106,11 +106,11 @@ func (c *ResourceController) Create(writer http.ResponseWriter, request *http.Re
 			State: uint8(state),
 		},
 	}
-	if err := c.srv.Resources().Create(request.Context(), &param); err != nil {
-		app.ToResponseCode(writer, retcode.CreateResourceFail)
+	if err := c.srv.Resources().Create(ctx.Request.Context(), &param); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.CreateResourceFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }
 
 // @Summary 修改资源
@@ -125,19 +125,19 @@ func (c *ResourceController) Create(writer http.ResponseWriter, request *http.Re
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource [put]
-func (c *ResourceController) Update(writer http.ResponseWriter, request *http.Request) {
-	file, fileHeader, err := request.FormFile("file")
+func (c *ResourceController) Update(ctx *gin.Context) {
+	file, fileHeader, err := ctx.Request.FormFile("file")
 	if err != nil {
-		app.ToResponseCode(writer, retcode.RequestIllegal)
+		app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
 		return
 	}
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		app.ToResponseCode(writer, retcode.RequestIllegal)
+		app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
 		return
 	}
-	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
-	stateValue := request.FormValue("state")
+	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
+	stateValue := ctx.Request.FormValue("state")
 	state, _ := strconv.Atoi(stateValue)
 	param := service.UpdateResourceRequest{
 		Resource: model.Resource{
@@ -149,11 +149,11 @@ func (c *ResourceController) Update(writer http.ResponseWriter, request *http.Re
 			State: uint8(state),
 		},
 	}
-	if err := c.srv.Resources().Update(request.Context(), &param); err != nil {
-		app.ToResponseCode(writer, retcode.UpdateResourceFail)
+	if err := c.srv.Resources().Update(ctx.Request.Context(), &param); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.UpdateResourceFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }
 
 // @Summary 删除资源
@@ -166,11 +166,11 @@ func (c *ResourceController) Update(writer http.ResponseWriter, request *http.Re
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource [delete]
-func (c *ResourceController) Delete(writer http.ResponseWriter, request *http.Request) {
-	id, _ := strconv.Atoi(request.URL.Query().Get("id"))
-	if err := c.srv.Resources().Delete(request.Context(), id); err != nil {
-		app.ToResponseCode(writer, retcode.DeleteResourceFail)
+func (c *ResourceController) Delete(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
+	if err := c.srv.Resources().Delete(ctx.Request.Context(), id); err != nil {
+		app.ToResponseCode(ctx.Writer, retcode.DeleteResourceFail)
 		return
 	}
-	app.ToResponseData(writer, nil)
+	app.ToResponseData(ctx.Writer, nil)
 }

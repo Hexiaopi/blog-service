@@ -1,42 +1,41 @@
 package middleware
 
 import (
-	"context"
-	"net/http"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 )
 
 // JWT 身份验证
-func JWT(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		auth := request.Header.Get("Authorization")
+func JWT() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		auth := c.Request.Header.Get("Authorization")
 		if auth == "" {
-			app.ToResponseCode(writer, retcode.RequestTokenEmpty)
-			return
+			app.ToResponseCode(c.Writer, retcode.RequestTokenEmpty)
+			c.Abort()
 		}
 		token := strings.Split(auth, " ")
 		if len(token) != 2 || token[0] != "bearer" {
-			app.ToResponseCode(writer, retcode.RequestTokenEmpty)
-			return
+			app.ToResponseCode(c.Writer, retcode.RequestTokenEmpty)
+			c.Abort()
 		}
 		claims, err := app.ParseToken(token[1])
 		if err != nil {
 			switch err.(*jwt.ValidationError).Errors {
 			case jwt.ValidationErrorExpired:
-				app.ToResponseCode(writer, retcode.RequestTokenAuthExpire)
-				return
+				app.ToResponseCode(c.Writer, retcode.RequestTokenAuthExpire)
+				c.Abort()
 			default:
-				app.ToResponseCode(writer, retcode.RequestTokenAuthFail)
-				return
+				app.ToResponseCode(c.Writer, retcode.RequestTokenAuthFail)
+				c.Abort()
 			}
 		}
-		ctx := context.WithValue(request.Context(), "name", claims.UserName)
-		ctx = context.WithValue(ctx, "userid", claims.UserId)
-		request = request.WithContext(ctx)
-		handler.ServeHTTP(writer, request)
-	})
+		c.Set("username", claims.UserName)
+		c.Set("userid", claims.UserId)
+		c.Next()
+	}
 }

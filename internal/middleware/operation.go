@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -24,22 +24,22 @@ func NewOperation(store store.Factory) *Operation {
 }
 
 // Logger 日志记录
-func (op *Operation) RecordOperation(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if request.Method != http.MethodGet {
-			path := request.URL.Path
+func (op *Operation) RecordOperation() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.Method != http.MethodGet {
+			path := c.Request.URL.Path
 			object := strings.TrimPrefix(path, "/api/v1/")
 
-			handler.ServeHTTP(writer, request)
+			c.Next()
 
 			go func() {
 				operation := service.CreateOperationRequest{
 					SystemOperationLog: model.SystemOperationLog{
-						UserId:    request.Context().Value("userid").(int),
-						UserAgent: request.UserAgent(),
-						IP:        app.GetRemoteIp(request),
+						UserId:    c.GetInt("userid"),
+						UserAgent: c.Request.UserAgent(),
+						IP:        c.RemoteIP(),
 						Object:    strings.Split(object, "/")[0],
-						Action:    request.Method,
+						Action:    c.Request.Method,
 						Result:    "",
 					},
 				}
@@ -48,7 +48,7 @@ func (op *Operation) RecordOperation(handler http.Handler) http.Handler {
 				}
 			}()
 		} else {
-			handler.ServeHTTP(writer, request)
+			c.Next()
 		}
-	})
+	}
 }
