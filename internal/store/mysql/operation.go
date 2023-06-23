@@ -62,6 +62,7 @@ func (dao *OperationDao) List(ctx context.Context, opt *model.ListOption) ([]mod
 		query = query.Order(opt.GetSortType())
 	}
 	if err := query.Model(&model.SystemOperationLog{}).
+		Preload("User").
 		Find(&logs).
 		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

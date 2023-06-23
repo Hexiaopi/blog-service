@@ -122,7 +122,7 @@ export const constantRoutes = [
         path: 'list',
         name: 'Operation',
         component: () => import('@/views/operation/list'),
-        meta: { title: '操作日志列表', icon: 'el-icon-edit' }
+        meta: { title: '操作日志', icon: 'el-icon-edit' }
       }
     ]
   },

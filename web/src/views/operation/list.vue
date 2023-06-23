@@ -23,9 +23,9 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户ID" align="center" width="100px">
+      <el-table-column label="用户" align="center" width="100px">
         <template slot-scope="scope">
-          {{ scope.row.user_id }}
+          {{ scope.row.user.name }}
         </template>
       </el-table-column>
       <el-table-column label="用户代理" align="center" min-width="100px">
