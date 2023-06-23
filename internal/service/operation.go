@@ -37,7 +37,7 @@ func (svc *OperationService) List(ctx context.Context, param *OperationListReque
 		log.Println(err)
 		return nil, 0, err
 	}
-	total, err := svc.store.Tags().Count(ctx, &param.ListOption)
+	total, err := svc.store.Operations().Count(ctx, &param.ListOption)
 	if err != nil {
 		log.Println(err)
 		return nil, 0, err

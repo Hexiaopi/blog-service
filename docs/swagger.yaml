@@ -51,6 +51,8 @@ definitions:
     type: object
   model.Resource:
     properties:
+      base64:
+        type: string
       blob:
         items:
           type: integer
@@ -71,6 +73,25 @@ definitions:
         type: string
       update_time:
         type: string
+    type: object
+  model.SystemOperationLog:
+    properties:
+      action:
+        type: string
+      create_time:
+        type: string
+      id:
+        type: integer
+      ip:
+        type: string
+      object:
+        type: string
+      result:
+        type: string
+      user_agent:
+        type: string
+      user_id:
+        type: integer
     type: object
   model.Tag:
     properties:
@@ -115,28 +136,24 @@ definitions:
       update_time:
         type: string
     type: object
-  service.CreateResourceRequest:
+  service.CreateOperationRequest:
     properties:
-      blob:
-        items:
-          type: integer
-        type: array
+      action:
+        type: string
       create_time:
         type: string
       id:
         type: integer
-      name:
+      ip:
         type: string
-      operator:
+      object:
         type: string
-      size:
+      result:
+        type: string
+      user_agent:
+        type: string
+      user_id:
         type: integer
-      state:
-        type: integer
-      type:
-        type: string
-      update_time:
-        type: string
     type: object
   service.CreateTagRequest:
     properties:
@@ -181,8 +198,29 @@ definitions:
       update_time:
         type: string
     type: object
+  service.UpdateOperationRequest:
+    properties:
+      action:
+        type: string
+      create_time:
+        type: string
+      id:
+        type: integer
+      ip:
+        type: string
+      object:
+        type: string
+      result:
+        type: string
+      user_agent:
+        type: string
+      user_id:
+        type: integer
+    type: object
   service.UpdateResourceRequest:
     properties:
+      base64:
+        type: string
       blob:
         items:
           type: integer
@@ -528,6 +566,148 @@ paths:
       summary: 修改文章
       tags:
       - Article
+  /api/v1/operation:
+    delete:
+      description: 删除操作日志
+      parameters:
+      - description: 操作日志ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 删除操作日志
+      tags:
+      - Operation
+    get:
+      description: 获取多个操作日志
+      parameters:
+      - description: 用户
+        in: query
+        name: user
+        type: string
+      - description: 对象
+        in: query
+        name: object
+        type: integer
+      - description: 页码
+        in: query
+        name: page_num
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.SystemOperationLog'
+                  type: array
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 获取多个操作日志
+      tags:
+      - Operation
+    post:
+      consumes:
+      - application/json
+      description: 创建操作日志
+      parameters:
+      - description: 创建标签
+        in: body
+        name: CreateOperationRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateOperationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 创建操作日志
+      tags:
+      - Operation
+    put:
+      consumes:
+      - application/json
+      description: 修改操作日志
+      parameters:
+      - description: 操作日志ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改文章
+        in: body
+        name: UpdateOperationRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdateOperationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 修改操作日志
+      tags:
+      - Operation
   /api/v1/resource:
     delete:
       description: 删除资源
@@ -559,15 +739,14 @@ paths:
       - Resource
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: 创建资源
       parameters:
-      - description: 创建标签
-        in: body
-        name: CreateResourceRequest
+      - description: file
+        in: formData
+        name: file
         required: true
-        schema:
-          $ref: '#/definitions/service.CreateResourceRequest'
+        type: file
       produces:
       - application/json
       responses:

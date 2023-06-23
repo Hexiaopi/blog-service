@@ -478,6 +478,233 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/operation": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取多个操作日志",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Operation"
+                ],
+                "summary": "获取多个操作日志",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户",
+                        "name": "user",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "对象",
+                        "name": "object",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_num",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.SystemOperationLog"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "修改操作日志",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Operation"
+                ],
+                "summary": "修改操作日志",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "操作日志ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "修改文章",
+                        "name": "UpdateOperationRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.UpdateOperationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "创建操作日志",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Operation"
+                ],
+                "summary": "创建操作日志",
+                "parameters": [
+                    {
+                        "description": "创建标签",
+                        "name": "CreateOperationRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.CreateOperationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除操作日志",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Operation"
+                ],
+                "summary": "删除操作日志",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "操作日志ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/app.CommResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/app.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/resource": {
             "put": {
                 "security": [
@@ -543,7 +770,7 @@ var doc = `{
                 ],
                 "description": "创建资源",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -554,13 +781,11 @@ var doc = `{
                 "summary": "创建资源",
                 "parameters": [
                     {
-                        "description": "创建标签",
-                        "name": "CreateResourceRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/service.CreateResourceRequest"
-                        }
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1127,6 +1352,9 @@ var doc = `{
         "model.Resource": {
             "type": "object",
             "properties": {
+                "base64": {
+                    "type": "string"
+                },
                 "blob": {
                     "type": "array",
                     "items": {
@@ -1156,6 +1384,35 @@ var doc = `{
                 },
                 "update_time": {
                     "type": "string"
+                }
+            }
+        },
+        "model.SystemOperationLog": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "object": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "user_agent": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -1224,14 +1481,11 @@ var doc = `{
                 }
             }
         },
-        "service.CreateResourceRequest": {
+        "service.CreateOperationRequest": {
             "type": "object",
             "properties": {
-                "blob": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                "action": {
+                    "type": "string"
                 },
                 "create_time": {
                     "type": "string"
@@ -1239,23 +1493,20 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "ip": {
                     "type": "string"
                 },
-                "operator": {
+                "object": {
                     "type": "string"
                 },
-                "size": {
+                "result": {
+                    "type": "string"
+                },
+                "user_agent": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "integer"
-                },
-                "state": {
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "update_time": {
-                    "type": "string"
                 }
             }
         },
@@ -1324,9 +1575,41 @@ var doc = `{
                 }
             }
         },
+        "service.UpdateOperationRequest": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "object": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "user_agent": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "service.UpdateResourceRequest": {
             "type": "object",
             "properties": {
+                "base64": {
+                    "type": "string"
+                },
                 "blob": {
                     "type": "array",
                     "items": {

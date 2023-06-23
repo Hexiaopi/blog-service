@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
@@ -32,7 +33,7 @@ func NewOperationController(store store.Factory) *OperationController {
 // @param object query integer false "对象"
 // @param page_num query integer false "页码"
 // @param page_size query integer false "每页数量"
-// @Success 200 {object} app.ListResponse{data=[]model.OperationLog} "成功"
+// @Success 200 {object} app.ListResponse{data=[]model.SystemOperationLog} "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/operation [get]
@@ -85,7 +86,7 @@ func (c *OperationController) Create(ctx *gin.Context) {
 // @Accept json
 // @Security JWT
 // @Param id path integer true "操作日志ID"
-// @param UpdateOperationRequest body service.UpdateTagRequest true "修改文章"
+// @param UpdateOperationRequest body service.UpdateOperationRequest true "修改文章"
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"

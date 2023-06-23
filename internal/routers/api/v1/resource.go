@@ -76,10 +76,10 @@ func (c *ResourceController) Get(ctx *gin.Context) {
 // @Summary 创建资源
 // @Description 创建资源
 // @Tags Resource
-// @Produce form-data
-// @Accept json
+// @Produce json
+// @Accept multipart/form-data
 // @Security JWT
-// @param CreateResourceRequest body service.CreateResourceRequest true "创建标签"
+// @param file formData file true "file"
 // @Success 200 {object} app.CommResponse "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
