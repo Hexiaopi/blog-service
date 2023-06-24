@@ -33,10 +33,13 @@ func (rec *ResponseWithRecorder) Write(d []byte) (n int, err error) {
 }
 
 // Logger 日志记录
-func Logger() gin.HandlerFunc {
+func Logger(skippers ...SkipperFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if SkipHandler(c, skippers...) {
+			c.Next()
+			return
+		}
 		start := time.Now()
-
 		//记录请求包
 		buf, _ := ioutil.ReadAll(c.Request.Body)
 		rdr := ioutil.NopCloser(bytes.NewBuffer(buf))

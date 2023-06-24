@@ -11,8 +11,12 @@ import (
 )
 
 // JWT 身份验证
-func JWT() gin.HandlerFunc {
+func JWT(skippers ...SkipperFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if SkipHandler(c, skippers...) {
+			c.Next()
+			return
+		}
 		auth := c.Request.Header.Get("Authorization")
 		if auth == "" {
 			app.ToResponseCode(c.Writer, retcode.RequestTokenEmpty)

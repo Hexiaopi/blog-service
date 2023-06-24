@@ -24,8 +24,12 @@ func NewOperation(store store.Factory) *Operation {
 }
 
 // Logger 日志记录
-func (op *Operation) RecordOperation() gin.HandlerFunc {
+func (op *Operation) RecordOperation(skippers ...SkipperFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if SkipHandler(c, skippers...) {
+			c.Next()
+			return
+		}
 		if c.Request.Method != http.MethodGet {
 			path := c.Request.URL.Path
 			object := strings.TrimPrefix(path, "/api/v1/")
