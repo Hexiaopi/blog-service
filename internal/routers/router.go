@@ -10,6 +10,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/hexiaopi/blog-service/internal/app"
 	cache "github.com/hexiaopi/blog-service/internal/cache/redis"
 	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/middleware"
@@ -33,6 +34,8 @@ func NewRouter() *gin.Engine {
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	router.StaticFS("/static", http.Dir("./web/dist"))
 	//router.Use(middleware.Logger)
+	router.NoMethod(MethodNotAllow)
+	router.NoRoute(PathNotFound)
 	router.Use(middleware.Recovery())
 
 	loginController := sys.NewLoginController(storeIns)
@@ -86,16 +89,12 @@ func NewRouter() *gin.Engine {
 	return router
 }
 
-type pathNotFound struct{}
-
-func (pathNotFound) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	log.Errorf("request path:%s not found!", request.RequestURI)
-	writer.Write(retcode.RequestPathNotFound.Marshal())
+func PathNotFound(ctx *gin.Context) {
+	log.Errorf("request path:%s not found!", ctx.Request.RequestURI)
+	app.ToResponseCode(ctx.Writer, retcode.RequestPathNotFound)
 }
 
-type methodNotAllow struct{}
-
-func (methodNotAllow) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	log.Errorf("request path:%s method:%s not allowed!", request.RequestURI, request.Method)
-	writer.Write(retcode.RequestMethodNotAllow.Marshal())
+func MethodNotAllow(ctx *gin.Context) {
+	log.Errorf("request path:%s method:%s not allowed!", ctx.Request.RequestURI, ctx.Request.Method)
+	app.ToResponseCode(ctx.Writer, retcode.RequestMethodNotAllow)
 }
