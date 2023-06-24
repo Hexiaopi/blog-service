@@ -39,7 +39,6 @@ func Metrics() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
 		method := c.Request.Method
-		start := time.Now()
 		HttpRequestConcurrency.WithLabelValues(path, method).Inc()
 		defer func() {
 			HttpRequestConcurrency.WithLabelValues(path, method).Dec()
@@ -49,6 +48,7 @@ func Metrics() gin.HandlerFunc {
 			statusCode:     http.StatusOK,
 			body:           bytes.Buffer{},
 		}
+		start := time.Now()
 		c.Next()
 		duration := time.Since(start)
 		HttpRequestLatency.WithLabelValues(path, method).Observe(duration.Seconds())

@@ -1408,6 +1408,9 @@ var doc = `{
                 "result": {
                     "type": "string"
                 },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
                 "user_agent": {
                     "type": "string"
                 },
@@ -1439,6 +1442,35 @@ var doc = `{
                 },
                 "state": {
                     "type": "integer"
+                },
+                "update_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_del": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "update_time": {
                     "type": "string"
@@ -1501,6 +1533,9 @@ var doc = `{
                 },
                 "result": {
                     "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
                 },
                 "user_agent": {
                     "type": "string"
@@ -1595,6 +1630,9 @@ var doc = `{
                 },
                 "result": {
                     "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
                 },
                 "user_agent": {
                     "type": "string"

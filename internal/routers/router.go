@@ -10,11 +10,11 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "github.com/hexiaopi/blog-service/docs"
 	cache "github.com/hexiaopi/blog-service/internal/cache/redis"
 	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/middleware"
 	"github.com/hexiaopi/blog-service/internal/retcode"
+	_ "github.com/hexiaopi/blog-service/internal/routers/api/docs"
 	"github.com/hexiaopi/blog-service/internal/routers/api/sys"
 	v1 "github.com/hexiaopi/blog-service/internal/routers/api/v1"
 	dao "github.com/hexiaopi/blog-service/internal/store/mysql"
