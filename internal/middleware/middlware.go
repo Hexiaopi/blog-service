@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
@@ -8,6 +10,7 @@ import (
 	"github.com/hexiaopi/blog-service/internal/retcode"
 )
 
+// 全局错误
 func PathNotFound(ctx *gin.Context) {
 	log.Errorf("request path:%s not found!", ctx.Request.RequestURI)
 	app.ToResponseCode(ctx.Writer, retcode.RequestPathNotFound)
@@ -18,15 +21,28 @@ func MethodNotAllow(ctx *gin.Context) {
 	app.ToResponseCode(ctx.Writer, retcode.RequestMethodNotAllow)
 }
 
+// 中间件跳过
 type SkipperFunc func(ctx *gin.Context) bool
 
-func AllowPathPrefixShipper(prefixs ...string) SkipperFunc {
+func PathPrefixSkipper(prefixs ...string) SkipperFunc {
 	return func(ctx *gin.Context) bool {
 		path := ctx.Request.URL.Path
 		pathLength := len(path)
-		for _, p := range prefixs {
-			pl := len(p)
-			if pathLength >= pl && path[:pl] == p {
+		for _, prefix := range prefixs {
+			pl := len(prefix)
+			if pathLength >= pl && path[:pl] == prefix {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+func PathContainSkipper(prefixs ...string) SkipperFunc {
+	return func(ctx *gin.Context) bool {
+		path := ctx.Request.URL.Path
+		for _, prefix := range prefixs {
+			if strings.Contains(path, prefix) {
 				return true
 			}
 		}
