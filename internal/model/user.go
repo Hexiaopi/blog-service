@@ -28,3 +28,12 @@ func (u *User) Compare(password string) error {
 	}
 	return nil
 }
+
+func (u *User) EncryptPassword() error {
+	password, err := auth.Encrypt(u.PassWord)
+	if err != nil {
+		return err
+	}
+	u.PassWord = password
+	return nil
+}

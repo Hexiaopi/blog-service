@@ -41,5 +41,10 @@ var (
 
 	GetSystemConfigFail = NewCode("500001", "Get System Config Fail")
 
+	GetUsersFail   = NewCode("600001", "Get Users Fail")
+	CreateUserFail = NewCode("600002", "Create User Fail")
+	UpdateUserFail = NewCode("600003", "Update User Fail")
+	DeleteUserFail = NewCode("600004", "Delete User Fail")
+
 	UnknownError = NewCode("999999", "Unknown Error")
 )

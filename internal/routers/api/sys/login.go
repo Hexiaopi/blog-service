@@ -107,7 +107,7 @@ func (c *LoginController) Info(ctx *gin.Context) {
 		app.ToResponseCode(ctx.Writer, retcode.RequestTokenAuthFail)
 		return
 	}
-	user, err := c.srv.Users().GetUser(ctx.Request.Context(), name)
+	user, err := c.srv.Users().Get(ctx.Request.Context(), name)
 	if err != nil {
 		app.ToResponseCode(ctx.Writer, retcode.RequestUserGetFail)
 		return

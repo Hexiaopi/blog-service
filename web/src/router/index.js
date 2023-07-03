@@ -111,7 +111,20 @@ export const constantRoutes = [
       }
     ]
   },
-
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/list',
+    meta: { title: '用户', icon: 'el-icon-user' },
+    children: [
+      {
+        path: 'list',
+        name: 'User',
+        component: () => import('@/views/user/list'),
+        meta: { title: '用户列表', icon: 'el-icon-user' }
+      }
+    ]
+  },
   {
     path: '/operation',
     component: Layout,

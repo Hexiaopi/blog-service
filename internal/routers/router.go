@@ -60,6 +60,14 @@ func NewRouter() *gin.Engine {
 	apiV1.Use(middleware.NewOperation(storeIns).RecordOperation())
 	{
 		apiV1.GET("/user", loginController.Info)
+		userController := v1.NewUserController(storeIns)
+		{
+			apiV1.GET("/users", userController.List)
+			apiV1.POST("/user", userController.Create)
+			apiV1.PUT("/user", userController.Update)
+			apiV1.DELETE("/user", userController.Delete)
+		}
+
 		articleController := v1.NewArticleController(storeIns, cacheIns)
 		{
 			apiV1.GET("/articles", articleController.List)

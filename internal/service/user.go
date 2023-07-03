@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -10,7 +11,11 @@ import (
 
 type UserSrv interface {
 	CheckAuth(ctx context.Context, param *AuthRequest) error
-	GetUser(ctx context.Context, name string) (*model.User, error)
+	Get(ctx context.Context, name string) (*model.User, error)
+	List(ctx context.Context, param *ListUserRequest) ([]model.User, int64, error)
+	Create(ctx context.Context, param *CreateUserRequest) error
+	Update(ctx context.Context, param *UpdateUserRequest) error
+	Delete(ctx context.Context, param *DeleteUserRequest) error
 }
 
 type UserService struct {
@@ -48,7 +53,7 @@ func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error
 	return nil
 }
 
-func (svc *UserService) GetUser(ctx context.Context, name string) (*model.User, error) {
+func (svc *UserService) Get(ctx context.Context, name string) (*model.User, error) {
 	user, err := svc.store.Users().Get(ctx, name)
 	if err != nil {
 		return nil, err
@@ -58,4 +63,54 @@ func (svc *UserService) GetUser(ctx context.Context, name string) (*model.User, 
 	}
 	user.PassWord = ""
 	return user, nil
+}
+
+type ListUserRequest struct {
+	model.ListOption
+}
+
+func (svc *UserService) List(ctx context.Context, param *ListUserRequest) ([]model.User, int64, error) {
+	users, err := svc.store.Users().List(ctx, &param.ListOption)
+	if err != nil {
+		log.Println(err)
+		return nil, 0, err
+	}
+	total, err := svc.store.Users().Count(ctx, &param.ListOption)
+	if err != nil {
+		log.Println(err)
+		return nil, 0, err
+	}
+	return users, total, nil
+}
+
+type CreateUserRequest struct {
+	model.User
+}
+
+func (svc *UserService) Create(ctx context.Context, param *CreateUserRequest) error {
+	if err := svc.store.Users().Create(ctx, &param.User); err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+type UpdateUserRequest struct {
+	model.User
+}
+
+func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) error {
+	if err := svc.store.Users().Update(ctx, &param.User); err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+type DeleteUserRequest struct {
+	model.OneOption
+}
+
+func (svc *UserService) Delete(ctx context.Context, param *DeleteUserRequest) error {
+	return svc.store.Users().Delete(ctx, param.Id)
 }
