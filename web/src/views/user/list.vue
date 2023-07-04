@@ -71,11 +71,14 @@
         <el-form-item label="用户名称" prop="title">
           <el-input v-model="temp.name" />
         </el-form-item>
+        <el-form-item label="用户密码" prop="title">
+          <el-input v-model="temp.password" />
+        </el-form-item>
         <el-form-item label="用户头像">
           <el-input v-model="temp.avatar" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="temp.state" class="filter-item" placeholder="请选择">
+          <el-select v-model="temp.is_del" class="filter-item" placeholder="请选择">
             <el-option v-for="item in stateOptions" :key="item" :label="item | statusDisplayFilter" :value="item" />
           </el-select>
         </el-form-item>
@@ -135,8 +138,9 @@ export default {
       temp: {
         id: undefined,
         name: '',
-        desc: '',
-        state: 1
+        password: '',
+        avatar: '',
+        is_del: 0
       },
       dialogFormVisible: false,
       dialogStatus: '',

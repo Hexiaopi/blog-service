@@ -74,7 +74,7 @@ export default {
       captchaImage: '',
       loginForm: {
         username: 'admin',
-        password: '111111',
+        password: '123456',
         captcha: '',
         cid: '',
       },

@@ -75,6 +75,9 @@ func (svc *UserService) List(ctx context.Context, param *ListUserRequest) ([]mod
 		log.Println(err)
 		return nil, 0, err
 	}
+	for i := range users {
+		users[i].PassWord = ""
+	}
 	total, err := svc.store.Users().Count(ctx, &param.ListOption)
 	if err != nil {
 		log.Println(err)

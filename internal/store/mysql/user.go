@@ -19,6 +19,9 @@ func NewUserDao(db *gorm.DB) *UserDao {
 }
 
 func (dao *UserDao) Create(ctx context.Context, user *model.User) error {
+	if err := user.EncryptPassword(); err != nil {
+		return err
+	}
 	user.CreateTime = time.Now()
 	user.UpdateTime = time.Now()
 	return dao.db.WithContext(ctx).Create(user).Error
@@ -26,6 +29,11 @@ func (dao *UserDao) Create(ctx context.Context, user *model.User) error {
 
 func (dao *UserDao) Update(ctx context.Context, user *model.User) error {
 	user.UpdateTime = time.Now()
+	if user.PassWord != "" {
+		if err := user.EncryptPassword(); err != nil {
+			return err
+		}
+	}
 	return dao.db.WithContext(ctx).Updates(user).Error
 }
 
