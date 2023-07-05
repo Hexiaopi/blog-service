@@ -83,6 +83,13 @@ func NewRouter() *gin.Engine {
 			apiV1.PUT("/tag", tagController.Update)
 			apiV1.DELETE("/tag", tagController.Delete)
 		}
+		roleController := v1.NewRoleController(storeIns)
+		{
+			apiV1.GET("/roles", roleController.List)
+			apiV1.POST("/role", roleController.Create)
+			apiV1.PUT("/role", roleController.Update)
+			apiV1.DELETE("/role", roleController.Delete)
+		}
 		resourceController := v1.NewResourceController(storeIns)
 		{
 			apiV1.GET("/resources", resourceController.List)

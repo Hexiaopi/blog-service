@@ -82,7 +82,8 @@ export default {
         'article': '文章',
         'tag': '标签',
         'resource': '资源',
-        'user': '用户'
+        'user': '用户',
+        'role': '角色',
       }
       return objectMap[object]
     },

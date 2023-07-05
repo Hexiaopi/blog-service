@@ -82,7 +82,6 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
     path: '/tag',
     component: Layout,
@@ -122,6 +121,20 @@ export const constantRoutes = [
         name: 'User',
         component: () => import('@/views/user/list'),
         meta: { title: '用户列表', icon: 'el-icon-user' }
+      }
+    ]
+  },
+  {
+    path: '/role',
+    component: Layout,
+    redirect: '/role/list',
+    meta: { title: '角色', icon: 'el-icon-s-custom' },
+    children: [
+      {
+        path: 'list',
+        name: 'Role',
+        component: () => import('@/views/role/list'),
+        meta: { title: '角色列表', icon: 'el-icon-s-custom' }
       }
     ]
   },

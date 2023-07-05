@@ -74,6 +74,21 @@ definitions:
       update_time:
         type: string
     type: object
+  model.Role:
+    properties:
+      create_time:
+        type: string
+      desc:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      state:
+        type: integer
+      update_time:
+        type: string
+    type: object
   model.SystemOperationLog:
     properties:
       action:
@@ -125,6 +140,8 @@ definitions:
       is_del:
         type: integer
       name:
+        type: string
+      password:
         type: string
       roles:
         items:
@@ -178,6 +195,21 @@ definitions:
       user_id:
         type: integer
     type: object
+  service.CreateRoleRequest:
+    properties:
+      create_time:
+        type: string
+      desc:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      state:
+        type: integer
+      update_time:
+        type: string
+    type: object
   service.CreateTagRequest:
     properties:
       article_total:
@@ -194,6 +226,27 @@ definitions:
         type: string
       state:
         type: integer
+      update_time:
+        type: string
+    type: object
+  service.CreateUserRequest:
+    properties:
+      avatar:
+        type: string
+      create_time:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
       update_time:
         type: string
     type: object
@@ -267,6 +320,21 @@ definitions:
       update_time:
         type: string
     type: object
+  service.UpdateRoleRequest:
+    properties:
+      create_time:
+        type: string
+      desc:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      state:
+        type: integer
+      update_time:
+        type: string
+    type: object
   service.UpdateTagRequest:
     properties:
       article_total:
@@ -283,6 +351,27 @@ definitions:
         type: string
       state:
         type: integer
+      update_time:
+        type: string
+    type: object
+  service.UpdateUserRequest:
+    properties:
+      avatar:
+        type: string
+      create_time:
+        type: string
+      id:
+        type: integer
+      is_del:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
       update_time:
         type: string
     type: object
@@ -911,6 +1000,149 @@ paths:
       summary: 获取多个资源
       tags:
       - Resource
+  /api/v1/role:
+    delete:
+      description: 删除角色
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 删除角色
+      tags:
+      - Role
+    post:
+      consumes:
+      - application/json
+      description: 创建角色
+      parameters:
+      - description: 创建标签
+        in: body
+        name: CreateRoleRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 创建角色
+      tags:
+      - Role
+    put:
+      consumes:
+      - application/json
+      description: 修改角色
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改文章
+        in: body
+        name: UpdateRoleRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 修改角色
+      tags:
+      - Role
+  /api/v1/roles:
+    get:
+      description: 获取多个角色
+      parameters:
+      - description: 角色名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page_num
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Role'
+                  type: array
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 获取多个角色
+      tags:
+      - Role
   /api/v1/tag:
     delete:
       description: 删除标签
@@ -1055,6 +1287,34 @@ paths:
       tags:
       - Tag
   /api/v1/user:
+    delete:
+      description: 删除用户
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 删除用户
+      tags:
+      - User
     get:
       consumes:
       - application/json
@@ -1086,6 +1346,120 @@ paths:
       summary: 用户信息
       tags:
       - Auth
+    post:
+      consumes:
+      - application/json
+      description: 创建用户
+      parameters:
+      - description: 创建用户
+        in: body
+        name: CreateUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 创建用户
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: 修改用户信息
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 修改用户
+        in: body
+        name: UpdateUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/app.CommResponse'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 修改用户
+      tags:
+      - User
+  /api/v1/users:
+    get:
+      description: 获取多个用户
+      parameters:
+      - description: 用户名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page_num
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.User'
+                  type: array
+              type: object
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/app.ErrResponse'
+      security:
+      - JWT: []
+      summary: 获取多个用户
+      tags:
+      - User
 securityDefinitions:
   JWT:
     in: header

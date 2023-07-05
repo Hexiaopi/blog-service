@@ -28,6 +28,10 @@ func (ds *datastore) Users() store.UserStore {
 	return NewUserDao(ds.db)
 }
 
+func (ds *datastore) Roles() store.RoleStore {
+	return NewRoleDao(ds.db)
+}
+
 func (ds *datastore) Systems() store.SystemConfigStore {
 	return NewSystemConfigDao(ds.db)
 }

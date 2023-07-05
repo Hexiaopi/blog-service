@@ -9,6 +9,7 @@ type Service interface {
 	Articles() ArticleSrv
 	Tags() TagSrv
 	Users() UserSrv
+	Roles() RoleSrv
 	Systems() SystemSrv
 	Resources() ResourceSrv
 	Operations() OperationSrv
@@ -29,6 +30,10 @@ func (s *service) Tags() TagSrv {
 
 func (s *service) Users() UserSrv {
 	return NewUserService(s.store)
+}
+
+func (s *service) Roles() RoleSrv {
+	return NewRoleService(s.store)
 }
 
 func (s *service) Systems() SystemSrv {
