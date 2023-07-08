@@ -7,5 +7,5 @@ import (
 )
 
 type SystemConfigStore interface {
-	Get(ctx context.Context, name string) (*model.SystemConfig, error)
+	Get(ctx context.Context, name string) (*model.Config, error)
 }

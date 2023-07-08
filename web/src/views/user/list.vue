@@ -36,7 +36,7 @@
       </el-table-column>
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.is_del | statusTypeFilter">{{ scope.row.is_del | statusDisplayFilter }}</el-tag>
+          <el-tag :type="scope.row.state | statusTypeFilter">{{ scope.row.state | statusDisplayFilter }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="create_time" label="创建时间" min-width="100px">
@@ -78,7 +78,7 @@
           <el-input v-model="temp.avatar" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="temp.is_del" class="filter-item" placeholder="请选择">
+          <el-select v-model="temp.state" class="filter-item" placeholder="请选择">
             <el-option v-for="item in stateOptions" :key="item" :label="item | statusDisplayFilter" :value="item" />
           </el-select>
         </el-form-item>
@@ -140,7 +140,7 @@ export default {
         name: '',
         password: '',
         avatar: '',
-        is_del: 0
+        state: 0
       },
       dialogFormVisible: false,
       dialogStatus: '',

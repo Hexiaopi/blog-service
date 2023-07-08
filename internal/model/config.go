@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type SystemConfig struct {
+type Config struct {
 	ID         int       `gorm:"primaryKey;autoIncrement;id" json:"id"`
 	Name       string    `gorm:"name" json:"name"`
 	Desc       string    `gorm:"desc" json:"desc"`
@@ -12,6 +12,6 @@ type SystemConfig struct {
 	Operator   string    `gorm:"operator" json:"operator"`
 }
 
-func (sc SystemConfig) TableName() string {
-	return "system_config"
+func (sc Config) TableName() string {
+	return "sys_config"
 }

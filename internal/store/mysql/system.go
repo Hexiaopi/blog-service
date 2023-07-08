@@ -16,8 +16,8 @@ func NewSystemConfigDao(db *gorm.DB) *SystemConfigDao {
 	return &SystemConfigDao{db: db}
 }
 
-func (dao *SystemConfigDao) Get(ctx context.Context, name string) (*model.SystemConfig, error) {
-	var config model.SystemConfig
+func (dao *SystemConfigDao) Get(ctx context.Context, name string) (*model.Config, error) {
+	var config model.Config
 	if err := dao.db.WithContext(ctx).Where("name = ?", name).First(&config).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil

@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type SystemOperationLog struct {
+type OperationLog struct {
 	ID         int       `gorm:"primaryKey;autoIncrement;id" json:"id"`
 	UserId     int       `gorm:"user_id" json:"user_id"`
 	User       User      `json:"user"`
@@ -14,6 +14,6 @@ type SystemOperationLog struct {
 	CreateTime time.Time `gorm:"create_time" json:"create_time,omitempty"`
 }
 
-func (so SystemOperationLog) TableName() string {
-	return "system_operation_log"
+func (so OperationLog) TableName() string {
+	return "sys_operation_log"
 }

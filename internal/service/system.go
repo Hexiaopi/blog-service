@@ -10,7 +10,7 @@ import (
 )
 
 type SystemSrv interface {
-	Get(ctx context.Context, param *SystemGetRequest) (*model.SystemConfig, error)
+	Get(ctx context.Context, param *SystemGetRequest) (*model.Config, error)
 }
 
 type SystemService struct {
@@ -29,7 +29,7 @@ type SystemGetRequest struct {
 	model.OneOption
 }
 
-func (srv *SystemService) Get(ctx context.Context, param *SystemGetRequest) (*model.SystemConfig, error) {
+func (srv *SystemService) Get(ctx context.Context, param *SystemGetRequest) (*model.Config, error) {
 	sc, err := srv.store.Systems().Get(ctx, param.Name)
 	if err != nil {
 		log.Errorf("system get:%s error:%v", param.Name, err)

@@ -14,12 +14,12 @@ type User struct {
 	Avatar     string    `gorm:"column:avatar" json:"avatar"`
 	CreateTime time.Time `gorm:"column:create_time" json:"create_time"`
 	UpdateTime time.Time `gorm:"column:update_time" json:"update_time"`
-	IsDel      uint8     `gorm:"column:is_del" json:"is_del"`
+	State      uint8     `gorm:"column:state" json:"state"`
 	Roles      []string  `gorm:"-" json:"roles"`
 }
 
 func (u *User) TableName() string {
-	return "blog_user"
+	return "sys_user"
 }
 
 func (u *User) Compare(password string) error {

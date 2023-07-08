@@ -38,7 +38,7 @@ func (op *Operation) RecordOperation(skippers ...SkipperFunc) gin.HandlerFunc {
 
 			go func() {
 				operation := service.CreateOperationRequest{
-					SystemOperationLog: model.SystemOperationLog{
+					OperationLog: model.OperationLog{
 						UserId:    c.GetInt("userid"),
 						UserAgent: c.Request.UserAgent(),
 						IP:        c.RemoteIP(),

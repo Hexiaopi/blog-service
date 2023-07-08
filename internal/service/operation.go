@@ -9,7 +9,7 @@ import (
 )
 
 type OperationSrv interface {
-	List(ctx context.Context, param *OperationListRequest) ([]model.SystemOperationLog, int64, error)
+	List(ctx context.Context, param *OperationListRequest) ([]model.OperationLog, int64, error)
 	Create(ctx context.Context, param *CreateOperationRequest) error
 	Update(ctx context.Context, param *UpdateOperationRequest) error
 	Delete(ctx context.Context, param *DeleteOperationRequest) error
@@ -31,7 +31,7 @@ type OperationListRequest struct {
 	model.ListOption
 }
 
-func (svc *OperationService) List(ctx context.Context, param *OperationListRequest) ([]model.SystemOperationLog, int64, error) {
+func (svc *OperationService) List(ctx context.Context, param *OperationListRequest) ([]model.OperationLog, int64, error) {
 	logs, err := svc.store.Operations().List(ctx, &param.ListOption)
 	if err != nil {
 		log.Println(err)
@@ -46,11 +46,11 @@ func (svc *OperationService) List(ctx context.Context, param *OperationListReque
 }
 
 type CreateOperationRequest struct {
-	model.SystemOperationLog
+	model.OperationLog
 }
 
 func (svc *OperationService) Create(ctx context.Context, param *CreateOperationRequest) error {
-	if err := svc.store.Operations().Create(ctx, &param.SystemOperationLog); err != nil {
+	if err := svc.store.Operations().Create(ctx, &param.OperationLog); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -58,11 +58,11 @@ func (svc *OperationService) Create(ctx context.Context, param *CreateOperationR
 }
 
 type UpdateOperationRequest struct {
-	model.SystemOperationLog
+	model.OperationLog
 }
 
 func (svc *OperationService) Update(ctx context.Context, param *UpdateOperationRequest) error {
-	if err := svc.store.Operations().Update(ctx, &param.SystemOperationLog); err != nil {
+	if err := svc.store.Operations().Update(ctx, &param.OperationLog); err != nil {
 		log.Println(err)
 		return err
 	}
