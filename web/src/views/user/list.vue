@@ -1,33 +1,41 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.name" placeholder="名称" style="width: 200px;" class="filter-item"
-        @keyup.enter.native="handleFilter" />
-      <!-- <el-select v-model="listQuery.state" placeholder="状态" style="width: 90px" class="filter-item"
-        @change="handleFilter">
-        <el-option v-for="item in stateOptions" :key="item" :label="item | statusDisplayFilter" :value="item" />
-      </el-select> -->
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        搜索
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加
-      </el-button>
+      <el-form :inline="true" :model="listQuery">
+        <el-form-item label="用户名">
+          <el-input v-model="listQuery.name" clearable placeholder="用户名" style="width: 200px;" class="filter-item"
+            @keyup.enter.native="handleFilter" />
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="listQuery.state" placeholder="状态" style="width: 90px" class="filter-item"
+            @change="handleFilter">
+            <el-option v-for="item in stateOptions" :key="item" :label="item | statusDisplayFilter" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+            <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+            搜索
+          </el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
+            @click="handleCreate">
+            添加
+          </el-button>
+        </el-form-item>
+      </el-form>
     </div>
-    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" board fit highlight-current-row
-      style="width: 100%;" @sort-change="sortChange">
-      <el-table-column align="center" label="ID" min-width="50px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
+    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border stripe board fit
+      highlight-current-row style="width: 100%;" @sort-change="sortChange">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column align="center" prop="id" label="ID" min-width="50px">
       </el-table-column>
-      <el-table-column label="名称" align="center" width="100px">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
+      <el-table-column prop="name" label="名称" align="center" width="100px">
       </el-table-column>
       <el-table-column label="头像" align="center" width="100px">
         <template slot-scope="scope">
@@ -54,14 +62,20 @@
           {{ scope.row.update_time }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑
-          </el-button>
-          <el-button v-if="row.state != 2" size="mini" type="danger" @click="handleDelete(row, $index)">
-            删除
-          </el-button>
+      <el-table-column fixed="right" label="操作" align="center" width="150" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-tooltip content="编辑" effect="dark" placement="top">
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(scope.row)">
+              编辑
+            </el-button>
+          </el-tooltip>
+          <el-tooltip class="delete-popover" content="删除" effect="dark" placement="top">
+            <el-popconfirm title="确定删除吗？" @onConfirm="handleDelete(scope.row)">
+              <el-button slot="reference" icon="el-icon-delete" size="mini" type="danger">
+                删除
+              </el-button>
+            </el-popconfirm>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -70,14 +84,22 @@
       @pagination="getList" />
 
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px"
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="30%">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px"
         style="width: 400px; margin-left:50px;">
-        <el-form-item label="用户名称" prop="title">
-          <el-input v-model="temp.name" />
+        <el-form-item label="用户名称" prop="name">
+          <el-input v-model.trim="temp.name" placeholder="用户名" />
         </el-form-item>
-        <el-form-item label="用户密码" prop="title">
-          <el-input v-model="temp.password" />
+        <el-form-item :label="dialogStatus === 'create' ? '用户密码' : '重置密码'" prop="password">
+          <el-input v-model.trim="temp.password" autocomplte="off" :type="passwordType" />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
+        </el-form-item>
+        <el-form-item label="角色" prop="roleIds">
+          <el-select v-model.trim="temp.roles" value-key="id" multiple placeholder="请选择角色" style="width:100%">
+            <el-option v-for="item in roles" :key="item.id" :label="item.name" :value="item" />
+          </el-select>
         </el-form-item>
         <el-form-item label="用户头像">
           <el-input v-model="temp.avatar" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" placeholder="请输入" />
@@ -102,6 +124,7 @@
 
 <script>
 import { listUser, createUser, updateUser, deleteUser } from '@/api/user'
+import { listRole } from '@/api/role'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -145,8 +168,11 @@ export default {
         name: '',
         password: '',
         avatar: '',
-        state: 0
+        state: 0,
+        roles: [],
       },
+      roles: [],
+      passwordType: 'password',
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -161,8 +187,14 @@ export default {
   },
   created () {
     this.getList()
+    this.getRoles()
   },
   methods: {
+    getRoles () {
+      listRole({}).then(response => {
+        this.roles = response.data
+      })
+    },
     getList () {
       this.listLoading = true
       listUser(this.listQuery).then(response => {
@@ -194,7 +226,15 @@ export default {
         id: undefined,
         name: '',
         desc: '',
-        state: 1
+        state: 0,
+        roles: [],
+      }
+    },
+    showPwd () {
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
+      } else {
+        this.passwordType = 'password'
       }
     },
     handleCreate () {
@@ -247,7 +287,7 @@ export default {
         }
       })
     },
-    handleDelete (row, index) {
+    handleDelete (row) {
       deleteUser(row.id).then(() => {
         this.$notify({
           title: 'Success',
@@ -255,9 +295,20 @@ export default {
           type: 'success',
           duration: 2000
         })
-        this.list.splice(index, 1)
+        this.getList()
       })
     },
   }
 }
 </script>
+<style scoped>
+.show-pwd {
+  position: absolute;
+  right: 10px;
+  top: 3px;
+  font-size: 16px;
+  color: #889aa4;
+  cursor: pointer;
+  user-select: none;
+}
+</style>

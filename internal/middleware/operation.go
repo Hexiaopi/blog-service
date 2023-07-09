@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 	"strings"
 
@@ -36,21 +35,19 @@ func (op *Operation) RecordOperation(skippers ...SkipperFunc) gin.HandlerFunc {
 
 			c.Next()
 
-			go func() {
-				operation := service.CreateOperationRequest{
-					OperationLog: model.OperationLog{
-						UserId:    c.GetInt("userid"),
-						UserAgent: c.Request.UserAgent(),
-						IP:        c.RemoteIP(),
-						Object:    strings.Split(object, "/")[0],
-						Action:    c.Request.Method,
-						Result:    "",
-					},
-				}
-				if err := op.srv.Operations().Create(context.Background(), &operation); err != nil {
-					log.Errorf("record operation log err:%v", err)
-				}
-			}()
+			operation := service.CreateOperationRequest{
+				OperationLog: model.OperationLog{
+					UserId:    c.GetInt("userid"),
+					UserAgent: c.Request.UserAgent(),
+					IP:        c.RemoteIP(),
+					Object:    strings.Split(object, "/")[0],
+					Action:    c.Request.Method,
+					Result:    "",
+				},
+			}
+			if err := op.srv.Operations().Create(c.Request.Context(), &operation); err != nil {
+				log.Errorf("record operation log err:%v", err)
+			}
 		} else {
 			c.Next()
 		}

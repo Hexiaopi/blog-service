@@ -71,9 +71,6 @@ func (dao *ArticleDao) List(ctx context.Context, opt *model.ListOption) ([]model
 
 func (dao *ArticleDao) Count(ctx context.Context, opt *model.ListOption) (int64, error) {
 	query := dao.db.WithContext(ctx)
-	if opt.Page >= 0 && opt.Limit > 0 {
-		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
-	}
 	var count int64
 	if opt.Name != "" {
 		query = query.Where("name = ?", opt.Name)

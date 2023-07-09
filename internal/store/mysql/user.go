@@ -18,13 +18,20 @@ func NewUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{db: db}
 }
 
+// func (dao *UserDao) Tx(ctx context.Context, f store.UserTxFunc) error {
+// 	return dao.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+// 		repo := NewUserDao(tx)
+// 		return f(ctx, repo)
+// 	})
+// }
+
 func (dao *UserDao) Create(ctx context.Context, user *model.User) error {
 	if err := user.EncryptPassword(); err != nil {
 		return err
 	}
 	user.CreateTime = time.Now()
 	user.UpdateTime = time.Now()
-	return dao.db.WithContext(ctx).Create(user).Error
+	return dao.db.WithContext(ctx).Omit("Roles").Create(user).Error
 }
 
 func (dao *UserDao) Update(ctx context.Context, user *model.User) error {
@@ -34,7 +41,7 @@ func (dao *UserDao) Update(ctx context.Context, user *model.User) error {
 			return err
 		}
 	}
-	return dao.db.WithContext(ctx).Updates(user).Error
+	return dao.db.WithContext(ctx).Omit("Roles").Updates(user).Error
 }
 
 func (dao *UserDao) Delete(ctx context.Context, id int) error {
@@ -80,9 +87,6 @@ func (dao *UserDao) List(ctx context.Context, opt *model.ListOption) ([]model.Us
 
 func (dao *UserDao) Count(ctx context.Context, opt *model.ListOption) (int64, error) {
 	query := dao.db.WithContext(ctx)
-	if opt.Page >= 0 && opt.Limit > 0 {
-		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
-	}
 	var count int64
 	if opt.Name != "" {
 		query = query.Where("name = ?", opt.Name)

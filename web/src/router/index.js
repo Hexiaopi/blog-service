@@ -110,27 +110,19 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/user',
+    path: '/system',
     component: Layout,
-    redirect: '/user/list',
-    meta: { title: '用户', icon: 'el-icon-user' },
+    redirect: '/system/user',
+    meta: { title: '系统管理', icon: 'el-icon-setting' },
     children: [
       {
-        path: 'list',
+        path: 'user',
         name: 'User',
         component: () => import('@/views/user/list'),
         meta: { title: '用户列表', icon: 'el-icon-user' }
-      }
-    ]
-  },
-  {
-    path: '/role',
-    component: Layout,
-    redirect: '/role/list',
-    meta: { title: '角色', icon: 'el-icon-s-custom' },
-    children: [
+      },
       {
-        path: 'list',
+        path: 'role',
         name: 'Role',
         component: () => import('@/views/role/list'),
         meta: { title: '角色列表', icon: 'el-icon-s-custom' }
