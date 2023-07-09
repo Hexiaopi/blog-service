@@ -112,7 +112,7 @@ func (c *LoginController) Info(ctx *gin.Context) {
 		app.ToResponseCode(ctx.Writer, retcode.RequestUserGetFail)
 		return
 	}
-	user.Roles = []string{"admin"}
+	//user.Roles = []string{"admin"}
 	app.ToResponseData(ctx.Writer, user)
 }
 

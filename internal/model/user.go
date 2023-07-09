@@ -15,7 +15,7 @@ type User struct {
 	CreateTime time.Time `gorm:"column:create_time" json:"create_time"`
 	UpdateTime time.Time `gorm:"column:update_time" json:"update_time"`
 	State      uint8     `gorm:"column:state" json:"state"`
-	Roles      []string  `gorm:"-" json:"roles"`
+	Roles      []Role    `gorm:"many2many:sys_user_role" json:"roles"`
 }
 
 func (u *User) TableName() string {

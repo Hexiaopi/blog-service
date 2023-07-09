@@ -34,9 +34,14 @@
           <el-image :src="scope.row.avatar" lazy></el-image>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" width="100">
+      <el-table-column label="状态" align="center" width="100px">
         <template slot-scope="scope">
           <el-tag :type="scope.row.state | statusTypeFilter">{{ scope.row.state | statusDisplayFilter }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="角色个数" align="center" width="100px">
+        <template slot-scope="scope">
+          {{ scope.row.roles.length }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="create_time" label="创建时间" min-width="100px">

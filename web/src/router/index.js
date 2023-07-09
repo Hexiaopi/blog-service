@@ -54,7 +54,6 @@ export const constantRoutes = [
       meta: { title: '仪表板', icon: 'dashboard' }
     }]
   },
-
   {
     path: '/article',
     component: Layout,
@@ -139,13 +138,13 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/operation',
+    path: '/log',
     component: Layout,
-    redirect: '/operation/list',
-    meta: { title: '操作日志', icon: 'el-icon-edit' },
+    redirect: '/log/operation',
+    meta: { title: '日志管理', icon: 'el-icon-video-camera-solid' },
     children: [
       {
-        path: 'list',
+        path: 'operation',
         name: 'Operation',
         component: () => import('@/views/operation/list'),
         meta: { title: '操作日志', icon: 'el-icon-edit' }

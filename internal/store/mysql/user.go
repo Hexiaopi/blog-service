@@ -44,7 +44,7 @@ func (dao *UserDao) Delete(ctx context.Context, id int) error {
 
 func (dao *UserDao) Get(ctx context.Context, name string) (*model.User, error) {
 	var user model.User
-	err := dao.db.WithContext(ctx).Where("name = ?", name).First(&user).Error
+	err := dao.db.WithContext(ctx).Where("name = ?", name).Preload("Roles").First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -67,7 +67,8 @@ func (dao *UserDao) List(ctx context.Context, opt *model.ListOption) ([]model.Us
 	}
 	users := make([]model.User, 0)
 	if err := query.Model(&model.User{}).
-		//Where("state = ?", opt.State).
+		Where("state = ?", opt.State).
+		Preload("Roles").
 		Find(&users).
 		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -90,7 +91,7 @@ func (dao *UserDao) Count(ctx context.Context, opt *model.ListOption) (int64, er
 		query = query.Order(opt.GetSortType())
 	}
 	if err := query.Model(&model.User{}).
-		//Where("state = ?", opt.State).
+		Where("state = ?", opt.State).
 		Count(&count).
 		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
