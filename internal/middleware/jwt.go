@@ -37,9 +37,10 @@ func JWT(skippers ...SkipperFunc) gin.HandlerFunc {
 				app.ToResponseCode(c.Writer, retcode.RequestTokenAuthFail)
 				c.Abort()
 			}
+		} else {
+			c.Set("username", claims.UserName)
+			c.Set("userid", claims.UserId)
+			c.Next()
 		}
-		c.Set("username", claims.UserName)
-		c.Set("userid", claims.UserId)
-		c.Next()
 	}
 }
