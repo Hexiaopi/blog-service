@@ -47,9 +47,9 @@
           <el-tag :type="scope.row.state | statusTypeFilter">{{ scope.row.state | statusDisplayFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="角色个数" align="center" width="100px">
+      <el-table-column label="角色" align="center" width="200px">
         <template slot-scope="scope">
-          {{ scope.row.roles.length }}
+          <el-tag v-for="role in scope.row.roles" :key="role.id" type="success">{{ role.name }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="create_time" label="创建时间" min-width="100px">
