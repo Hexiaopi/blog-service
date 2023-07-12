@@ -42,8 +42,11 @@ func (op *Operation) RecordOperation(skippers ...SkipperFunc) gin.HandlerFunc {
 					IP:        c.RemoteIP(),
 					Object:    strings.Split(object, "/")[0],
 					Action:    c.Request.Method,
-					Result:    "",
+					Result:    "Success",
 				},
+			}
+			if len(c.Errors) > 0 {
+				operation.Result = "Fail"
 			}
 			if err := op.srv.Operations().Create(c.Request.Context(), &operation); err != nil {
 				log.Errorf("record operation log err:%v", err)

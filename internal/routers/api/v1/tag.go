@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hexiaopi/blog-service/internal/app"
+
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
@@ -36,7 +36,7 @@ func NewTagController(store store.Factory) *TagController {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/tags [get]
-func (c *TagController) List(ctx *gin.Context) {
+func (c *TagController) List(ctx *gin.Context) (res interface{}, total int64, err error) {
 	values := ctx.Request.URL.Query()
 	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
@@ -46,10 +46,11 @@ func (c *TagController) List(ctx *gin.Context) {
 	param := service.TagListRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	tags, total, err := c.srv.Tags().List(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.GetTagsFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.GetTagsFail)
+		return nil, 0, retcode.GetTagsFail
 	}
-	app.ToResponseList(ctx.Writer, total, tags)
+	//app.ToResponseList(ctx.Writer, total, tags)
+	return tags, total, nil
 }
 
 // @Summary 创建标签
@@ -63,18 +64,19 @@ func (c *TagController) List(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/tag [post]
-func (c *TagController) Create(ctx *gin.Context) {
+func (c *TagController) Create(ctx *gin.Context) (res interface{}, err error) {
 	var param service.CreateTagRequest
 	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
+		return nil, retcode.RequestUnMarshalError
 	}
 	if err := c.srv.Tags().Create(ctx.Request.Context(), &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.CreateTagFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.CreateTagFail)
+		return nil, retcode.CreateTagFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }
 
 // @Summary 修改标签
@@ -89,18 +91,19 @@ func (c *TagController) Create(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/tag [put]
-func (c *TagController) Update(ctx *gin.Context) {
+func (c *TagController) Update(ctx *gin.Context) (res interface{}, err error) {
 	var param service.UpdateTagRequest
 	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
+		return nil, retcode.RequestUnMarshalError
 	}
 	if err := c.srv.Tags().Update(ctx.Request.Context(), &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.UpdateTagFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.UpdateTagFail)
+		return nil, retcode.UpdateTagFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }
 
 // @Summary 删除标签
@@ -113,12 +116,13 @@ func (c *TagController) Update(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/tag [delete]
-func (c *TagController) Delete(ctx *gin.Context) {
+func (c *TagController) Delete(ctx *gin.Context) (res interface{}, err error) {
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
 	param := service.DeleteTagRequest{OneOption: model.OneOption{Id: id}}
 	if err := c.srv.Tags().Delete(ctx.Request.Context(), &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.DeleteTagFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.DeleteTagFail)
+		return nil, retcode.DeleteTagFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }

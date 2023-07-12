@@ -49,6 +49,27 @@ definitions:
       update_time:
         type: string
     type: object
+  model.OperationLog:
+    properties:
+      action:
+        type: string
+      create_time:
+        type: string
+      id:
+        type: integer
+      ip:
+        type: string
+      object:
+        type: string
+      result:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+      user_agent:
+        type: string
+      user_id:
+        type: integer
+    type: object
   model.Resource:
     properties:
       base64:
@@ -89,27 +110,6 @@ definitions:
       update_time:
         type: string
     type: object
-  model.SystemOperationLog:
-    properties:
-      action:
-        type: string
-      create_time:
-        type: string
-      id:
-        type: integer
-      ip:
-        type: string
-      object:
-        type: string
-      result:
-        type: string
-      user:
-        $ref: '#/definitions/model.User'
-      user_agent:
-        type: string
-      user_id:
-        type: integer
-    type: object
   model.Tag:
     properties:
       article_total:
@@ -137,16 +137,16 @@ definitions:
         type: string
       id:
         type: integer
-      is_del:
-        type: integer
       name:
         type: string
       password:
         type: string
       roles:
         items:
-          type: string
+          $ref: '#/definitions/model.Role'
         type: array
+      state:
+        type: integer
       update_time:
         type: string
     type: object
@@ -237,16 +237,16 @@ definitions:
         type: string
       id:
         type: integer
-      is_del:
-        type: integer
       name:
         type: string
       password:
         type: string
       roles:
         items:
-          type: string
+          $ref: '#/definitions/model.Role'
         type: array
+      state:
+        type: integer
       update_time:
         type: string
     type: object
@@ -362,16 +362,16 @@ definitions:
         type: string
       id:
         type: integer
-      is_del:
-        type: integer
       name:
         type: string
       password:
         type: string
       roles:
         items:
-          type: string
+          $ref: '#/definitions/model.Role'
         type: array
+      state:
+        type: integer
       update_time:
         type: string
     type: object
@@ -739,7 +739,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/model.SystemOperationLog'
+                    $ref: '#/definitions/model.OperationLog'
                   type: array
               type: object
         "400":

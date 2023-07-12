@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 )
 
@@ -52,4 +53,49 @@ func ToResponseList(writer http.ResponseWriter, total int64, data interface{}) {
 	}
 	result, _ := json.Marshal(response)
 	writer.Write(result)
+}
+
+type HandlerFunc func(ctx *gin.Context) (res interface{}, err error)
+
+func Wrap(handler HandlerFunc) func(c *gin.Context) {
+	return func(ctx *gin.Context) {
+		path := ctx.Request.URL.Path
+		method := ctx.Request.Method
+		response := CommResponse{RetErr: retcode.Success}
+		res, err := handler(ctx)
+		if err != nil {
+			var code *retcode.RetErr
+			if errors.As(err, &code) {
+				response.RetErr = code
+				ctx.Error(code)
+			}
+		} else {
+			response.Data = res
+		}
+		retcode.RequestRetcodeCounter.WithLabelValues(path, method, response.Code, response.Desc).Inc()
+		ctx.JSON(http.StatusOK, response)
+	}
+}
+
+type HandlerListFunc func(ctx *gin.Context) (res interface{}, total int64, err error)
+
+func WrapList(handler HandlerListFunc) func(c *gin.Context) {
+	return func(ctx *gin.Context) {
+		path := ctx.Request.URL.Path
+		method := ctx.Request.Method
+		response := ListResponse{RetErr: retcode.Success}
+		res, total, err := handler(ctx)
+		if err != nil {
+			var code *retcode.RetErr
+			if errors.As(err, &code) {
+				response.RetErr = code
+				ctx.Error(code)
+			}
+		} else {
+			response.Total = total
+			response.Data = res
+		}
+		retcode.RequestRetcodeCounter.WithLabelValues(path, method, response.Code, response.Desc).Inc()
+		ctx.JSON(http.StatusOK, response)
+	}
 }

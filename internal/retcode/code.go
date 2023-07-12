@@ -46,5 +46,10 @@ var (
 	UpdateUserFail = NewCode("600003", "Update User Fail")
 	DeleteUserFail = NewCode("600004", "Delete User Fail")
 
+	GetRolesFail   = NewCode("700001", "Get Roles Fail")
+	CreateRoleFail = NewCode("700002", "Create Role Fail")
+	UpdateRoleFail = NewCode("700003", "Update Role Fail")
+	DeleteRoleFail = NewCode("700004", "Delete Role Fail")
+
 	UnknownError = NewCode("999999", "Unknown Error")
 )

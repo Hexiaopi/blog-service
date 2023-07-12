@@ -2,8 +2,7 @@ package sys
 
 import (
 	"github.com/gin-gonic/gin"
-	
-	"github.com/hexiaopi/blog-service/internal/app"
+
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
@@ -29,14 +28,15 @@ func NewSystemController(store store.Factory) *SystemController {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/sys/config [get]
-func (c *SystemController) Get(ctx *gin.Context) {
+func (c *SystemController) Get(ctx *gin.Context) (res interface{}, err error) {
 	values := ctx.Request.URL.Query()
 	name := values.Get("name")
 	param := service.SystemGetRequest{OneOption: model.OneOption{Name: name}}
 	config, err := c.srv.Systems().Get(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.GetSystemConfigFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.GetSystemConfigFail)
+		return nil, retcode.GetSystemConfigFail
 	}
-	app.ToResponseData(ctx.Writer, config.Value)
+	//app.ToResponseData(ctx.Writer, config.Value)
+	return config.Value, nil
 }

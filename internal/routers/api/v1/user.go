@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hexiaopi/blog-service/internal/app"
+
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
@@ -36,7 +36,7 @@ func NewUserController(store store.Factory) *UserController {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/users [get]
-func (c *UserController) List(ctx *gin.Context) {
+func (c *UserController) List(ctx *gin.Context) (res interface{}, total int64, err error) {
 	values := ctx.Request.URL.Query()
 	name := values.Get("name")
 	//state, _ := strconv.Atoi(values.Get("state"))
@@ -46,10 +46,11 @@ func (c *UserController) List(ctx *gin.Context) {
 	param := service.ListUserRequest{ListOption: model.ListOption{Name: name, Limit: limit, Page: page, Sort: sort}}
 	users, total, err := c.srv.Users().List(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.GetUsersFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.GetUsersFail)
+		return nil, 0, retcode.GetUsersFail
 	}
-	app.ToResponseList(ctx.Writer, total, users)
+	//app.ToResponseList(ctx.Writer, total, users)
+	return users, total, nil
 }
 
 // @Summary 创建用户
@@ -63,18 +64,19 @@ func (c *UserController) List(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/user [post]
-func (c *UserController) Create(ctx *gin.Context) {
+func (c *UserController) Create(ctx *gin.Context) (res interface{}, err error) {
 	var param service.CreateUserRequest
 	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
+		return nil, retcode.RequestUnMarshalError
 	}
 	if err := c.srv.Users().Create(ctx.Request.Context(), &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.CreateUserFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.CreateUserFail)
+		return nil, retcode.CreateUserFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }
 
 // @Summary 修改用户
@@ -89,18 +91,19 @@ func (c *UserController) Create(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/user [put]
-func (c *UserController) Update(ctx *gin.Context) {
+func (c *UserController) Update(ctx *gin.Context) (res interface{}, err error) {
 	var param service.UpdateUserRequest
 	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
+		return nil, retcode.RequestUnMarshalError
 	}
 	if err := c.srv.Users().Update(ctx.Request.Context(), &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.UpdateUserFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.UpdateUserFail)
+		return nil, retcode.UpdateUserFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }
 
 // @Summary 删除用户
@@ -113,12 +116,13 @@ func (c *UserController) Update(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/user [delete]
-func (c *UserController) Delete(ctx *gin.Context) {
+func (c *UserController) Delete(ctx *gin.Context) (res interface{}, err error) {
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
 	param := service.DeleteUserRequest{OneOption: model.OneOption{Id: id}}
 	if err := c.srv.Users().Delete(ctx.Request.Context(), &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.DeleteUserFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.DeleteUserFail)
+		return nil, retcode.DeleteUserFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }

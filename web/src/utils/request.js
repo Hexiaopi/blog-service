@@ -43,15 +43,15 @@ service.interceptors.response.use(
     const res = response.data
 
     // if the custom code is not 20000, it is judged as an error.
-    if (res.ret_code !== '000000') {
+    if (res.code !== '000000') {
       Message({
-        message: res.ret_desc || 'Error',
+        message: res.desc || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
 
       // 000001: Illegal token; 000002: Other clients logged in; 000003: Token expired;
-      if (res.ret_code === '020003' || res.ret_code === '020004' || res.ret_code === '020005') {
+      if (res.code === '020003' || res.code === '020004' || res.code === '020005') {
         // to re-login
         MessageBox.confirm('你已经退出, 你可以取消并停留在这个页面，或者重新登陆', '确认退出', {
           confirmButtonText: '重新登陆',
@@ -63,7 +63,7 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject(new Error(res.ret_desc || 'Error'))
+      return Promise.reject(new Error(res.desc || 'Error'))
     } else {
       return res
     }

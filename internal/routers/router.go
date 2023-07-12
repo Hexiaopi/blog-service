@@ -9,6 +9,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/hexiaopi/blog-service/internal/app"
 	cache "github.com/hexiaopi/blog-service/internal/cache/redis"
 	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/middleware"
@@ -49,58 +50,58 @@ func NewRouter() *gin.Engine {
 
 	sysRouter := apiRouter.Group("/sys")
 	{
-		sysRouter.GET("/config", systemController.Get)
-		sysRouter.GET("/captcha", captchaController.Get)
-		sysRouter.POST("/login", loginController.Login)
-		sysRouter.POST("/logout", loginController.Logout)
+		sysRouter.GET("/config", app.Wrap(systemController.Get))
+		sysRouter.GET("/captcha", app.Wrap(captchaController.Get))
+		sysRouter.POST("/login", app.Wrap(loginController.Login))
+		sysRouter.POST("/logout", app.Wrap(loginController.Logout))
 	}
 
 	apiV1 := apiRouter.Group("/v1")
 	apiV1.Use(middleware.JWT())
-	apiV1.Use(middleware.NewOperation(storeIns).RecordOperation())
+	apiV1.Use(middleware.NewOperation(storeIns).RecordOperation(middleware.PathContainSkipper("operation")))
 	{
-		apiV1.GET("/user", loginController.Info)
+		apiV1.GET("/user", app.Wrap(loginController.Info))
 		userController := v1.NewUserController(storeIns)
 		{
-			apiV1.GET("/users", userController.List)
-			apiV1.POST("/user", userController.Create)
-			apiV1.PUT("/user", userController.Update)
-			apiV1.DELETE("/user", userController.Delete)
+			apiV1.GET("/users", app.WrapList(userController.List))
+			apiV1.POST("/user", app.Wrap(userController.Create))
+			apiV1.PUT("/user", app.Wrap(userController.Update))
+			apiV1.DELETE("/user", app.Wrap(userController.Delete))
 		}
 
 		articleController := v1.NewArticleController(storeIns, cacheIns)
 		{
-			apiV1.GET("/articles", articleController.List)
-			apiV1.POST("/article", articleController.Create)
-			apiV1.GET("/article", articleController.Get)
-			apiV1.PUT("/article", articleController.Update)
-			apiV1.DELETE("/article", articleController.Delete)
+			apiV1.GET("/articles", app.WrapList(articleController.List))
+			apiV1.POST("/article", app.Wrap(articleController.Create))
+			apiV1.GET("/article", app.Wrap(articleController.Get))
+			apiV1.PUT("/article", app.Wrap(articleController.Update))
+			apiV1.DELETE("/article", app.Wrap(articleController.Delete))
 		}
 		tagController := v1.NewTagController(storeIns)
 		{
-			apiV1.GET("/tags", tagController.List)
-			apiV1.POST("/tag", tagController.Create)
-			apiV1.PUT("/tag", tagController.Update)
-			apiV1.DELETE("/tag", tagController.Delete)
+			apiV1.GET("/tags", app.WrapList(tagController.List))
+			apiV1.POST("/tag", app.Wrap(tagController.Create))
+			apiV1.PUT("/tag", app.Wrap(tagController.Update))
+			apiV1.DELETE("/tag", app.Wrap(tagController.Delete))
 		}
 		roleController := v1.NewRoleController(storeIns)
 		{
-			apiV1.GET("/roles", roleController.List)
-			apiV1.POST("/role", roleController.Create)
-			apiV1.PUT("/role", roleController.Update)
-			apiV1.DELETE("/role", roleController.Delete)
+			apiV1.GET("/roles", app.WrapList(roleController.List))
+			apiV1.POST("/role", app.Wrap(roleController.Create))
+			apiV1.PUT("/role", app.Wrap(roleController.Update))
+			apiV1.DELETE("/role", app.Wrap(roleController.Delete))
 		}
 		resourceController := v1.NewResourceController(storeIns)
 		{
-			apiV1.GET("/resources", resourceController.List)
-			apiV1.POST("/resource", resourceController.Create)
-			apiV1.GET("/resource", resourceController.Get)
-			apiV1.PUT("/resource", resourceController.Update)
-			apiV1.DELETE("/resource", resourceController.Delete)
+			apiV1.GET("/resources", app.WrapList(resourceController.List))
+			apiV1.POST("/resource", app.Wrap(resourceController.Create))
+			apiV1.GET("/resource", app.Wrap(resourceController.Get))
+			apiV1.PUT("/resource", app.Wrap(resourceController.Update))
+			apiV1.DELETE("/resource", app.Wrap(resourceController.Delete))
 		}
 		operationController := v1.NewOperationController(storeIns)
 		{
-			apiV1.GET("/operations", operationController.List)
+			apiV1.GET("/operations", app.WrapList(operationController.List))
 			apiV1.POST("/operation", operationController.Create)
 			apiV1.PUT("/operation", operationController.Update)
 			apiV1.DELETE("/operation", operationController.Delete)

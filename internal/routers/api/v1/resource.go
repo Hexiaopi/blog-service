@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hexiaopi/blog-service/internal/app"
+
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
@@ -35,7 +35,7 @@ func NewResourceController(store store.Factory) *ResourceController {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resources [get]
-func (c *ResourceController) List(ctx *gin.Context) {
+func (c *ResourceController) List(ctx *gin.Context) (res interface{}, total int64, err error) {
 	values := ctx.Request.URL.Query()
 	name := values.Get("name")
 	state, _ := strconv.Atoi(values.Get("state"))
@@ -45,10 +45,11 @@ func (c *ResourceController) List(ctx *gin.Context) {
 	param := service.ResourceListRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	resources, total, err := c.srv.Resources().List(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.GetResourcesFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.GetResourcesFail)
+		return nil, 0, retcode.GetResourcesFail
 	}
-	app.ToResponseList(ctx.Writer, total, resources)
+	//app.ToResponseList(ctx.Writer, total, resources)
+	return resources, total, nil
 }
 
 // @Summary 获取单个资源
@@ -62,15 +63,16 @@ func (c *ResourceController) List(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource/{id} [get]
-func (c *ResourceController) Get(ctx *gin.Context) {
+func (c *ResourceController) Get(ctx *gin.Context) (res interface{}, err error) {
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
 	param := service.ResourceRequest{OneOption: model.OneOption{Id: id}}
 	resource, err := c.srv.Resources().Get(ctx.Request.Context(), &param)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.GetResourceFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.GetResourceFail)
+		return nil, retcode.GetResourceFail
 	}
-	app.ToResponseData(ctx.Writer, resource)
+	//app.ToResponseData(ctx.Writer, resource)
+	return resource, nil
 }
 
 // @Summary 创建资源
@@ -84,16 +86,16 @@ func (c *ResourceController) Get(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource [post]
-func (c *ResourceController) Create(ctx *gin.Context) {
+func (c *ResourceController) Create(ctx *gin.Context) (res interface{}, err error) {
 	file, fileHeader, err := ctx.Request.FormFile("file")
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
+		return nil, retcode.RequestIllegal
 	}
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
-		return
+		// app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
+		return nil, retcode.RequestIllegal
 	}
 	stateValue := ctx.Request.FormValue("state")
 	state, _ := strconv.Atoi(stateValue)
@@ -107,10 +109,11 @@ func (c *ResourceController) Create(ctx *gin.Context) {
 		},
 	}
 	if err := c.srv.Resources().Create(ctx.Request.Context(), &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.CreateResourceFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.CreateResourceFail)
+		return nil, retcode.CreateResourceFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }
 
 // @Summary 修改资源
@@ -125,16 +128,16 @@ func (c *ResourceController) Create(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource [put]
-func (c *ResourceController) Update(ctx *gin.Context) {
+func (c *ResourceController) Update(ctx *gin.Context) (res interface{}, err error) {
 	file, fileHeader, err := ctx.Request.FormFile("file")
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
+		return nil, retcode.RequestIllegal
 	}
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
+		return nil, retcode.RequestIllegal
 	}
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
 	stateValue := ctx.Request.FormValue("state")
@@ -150,10 +153,11 @@ func (c *ResourceController) Update(ctx *gin.Context) {
 		},
 	}
 	if err := c.srv.Resources().Update(ctx.Request.Context(), &param); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.UpdateResourceFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.UpdateResourceFail)
+		return nil, retcode.UpdateResourceFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }
 
 // @Summary 删除资源
@@ -166,11 +170,12 @@ func (c *ResourceController) Update(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource [delete]
-func (c *ResourceController) Delete(ctx *gin.Context) {
+func (c *ResourceController) Delete(ctx *gin.Context) (res interface{}, err error) {
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
 	if err := c.srv.Resources().Delete(ctx.Request.Context(), id); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.DeleteResourceFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.DeleteResourceFail)
+		return nil, retcode.DeleteResourceFail
 	}
-	app.ToResponseData(ctx.Writer, nil)
+	//app.ToResponseData(ctx.Writer, nil)
+	return nil, nil
 }

@@ -46,13 +46,13 @@ type LoginResponse struct {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/sys/login [post]
-func (c *LoginController) Login(ctx *gin.Context) {
+func (c *LoginController) Login(ctx *gin.Context) (res interface{}, err error) {
 	var req LoginRequest
 
 	data, _ := ioutil.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &req); err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
+		return nil, retcode.RequestUnMarshalError
 	}
 	param := service.AuthRequest{
 		UserName: req.UserName,
@@ -62,32 +62,32 @@ func (c *LoginController) Login(ctx *gin.Context) {
 	}
 	if err := c.srv.Users().CheckAuth(ctx.Request.Context(), &param); err != nil {
 		log.Errorf("check user auth err:%v", err)
-		app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
+		return nil, retcode.RequestAuthCheckFail
 	}
 
 	config, err := c.srv.Systems().Get(ctx.Request.Context(), &service.SystemGetRequest{OneOption: model.OneOption{Name: "EnableLoginCaptcha"}})
 	if err != nil {
 		log.Errorf("get system config err:%v", err)
-		app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
+		return nil, retcode.RequestAuthCheckFail
 	}
 	if config != nil && config.Value == "1" {
 		if !captcha.Verify(param.Cid, param.Captcha) {
 			log.Errorf("check user auth err:%v", err)
-			app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
-			return
+			//app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
+			return nil, retcode.RequestAuthCheckFail
 		}
 	}
 
 	token, err := app.GenerateToken(param.UserId, param.UserName, param.PassWord)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.GenerateAuthTokenFail)
+		//app.ToResponseCode(ctx.Writer, retcode.GenerateAuthTokenFail)
+		return nil, retcode.GenerateAuthTokenFail
 	}
-
-	res := LoginResponse{Token: token}
-
-	app.ToResponseData(ctx.Writer, res)
+	return LoginResponse{Token: token}, nil
+	//res := LoginResponse{Token: token}
+	//app.ToResponseData(ctx.Writer, res)
 }
 
 // @Summary 用户信息
@@ -101,19 +101,19 @@ func (c *LoginController) Login(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/user [get]
-func (c *LoginController) Info(ctx *gin.Context) {
+func (c *LoginController) Info(ctx *gin.Context) (res interface{}, err error) {
 	name := ctx.GetString("username")
 	if name == "" {
-		app.ToResponseCode(ctx.Writer, retcode.RequestTokenAuthFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestTokenAuthFail)
+		return nil, retcode.RequestTokenAuthFail
 	}
 	user, err := c.srv.Users().Get(ctx.Request.Context(), name)
 	if err != nil {
-		app.ToResponseCode(ctx.Writer, retcode.RequestUserGetFail)
-		return
+		//app.ToResponseCode(ctx.Writer, retcode.RequestUserGetFail)
+		return nil, retcode.RequestUserGetFail
 	}
-	//user.Roles = []string{"admin"}
-	app.ToResponseData(ctx.Writer, user)
+	//app.ToResponseData(ctx.Writer, user)
+	return user, nil
 }
 
 // @Summary 退出接口
@@ -125,6 +125,7 @@ func (c *LoginController) Info(ctx *gin.Context) {
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/sys/logout [post]
-func (c *LoginController) Logout(ctx *gin.Context) {
-	app.ToResponseCode(ctx.Writer, retcode.Success)
+func (c *LoginController) Logout(ctx *gin.Context) (res interface{}, err error) {
+	//app.ToResponseCode(ctx.Writer, retcode.Success)
+	return nil, nil
 }

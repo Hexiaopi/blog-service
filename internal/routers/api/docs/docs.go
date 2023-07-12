@@ -533,7 +533,7 @@ var doc = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.SystemOperationLog"
+                                                "$ref": "#/definitions/model.OperationLog"
                                             }
                                         }
                                     }
@@ -1805,6 +1805,38 @@ var doc = `{
                 }
             }
         },
+        "model.OperationLog": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "object": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user_agent": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.Resource": {
             "type": "object",
             "properties": {
@@ -1866,38 +1898,6 @@ var doc = `{
                 }
             }
         },
-        "model.SystemOperationLog": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string"
-                },
-                "create_time": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "ip": {
-                    "type": "string"
-                },
-                "object": {
-                    "type": "string"
-                },
-                "result": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "user_agent": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.Tag": {
             "type": "object",
             "properties": {
@@ -1939,9 +1939,6 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "is_del": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -1951,8 +1948,11 @@ var doc = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/model.Role"
                     }
+                },
+                "state": {
+                    "type": "integer"
                 },
                 "update_time": {
                     "type": "string"
@@ -2091,9 +2091,6 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "is_del": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -2103,8 +2100,11 @@ var doc = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/model.Role"
                     }
+                },
+                "state": {
+                    "type": "integer"
                 },
                 "update_time": {
                     "type": "string"
@@ -2281,9 +2281,6 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "is_del": {
-                    "type": "integer"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -2293,8 +2290,11 @@ var doc = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/model.Role"
                     }
+                },
+                "state": {
+                    "type": "integer"
                 },
                 "update_time": {
                     "type": "string"
