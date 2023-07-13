@@ -7,6 +7,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/opentracing/opentracing-go v1.2.0

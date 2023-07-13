@@ -1,6 +1,6 @@
 package store
 
-//go:generate mockgen -self_package=github.com/hexiaopi/blog-service/internal/store -destination mock_store.go -package store github.com/hexiaopi/blog-service/internal/store Factory,ArticleStore,TagStore,AuthStore
+//go:generate mockgen -self_package=github.com/hexiaopi/blog-service/internal/store -destination mock_store.go -package store github.com/hexiaopi/blog-service/internal/store Factory,ArticleStore,TagStore,UserStore,RoleStore,SystemConfigStore,ResourceStore,OperationStore
 
 var client Factory
 
