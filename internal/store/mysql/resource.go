@@ -8,11 +8,14 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/store"
 )
 
 type ResourceDao struct {
 	db *gorm.DB
 }
+
+var _ store.ResourceStore = (*ResourceDao)(nil)
 
 func NewResourceDao(db *gorm.DB) *ResourceDao {
 	return &ResourceDao{db: db}

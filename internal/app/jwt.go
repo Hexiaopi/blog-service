@@ -6,13 +6,11 @@ import (
 	"github.com/dgrijalva/jwt-go"
 
 	"github.com/hexiaopi/blog-service/internal/config"
-	"github.com/hexiaopi/blog-service/internal/util"
 )
 
 type Claims struct {
 	UserId   int    `json:"user_id"`
 	UserName string `json:"user_name"`
-	PassWord string `json:"pass_word"`
 	jwt.StandardClaims
 }
 
@@ -26,7 +24,6 @@ func GenerateToken(id int, username, password string) (string, error) {
 	claims := Claims{
 		UserId:   id,
 		UserName: username,
-		PassWord: util.EncodeMD5(password),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
 			Issuer:    config.AppEngine.JWT.Issuer,

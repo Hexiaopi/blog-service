@@ -7,11 +7,14 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/store"
 )
 
 type TagDao struct {
 	db *gorm.DB
 }
+
+var _ store.TagStore = (*TagDao)(nil)
 
 func NewTagDao(db *gorm.DB) *TagDao {
 	return &TagDao{db: db}

@@ -6,11 +6,14 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/store"
 )
 
 type SystemConfigDao struct {
 	db *gorm.DB
 }
+
+var _ store.SystemConfigStore = (*SystemConfigDao)(nil)
 
 func NewSystemConfigDao(db *gorm.DB) *SystemConfigDao {
 	return &SystemConfigDao{db: db}

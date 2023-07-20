@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"time"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -103,11 +104,52 @@ type UpdateUserRequest struct {
 }
 
 func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) error {
-	if err := svc.store.Users().Update(ctx, &param.User); err != nil {
-		log.Println(err)
+	user, err := svc.store.Users().Get(ctx, param.User.Name)
+	if err != nil {
 		return err
 	}
-	return nil
+	if user == nil {
+		return errors.New("user not found")
+	}
+	roleExist := make(map[int]string)
+	for _, role := range user.Roles {
+		roleExist[role.ID] = "delete" //默认删除
+	}
+	for _, role := range param.Roles {
+		if _, ok := roleExist[role.ID]; ok {
+			roleExist[role.ID] = "exist" //原本角色
+		} else {
+			roleExist[role.ID] = "create" //新的角色
+		}
+	}
+	return svc.store.Tx(ctx, func(ctx context.Context, factory store.Factory) error {
+		if err := factory.Users().Update(ctx, &param.User); err != nil {
+			return err
+		}
+		for k, v := range roleExist {
+			if v == "exist" {
+				continue
+			}
+			if v == "create" {
+				if err := factory.UserRole().Create(ctx, &model.UserRole{
+					UserId:     user.ID,
+					RoleId:     k,
+					CreateTime: time.Now(),
+				}); err != nil {
+					return err
+				}
+			}
+			if v == "delete" {
+				if err := factory.UserRole().Delete(ctx, &model.UserRole{
+					UserId: user.ID,
+					RoleId: k,
+				}); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
 }
 
 type DeleteUserRequest struct {

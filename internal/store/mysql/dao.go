@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"errors"
 
 	"gorm.io/gorm"
@@ -11,6 +12,8 @@ import (
 type datastore struct {
 	db *gorm.DB
 }
+
+var _ store.Factory = (*datastore)(nil)
 
 func NewDao(db *gorm.DB) *datastore {
 	return &datastore{db: db}
@@ -42,6 +45,17 @@ func (ds *datastore) Resources() store.ResourceStore {
 
 func (ds *datastore) Operations() store.OperationStore {
 	return NewOperationDao(ds.db)
+}
+
+func (ds *datastore) UserRole() store.UserRoleStore {
+	return NewUserRoleDao(ds.db)
+}
+
+func (ds *datastore) Tx(ctx context.Context, f store.TxFunc) error {
+	return ds.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		dao := NewDao(tx)
+		return f(ctx, dao)
+	})
 }
 
 func (ds *datastore) Close() error {

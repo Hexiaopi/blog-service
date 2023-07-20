@@ -8,22 +8,30 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/store"
 )
 
 type UserDao struct {
 	db *gorm.DB
 }
 
+var _ store.UserStore = (*UserDao)(nil)
+
 func NewUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{db: db}
 }
 
-// func (dao *UserDao) Tx(ctx context.Context, f store.UserTxFunc) error {
-// 	return dao.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-// 		repo := NewUserDao(tx)
-// 		return f(ctx, repo)
-// 	})
-// }
+func (dao *UserDao) Get(ctx context.Context, name string) (*model.User, error) {
+	var user model.User
+	err := dao.db.WithContext(ctx).Where("name = ?", name).Preload("Roles").First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
 
 func (dao *UserDao) Create(ctx context.Context, user *model.User) error {
 	if err := user.EncryptPassword(); err != nil {
@@ -47,18 +55,6 @@ func (dao *UserDao) Update(ctx context.Context, user *model.User) error {
 func (dao *UserDao) Delete(ctx context.Context, id int) error {
 	user := model.User{ID: id}
 	return dao.db.WithContext(ctx).Delete(&user).Error
-}
-
-func (dao *UserDao) Get(ctx context.Context, name string) (*model.User, error) {
-	var user model.User
-	err := dao.db.WithContext(ctx).Where("name = ?", name).Preload("Roles").First(&user).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &user, nil
 }
 
 func (dao *UserDao) List(ctx context.Context, opt *model.ListOption) ([]model.User, error) {
