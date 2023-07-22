@@ -30,8 +30,9 @@ func NewRoleController(store store.Factory) *RoleController {
 // @Security JWT
 // @param name query string false "角色名称"
 // @param state query integer false "状态"
-// @param page_num query integer false "页码"
-// @param page_size query integer false "每页数量"
+// @param sort query string false "排序方式"
+// @param page query integer false "页码"
+// @param limit query integer false "页面大小"
 // @Success 200 {object} app.ListResponse{data=[]model.Role} "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"

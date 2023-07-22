@@ -1,23 +1,43 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.action" placeholder="动作" style="width: 90px" class="filter-item"
-        @change="handleFilter">
-        <el-option v-for="item in actionOptions" :key="item" :label="item | actionFilter" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.object" placeholder="对象" style="width: 90px" class="filter-item"
-        @change="handleFilter">
-        <el-option v-for="item in objectOptions" :key="item" :label="item | objectFilter" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        搜索
-      </el-button>
+      <el-form :inline="true" :model="listQuery">
+        <el-form-item label="操作者">
+          <el-input v-model="listQuery.username" clearable placeholder="用户名" style="width: 200px;" class="filter-item"
+            @keyup.enter.native="handleFilter" />
+        </el-form-item>
+        <el-form-item label="动作">
+          <el-select v-model="listQuery.action" placeholder="动作" style="width: 90px" class="filter-item"
+            @change="handleFilter">
+            <el-option v-for="item in actionOptions" :key="item" :label="item | actionFilter" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="对象">
+          <el-select v-model="listQuery.object" placeholder="对象" style="width: 90px" class="filter-item"
+            @change="handleFilter">
+            <el-option v-for="item in objectOptions" :key="item" :label="item | objectFilter" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="结果">
+          <el-select v-model="listQuery.result" placeholder="结果" @change="handleFilter">
+            <el-option value="Success" label="成功"></el-option>
+            <el-option value="Fail" label="失败"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="排序方式">
+          <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+            <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+            搜索
+          </el-button>
+        </el-form-item>
+      </el-form>
     </div>
-    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" board fit highlight-current-row
-      style="width: 100%;" @sort-change="sortChange">
+    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border stripe board fit
+      highlight-current-row style="width: 100%;" @sort-change="sortChange">
       <el-table-column align="center" label="ID" min-width="50px">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -46,6 +66,16 @@
       <el-table-column label="对象" align="center" min-width="100px">
         <template slot-scope="scope">
           {{ scope.row.object | objectFilter }}
+        </template>
+      </el-table-column>
+      <el-table-column label="结果" align="center" min-width="100px">
+        <template slot-scope="scope">
+          <div v-if="scope.row.result === 'Success'"><el-tag type="success">成功</el-tag></div>
+          <div v-if="scope.row.result === 'Fail'">
+            <el-tooltip :content="scope.row.error" placement="top">
+              <el-tag type="danger">失败</el-tag>
+            </el-tooltip>
+          </div>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="create_time" label="操作时间" min-width="100px">
@@ -102,7 +132,7 @@ export default {
         'DELETE': 'danger'
       }
       return actionMap[action]
-    }
+    },
   },
   data () {
     return {
@@ -112,8 +142,10 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
+        username: '',
         object: '',
         action: '',
+        result: '',
         sort: '+id'
       },
       objectOptions: ['article', 'tag', 'resource', 'user'],
@@ -121,8 +153,10 @@ export default {
       sortOptions: [{ label: 'ID升序', key: '+id' }, { label: 'ID降序', key: '-id' }],
       temp: {
         id: undefined,
+        username: '',
         object: '',
         action: '',
+        result: '',
       },
     }
   },
@@ -160,7 +194,9 @@ export default {
       this.temp = {
         id: undefined,
         object: '',
-        action: ''
+        action: '',
+        username: '',
+        result: '',
       }
     },
     handleDelete (row, index) {

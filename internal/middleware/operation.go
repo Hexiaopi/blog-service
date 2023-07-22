@@ -47,6 +47,7 @@ func (op *Operation) RecordOperation(skippers ...SkipperFunc) gin.HandlerFunc {
 			}
 			if len(c.Errors) > 0 {
 				operation.Result = "Fail"
+				operation.Error = c.Errors.String()
 			}
 			if err := op.srv.Operations().Create(c.Request.Context(), &operation); err != nil {
 				log.Errorf("record operation log err:%v", err)

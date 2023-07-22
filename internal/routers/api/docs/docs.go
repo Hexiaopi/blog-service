@@ -278,6 +278,12 @@ var doc = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "排序方式",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "页码",
                         "name": "page",
@@ -285,7 +291,7 @@ var doc = `{
                     },
                     {
                         "type": "integer",
-                        "description": "每页数量",
+                        "description": "页面大小",
                         "name": "limit",
                         "in": "query"
                     }
@@ -496,26 +502,44 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "用户",
-                        "name": "user",
+                        "description": "用户名",
+                        "name": "username",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "description": "操作",
+                        "name": "action",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "对象",
                         "name": "object",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page_num",
+                        "type": "string",
+                        "description": "结果",
+                        "name": "result",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序方式",
+                        "name": "sort",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "每页数量",
-                        "name": "page_size",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页面大小",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
@@ -944,15 +968,21 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page_num",
+                        "type": "string",
+                        "description": "排序方式",
+                        "name": "sort",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "每页数量",
-                        "name": "page_size",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页面大小",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
@@ -1173,15 +1203,21 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page_num",
+                        "type": "string",
+                        "description": "排序方式",
+                        "name": "sort",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "每页数量",
-                        "name": "page_size",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页面大小",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
@@ -1402,15 +1438,21 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page_num",
+                        "type": "string",
+                        "description": "排序方式",
+                        "name": "sort",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "每页数量",
-                        "name": "page_size",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页面大小",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
@@ -1680,15 +1722,21 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page_num",
+                        "type": "string",
+                        "description": "排序方式",
+                        "name": "sort",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "每页数量",
-                        "name": "page_size",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页面大小",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
@@ -1734,11 +1782,11 @@ var doc = `{
         "app.CommResponse": {
             "type": "object",
             "properties": {
-                "data": {},
-                "ret_code": {
+                "code": {
                     "type": "string"
                 },
-                "ret_desc": {
+                "data": {},
+                "desc": {
                     "type": "string"
                 }
             }
@@ -1746,10 +1794,10 @@ var doc = `{
         "app.ErrResponse": {
             "type": "object",
             "properties": {
-                "ret_code": {
+                "code": {
                     "type": "string"
                 },
-                "ret_desc": {
+                "desc": {
                     "type": "string"
                 }
             }
@@ -1757,11 +1805,11 @@ var doc = `{
         "app.ListResponse": {
             "type": "object",
             "properties": {
-                "data": {},
-                "ret_code": {
+                "code": {
                     "type": "string"
                 },
-                "ret_desc": {
+                "data": {},
+                "desc": {
                     "type": "string"
                 },
                 "total": {
@@ -1812,6 +1860,9 @@ var doc = `{
                     "type": "string"
                 },
                 "create_time": {
+                    "type": "string"
+                },
+                "error": {
                     "type": "string"
                 },
                 "id": {
@@ -2004,6 +2055,9 @@ var doc = `{
                 "create_time": {
                     "type": "string"
                 },
+                "error": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2154,6 +2208,9 @@ var doc = `{
                     "type": "string"
                 },
                 "create_time": {
+                    "type": "string"
+                },
+                "error": {
                     "type": "string"
                 },
                 "id": {

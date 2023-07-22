@@ -2,25 +2,25 @@ basePath: /
 definitions:
   app.CommResponse:
     properties:
-      data: {}
-      ret_code:
+      code:
         type: string
-      ret_desc:
+      data: {}
+      desc:
         type: string
     type: object
   app.ErrResponse:
     properties:
-      ret_code:
+      code:
         type: string
-      ret_desc:
+      desc:
         type: string
     type: object
   app.ListResponse:
     properties:
-      data: {}
-      ret_code:
+      code:
         type: string
-      ret_desc:
+      data: {}
+      desc:
         type: string
       total:
         type: integer
@@ -54,6 +54,8 @@ definitions:
       action:
         type: string
       create_time:
+        type: string
+      error:
         type: string
       id:
         type: integer
@@ -180,6 +182,8 @@ definitions:
         type: string
       create_time:
         type: string
+      error:
+        type: string
       id:
         type: integer
       ip:
@@ -279,6 +283,8 @@ definitions:
       action:
         type: string
       create_time:
+        type: string
+      error:
         type: string
       id:
         type: integer
@@ -549,11 +555,15 @@ paths:
         in: query
         name: state
         type: integer
+      - description: 排序方式
+        in: query
+        name: sort
+        type: string
       - description: 页码
         in: query
         name: page
         type: integer
-      - description: 每页数量
+      - description: 页面大小
         in: query
         name: limit
         type: integer
@@ -712,21 +722,33 @@ paths:
     get:
       description: 获取多个操作日志
       parameters:
-      - description: 用户
+      - description: 用户名
         in: query
-        name: user
+        name: username
+        type: string
+      - description: 操作
+        in: query
+        name: action
         type: string
       - description: 对象
         in: query
         name: object
-        type: integer
+        type: string
+      - description: 结果
+        in: query
+        name: result
+        type: string
+      - description: 排序方式
+        in: query
+        name: sort
+        type: string
       - description: 页码
         in: query
-        name: page_num
+        name: page
         type: integer
-      - description: 每页数量
+      - description: 页面大小
         in: query
-        name: page_size
+        name: limit
         type: integer
       produces:
       - application/json
@@ -965,13 +987,17 @@ paths:
         in: query
         name: state
         type: integer
+      - description: 排序方式
+        in: query
+        name: sort
+        type: string
       - description: 页码
         in: query
-        name: page_num
+        name: page
         type: integer
-      - description: 每页数量
+      - description: 页面大小
         in: query
-        name: page_size
+        name: limit
         type: integer
       produces:
       - application/json
@@ -1108,13 +1134,17 @@ paths:
         in: query
         name: state
         type: integer
+      - description: 排序方式
+        in: query
+        name: sort
+        type: string
       - description: 页码
         in: query
-        name: page_num
+        name: page
         type: integer
-      - description: 每页数量
+      - description: 页面大小
         in: query
-        name: page_size
+        name: limit
         type: integer
       produces:
       - application/json
@@ -1251,13 +1281,17 @@ paths:
         in: query
         name: state
         type: integer
+      - description: 排序方式
+        in: query
+        name: sort
+        type: string
       - description: 页码
         in: query
-        name: page_num
+        name: page
         type: integer
-      - description: 每页数量
+      - description: 页面大小
         in: query
-        name: page_size
+        name: limit
         type: integer
       produces:
       - application/json
@@ -1425,13 +1459,17 @@ paths:
         in: query
         name: state
         type: integer
+      - description: 排序方式
+        in: query
+        name: sort
+        type: string
       - description: 页码
         in: query
-        name: page_num
+        name: page
         type: integer
-      - description: 每页数量
+      - description: 页面大小
         in: query
-        name: page_size
+        name: limit
         type: integer
       produces:
       - application/json

@@ -29,23 +29,27 @@ func NewOperationController(store store.Factory) *OperationController {
 // @Tags Operation
 // @Produce json
 // @Security JWT
-// @param user query string false "用户"
-// @param object query integer false "对象"
-// @param page_num query integer false "页码"
-// @param page_size query integer false "每页数量"
+// @param username query string false "用户名"
+// @param action query string false "操作"
+// @param object query string false "对象"
+// @param result query string false "结果"
+// @param sort query string false "排序方式"
+// @param page query integer false "页码"
+// @param limit query integer false "页面大小"
 // @Success 200 {object} app.ListResponse{data=[]model.OperationLog} "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/operation [get]
 func (c *OperationController) List(ctx *gin.Context) (res interface{}, total int64, err error) {
 	values := ctx.Request.URL.Query()
+	username := values.Get("username")
 	object := values.Get("object")
 	action := values.Get("action")
-	userId, _ := strconv.Atoi(values.Get("user_id"))
+	result := values.Get("result")
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
-	param := service.OperationListRequest{ListOption: model.ListOption{UserId: userId, Object: object, Action: action, Limit: limit, Page: page, Sort: sort}}
+	param := service.OperationListRequest{UserName: username, ListOption: model.ListOption{Object: object, Action: action, Result: result, Limit: limit, Page: page, Sort: sort}}
 	logs, total, err := c.srv.Operations().List(ctx.Request.Context(), &param)
 	if err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.GetOperationsFail)

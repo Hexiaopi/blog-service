@@ -61,6 +61,9 @@ func (dao *OperationDao) List(ctx context.Context, opt *model.ListOption) ([]mod
 	if opt.UserId > 0 {
 		query = query.Where("user_id = ?", opt.UserId)
 	}
+	if opt.Result != "" {
+		query = query.Where("result = ?", opt.Result)
+	}
 	if opt.Sort != "" {
 		query = query.Order(opt.GetSortType())
 	}
@@ -78,11 +81,17 @@ func (dao *OperationDao) List(ctx context.Context, opt *model.ListOption) ([]mod
 func (dao *OperationDao) Count(ctx context.Context, opt *model.ListOption) (int64, error) {
 	query := dao.db.WithContext(ctx)
 	var total int64
-	if opt.Name != "" {
-		query = query.Where("name = ?", opt.Name)
+	if opt.Object != "" {
+		query = query.Where("object = ?", opt.Object)
 	}
-	if opt.Sort != "" {
-		query = query.Order(opt.GetSortType())
+	if opt.Action != "" {
+		query = query.Where("action = ?", opt.Action)
+	}
+	if opt.UserId > 0 {
+		query = query.Where("user_id = ?", opt.UserId)
+	}
+	if opt.Result != "" {
+		query = query.Where("result = ?", opt.Result)
 	}
 	if err := query.Model(&model.OperationLog{}).
 		Count(&total).

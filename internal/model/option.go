@@ -14,6 +14,7 @@ type ListOption struct {
 	UserId int    `json:"user_id"`
 	Object string `json:"object"`
 	Action string `json:"action"`
+	Result string `json:"result"`
 	Sort   string `json:"sort"`
 	State  uint8  `json:"state"`
 	Page   int    `json:"page"`

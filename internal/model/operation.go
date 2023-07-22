@@ -11,6 +11,7 @@ type OperationLog struct {
 	Object     string    `gorm:"object" json:"object"`
 	Action     string    `gorm:"action" json:"action"`
 	Result     string    `gorm:"result" json:"result"`
+	Error      string    `gorm:"error" json:"error"`
 	CreateTime time.Time `gorm:"create_time" json:"create_time,omitempty"`
 }
 

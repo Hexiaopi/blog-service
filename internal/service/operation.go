@@ -28,10 +28,18 @@ func NewOperationService(factory store.Factory) *OperationService {
 }
 
 type OperationListRequest struct {
+	UserName string `json:"username"`
 	model.ListOption
 }
 
 func (svc *OperationService) List(ctx context.Context, param *OperationListRequest) ([]model.OperationLog, int64, error) {
+	if param.UserName != "" {
+		user, err := svc.store.Users().Get(ctx, param.UserName)
+		if err != nil {
+			return nil, 0, err
+		}
+		param.ListOption.UserId = user.ID
+	}
 	logs, err := svc.store.Operations().List(ctx, &param.ListOption)
 	if err != nil {
 		log.Println(err)
