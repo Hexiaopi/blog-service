@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"errors"
-	"log"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -42,6 +43,7 @@ type AuthRequest struct {
 func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error {
 	user, err := svc.store.Users().Get(ctx, param.UserName)
 	if err != nil {
+		log.Errorf("user store get err:%v", err)
 		return err
 	}
 	if user == nil {
@@ -49,6 +51,7 @@ func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error
 	}
 	param.UserId = user.ID
 	if err := user.Compare(param.PassWord); err != nil {
+		log.Errorf("user compare password err:%v", err)
 		return err
 	}
 	return nil
@@ -57,6 +60,7 @@ func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error
 func (svc *UserService) Get(ctx context.Context, name string) (*model.User, error) {
 	user, err := svc.store.Users().Get(ctx, name)
 	if err != nil {
+		log.Errorf("user store get err:%v", err)
 		return nil, err
 	}
 	if user == nil {
@@ -73,7 +77,7 @@ type ListUserRequest struct {
 func (svc *UserService) List(ctx context.Context, param *ListUserRequest) ([]model.User, int64, error) {
 	users, err := svc.store.Users().List(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("user store list err:%v", err)
 		return nil, 0, err
 	}
 	for i := range users {
@@ -81,7 +85,7 @@ func (svc *UserService) List(ctx context.Context, param *ListUserRequest) ([]mod
 	}
 	total, err := svc.store.Users().Count(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("user store count err:%v", err)
 		return nil, 0, err
 	}
 	return users, total, nil
@@ -93,7 +97,7 @@ type CreateUserRequest struct {
 
 func (svc *UserService) Create(ctx context.Context, param *CreateUserRequest) error {
 	if err := svc.store.Users().Create(ctx, &param.User); err != nil {
-		log.Println(err)
+		log.Errorf("user store create err:%v", err)
 		return err
 	}
 	return nil
@@ -106,6 +110,7 @@ type UpdateUserRequest struct {
 func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) error {
 	user, err := svc.store.Users().Get(ctx, param.User.Name)
 	if err != nil {
+		log.Errorf("user store get err:%v", err)
 		return err
 	}
 	if user == nil {
@@ -124,6 +129,7 @@ func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) er
 	}
 	return svc.store.Tx(ctx, func(ctx context.Context, factory store.Factory) error {
 		if err := factory.Users().Update(ctx, &param.User); err != nil {
+			log.Errorf("user store update err:%v", err)
 			return err
 		}
 		for k, v := range roleExist {
@@ -136,6 +142,7 @@ func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) er
 					RoleId:     k,
 					CreateTime: time.Now(),
 				}); err != nil {
+					log.Errorf("user role create err:%v", err)
 					return err
 				}
 			}
@@ -144,6 +151,7 @@ func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) er
 					UserId: user.ID,
 					RoleId: k,
 				}); err != nil {
+					log.Errorf("user role delete err:%v", err)
 					return err
 				}
 			}
@@ -157,5 +165,9 @@ type DeleteUserRequest struct {
 }
 
 func (svc *UserService) Delete(ctx context.Context, param *DeleteUserRequest) error {
-	return svc.store.Users().Delete(ctx, param.Id)
+	if err := svc.store.Users().Delete(ctx, param.Id); err != nil {
+		log.Errorf("user store delete err:%v", err)
+		return err
+	}
+	return nil
 }

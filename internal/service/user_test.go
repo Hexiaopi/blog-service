@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/pkg/auth"
 	"github.com/hexiaopi/blog-service/internal/store"

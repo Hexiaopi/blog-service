@@ -3,7 +3,8 @@ package service
 import (
 	"context"
 	"encoding/base64"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -36,6 +37,7 @@ type ResourceRequest struct {
 func (svc *ResourceService) Get(ctx context.Context, request *ResourceRequest) (*model.Resource, error) {
 	resource, err := svc.store.Resources().Get(ctx, request.Id)
 	if err != nil {
+		log.Errorf("resource store get err:%v", err)
 		return nil, err
 	}
 	resource.Base64 = "data:image/png;base64," + base64.StdEncoding.EncodeToString(resource.Blob)
@@ -49,6 +51,7 @@ type ResourceListRequest struct {
 func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest) ([]model.Resource, int64, error) {
 	resources, err := svc.store.Resources().List(ctx, &param.ListOption)
 	if err != nil {
+		log.Errorf("resource store list err:%v", err)
 		return nil, 0, err
 	}
 	for i := range resources {
@@ -57,7 +60,7 @@ func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest
 	}
 	count, err := svc.store.Resources().Count(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("resource store count err:%v", err)
 		return nil, 0, err
 	}
 	return resources, count, nil
@@ -69,6 +72,7 @@ type CreateResourceRequest struct {
 
 func (svc *ResourceService) Create(ctx context.Context, param *CreateResourceRequest) error {
 	if err := svc.store.Resources().Create(ctx, &param.Resource); err != nil {
+		log.Errorf("resource store create err:%v", err)
 		return err
 	}
 	return nil
@@ -81,6 +85,7 @@ type UpdateResourceRequest struct {
 func (svc *ResourceService) Update(ctx context.Context, param *UpdateResourceRequest) error {
 	err := svc.store.Resources().Update(ctx, &param.Resource)
 	if err != nil {
+		log.Errorf("resource store update err:%v", err)
 		return err
 	}
 	return nil
@@ -88,6 +93,7 @@ func (svc *ResourceService) Update(ctx context.Context, param *UpdateResourceReq
 
 func (svc *ResourceService) Delete(ctx context.Context, id int) error {
 	if err := svc.store.Resources().Delete(ctx, id); err != nil {
+		log.Errorf("resource store delete err:%v", err)
 		return err
 	}
 	return nil

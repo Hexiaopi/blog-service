@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -36,18 +37,19 @@ func (svc *OperationService) List(ctx context.Context, param *OperationListReque
 	if param.UserName != "" {
 		user, err := svc.store.Users().Get(ctx, param.UserName)
 		if err != nil {
+			log.Errorf("user store get err:%v", err)
 			return nil, 0, err
 		}
 		param.ListOption.UserId = user.ID
 	}
 	logs, err := svc.store.Operations().List(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("operate store list err:%v", err)
 		return nil, 0, err
 	}
 	total, err := svc.store.Operations().Count(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("operation store count err:%v", err)
 		return nil, 0, err
 	}
 	return logs, total, nil
@@ -59,7 +61,7 @@ type CreateOperationRequest struct {
 
 func (svc *OperationService) Create(ctx context.Context, param *CreateOperationRequest) error {
 	if err := svc.store.Operations().Create(ctx, &param.OperationLog); err != nil {
-		log.Println(err)
+		log.Errorf("operation store create err:%v", err)
 		return err
 	}
 	return nil
@@ -71,7 +73,7 @@ type UpdateOperationRequest struct {
 
 func (svc *OperationService) Update(ctx context.Context, param *UpdateOperationRequest) error {
 	if err := svc.store.Operations().Update(ctx, &param.OperationLog); err != nil {
-		log.Println(err)
+		log.Errorf("operation store update err:%v", err)
 		return err
 	}
 	return nil
@@ -82,5 +84,9 @@ type DeleteOperationRequest struct {
 }
 
 func (svc *OperationService) Delete(ctx context.Context, param *DeleteOperationRequest) error {
-	return svc.store.Operations().Delete(ctx, param.Id)
+	if err := svc.store.Operations().Delete(ctx, param.Id); err != nil {
+		log.Errorf("operation store delete err:%v", err)
+		return err
+	}
+	return nil
 }

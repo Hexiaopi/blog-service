@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -34,12 +35,12 @@ type TagListRequest struct {
 func (svc *TagService) List(ctx context.Context, param *TagListRequest) ([]model.Tag, int64, error) {
 	tags, err := svc.store.Tags().List(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("tag store list err:%v", err)
 		return nil, 0, err
 	}
 	total, err := svc.store.Tags().Count(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("tag store count err:%v", err)
 		return nil, 0, err
 	}
 	return tags, total, nil
@@ -51,7 +52,7 @@ type CreateTagRequest struct {
 
 func (svc *TagService) Create(ctx context.Context, param *CreateTagRequest) error {
 	if err := svc.store.Tags().Create(ctx, &param.Tag); err != nil {
-		log.Println(err)
+		log.Errorf("tag store create err:%v", err)
 		return err
 	}
 	return nil
@@ -63,7 +64,7 @@ type UpdateTagRequest struct {
 
 func (svc *TagService) Update(ctx context.Context, param *UpdateTagRequest) error {
 	if err := svc.store.Tags().Update(ctx, &param.Tag); err != nil {
-		log.Println(err)
+		log.Errorf("tag store update err:%v", err)
 		return err
 	}
 	return nil
@@ -74,5 +75,9 @@ type DeleteTagRequest struct {
 }
 
 func (svc *TagService) Delete(ctx context.Context, param *DeleteTagRequest) error {
-	return svc.store.Tags().Delete(ctx, param.Id)
+	if err := svc.store.Tags().Delete(ctx, param.Id); err != nil {
+		log.Errorf("tag store delete err:%v", err)
+		return err
+	}
+	return nil
 }

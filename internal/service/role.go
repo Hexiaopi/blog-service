@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -34,12 +35,12 @@ type ListRoleRequest struct {
 func (svc *RoleService) List(ctx context.Context, param *ListRoleRequest) ([]model.Role, int64, error) {
 	roles, err := svc.store.Roles().List(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("role store list err:%v", err)
 		return nil, 0, err
 	}
 	total, err := svc.store.Roles().Count(ctx, &param.ListOption)
 	if err != nil {
-		log.Println(err)
+		log.Errorf("role store count err:%v", err)
 		return nil, 0, err
 	}
 	return roles, total, nil
@@ -51,7 +52,7 @@ type CreateRoleRequest struct {
 
 func (svc *RoleService) Create(ctx context.Context, param *CreateRoleRequest) error {
 	if err := svc.store.Roles().Create(ctx, &param.Role); err != nil {
-		log.Println(err)
+		log.Errorf("role store create err:%v", err)
 		return err
 	}
 	return nil
@@ -63,7 +64,7 @@ type UpdateRoleRequest struct {
 
 func (svc *RoleService) Update(ctx context.Context, param *UpdateRoleRequest) error {
 	if err := svc.store.Roles().Update(ctx, &param.Role); err != nil {
-		log.Println(err)
+		log.Errorf("role store update err:%v", err)
 		return err
 	}
 	return nil
@@ -74,5 +75,9 @@ type DeleteRoleRequest struct {
 }
 
 func (svc *RoleService) Delete(ctx context.Context, param *DeleteRoleRequest) error {
-	return svc.store.Roles().Delete(ctx, param.Id)
+	if err := svc.store.Roles().Delete(ctx, param.Id); err != nil {
+		log.Errorf("role store delete err:%v", err)
+		return err
+	}
+	return nil
 }
