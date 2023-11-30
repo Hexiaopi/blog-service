@@ -11,8 +11,12 @@ import (
 
 func Run() {
 	router := routers.NewRouter()
-	httpServer := http.NewServer(router, config.Logger, http.WithServerHost(config.AppEngine.HTTP.Host), http.WithServerPort(config.AppEngine.HTTP.Port))
+	httpServer := http.NewServer(router,
+		config.Logger,
+		http.WithServerHost(config.AppEngine.HTTP.Host),
+		http.WithServerPort(config.AppEngine.HTTP.Port),
+	)
 	if err := app.NewApp(app.WithServer(httpServer)).Run(context.Background()); err != nil {
-		config.Logger.Sugar().Errorf("start http server err:%v", err)
+		config.Logger.Errorf("start http server err:%v", err)
 	}
 }

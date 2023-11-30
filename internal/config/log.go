@@ -3,10 +3,10 @@ package config
 import (
 	"github.com/spf13/pflag"
 
-	"github.com/hexiaopi/blog-service/pkg/log"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
-var Logger *log.Logger
+var Logger log.Logger
 
 type LogConfig struct {
 	FileName  string `yaml:"file-name"`
@@ -30,7 +30,7 @@ func (o *LogConfig) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&o.Env, "log.env", o.Env, "Log env")
 }
 
-func (o *LogConfig) NewLog() *log.Logger {
+func (o *LogConfig) NewLog() log.Logger {
 	conf := &log.Config{
 		FileName:  o.FileName,
 		LogLevel:  o.LogLevel,

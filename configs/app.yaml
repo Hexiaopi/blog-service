@@ -16,14 +16,14 @@ mysql:
   log-level: 1
 
 log:
-  file-name: logs/app.log
+  file-name: ./logs/app.log
   log-level: debug
   max-size: 30 
   max-backup: 3
   max-age: 7 
-  compress: true
+  compress: false
   encoding: json
-  dev: prod
+  dev: dev
 
 redis:
   addr: "localhost:6379"

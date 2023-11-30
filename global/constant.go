@@ -9,6 +9,7 @@ const (
 	Status     = "status"
 	ReqPkg     = "reqpkg"
 	ResPkg     = "respkg"
+	UseTime    = "utm"
 )
 
 const (

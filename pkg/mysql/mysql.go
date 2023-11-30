@@ -34,7 +34,6 @@ func New(conf *Config, plugins ...gorm.Plugin) (*gorm.DB, error) {
 		true,
 		"Local",
 	)
-	fmt.Println("xxxx", dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})

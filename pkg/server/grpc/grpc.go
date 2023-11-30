@@ -8,19 +8,19 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/hexiaopi/blog-service/pkg/log"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type Server struct {
 	*grpc.Server
 	host   string
 	port   int
-	logger *log.Logger
+	logger log.Logger
 }
 
 type Option func(s *Server)
 
-func NewServer(logger *log.Logger, opts ...Option) *Server {
+func NewServer(logger log.Logger, opts ...Option) *Server {
 	s := &Server{
 		Server: grpc.NewServer(),
 		logger: logger,
@@ -44,10 +44,10 @@ func WithServerPort(port int) Option {
 func (s *Server) Start(ctx context.Context) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", s.host, s.port))
 	if err != nil {
-		s.logger.Sugar().Fatalf("Failed to listen: %v", err)
+		s.logger.Fatalf("Failed to listen: %v", err)
 	}
 	if err = s.Server.Serve(lis); err != nil {
-		s.logger.Sugar().Fatalf("Failed to serve: %v", err)
+		s.logger.Fatalf("Failed to serve: %v", err)
 	}
 	return nil
 

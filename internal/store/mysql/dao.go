@@ -83,6 +83,7 @@ func (ds *datastore) Migration() error {
 		&model.Role{},
 		&model.UserRole{},
 		&model.User{},
+		&model.Resource{},
 	); err != nil {
 		return err
 	}
