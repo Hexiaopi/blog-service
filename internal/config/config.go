@@ -1,29 +1,58 @@
 package config
 
 import (
-	log "github.com/sirupsen/logrus"
+	"fmt"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
-func Init() {
+func Init(cmd *cobra.Command) {
 	var err error
-	AppEngine, err = NewAppConfig("configs/app.yaml")
-	if err != nil {
-		log.Fatalf("init config fail %v", err)
+	v := viper.New()
+	v.SetConfigFile("configs/app.yaml")
+
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			panic(fmt.Errorf("read config file err:%v", err))
+		}
 	}
-	log.Infof("config:%v", AppEngine)
-	if err = InitLogger(AppEngine.LogLevel); err != nil {
-		log.Fatalf("init log fail err:%v", err)
+	if err := v.Unmarshal(&AppEngine); err != nil {
+		panic(fmt.Errorf("unmarshal config err:%v", err))
 	}
-	Tracer, _, err = NewJaegerTracer(AppEngine.ServiceName, AppEngine.TraceAgent)
+	v.WatchConfig()
+	v.OnConfigChange(func(in fsnotify.Event) {
+		if err := v.Unmarshal(&AppEngine); err != nil {
+			panic(fmt.Errorf("unmarshal config err:%v", err))
+		}
+	})
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		name := f.Name
+		if !f.Changed && v.IsSet(name) {
+			val := v.Get(name)
+			cmd.Flags().Set(name, fmt.Sprintf("%v", val))
+		}
+	})
+
+	AppEngine.Flags(pflag.CommandLine)
+
+	pflag.Parse()
+	v.BindPFlags(pflag.CommandLine)
+
+	Logger = AppEngine.Log.NewLog()
+	Tracer, _, err = NewJaegerTracer("blog-service", AppEngine.TraceAgent)
 	if err != nil {
-		log.Fatal("init jaeger client fail.")
+		panic(fmt.Errorf("init jaeger client err:%v", err))
 	}
-	DBEngine, err = NewDBEngine(&AppEngine.DataBase, AppEngine.LogLevel)
+
+	DBEngine, err = AppEngine.MySQL.NewClient()
 	if err != nil {
-		log.Fatalf("init db engine fail err:%v", err)
+		panic(fmt.Errorf("init db engine fail err:%v", err))
 	}
-	RedisEngine, err = NewCacheEngine(&AppEngine.Redis)
+	RedisEngine, err = AppEngine.Redis.NewClient()
 	if err != nil {
-		log.Fatalf("init redis engine fail err:%v", err)
+		panic(fmt.Errorf("init redis engine fail err:%v", err))
 	}
 }

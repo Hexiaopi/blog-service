@@ -1,35 +1,22 @@
 package config
 
 import (
-	"io/ioutil"
-	"time"
-
-	"gopkg.in/yaml.v2"
+	"github.com/spf13/pflag"
 )
 
+var AppEngine AppConfig
+
 type AppConfig struct {
-	LogLevel        string          `yaml:"LogLevel"`
-	ServiceName     string          `yaml:"ServiceName"`
-	ServicePort     int             `yaml:"ServicePort"`
-	ContextTimeout  time.Duration   `yaml:"ContextTimeout"`
-	DefaultPageSize int             `yaml:"DefaultPageSize"`
-	MaxPageSize     int             `yaml:"MaxPageSize"`
-	DataBase        DatabaseSetting `yaml:"DataBase"`
-	Redis           RedisSetting    `yaml:"Redis"`
-	JWT             JWTSetting      `yaml:"JWT"`
-	TraceAgent      string          `yaml:"TraceAgent"`
+	MySQL      MySQLConfig `yaml:"mysql"`
+	Redis      RedisConfig `yaml:"redis"`
+	Log        LogConfig   `yaml:"log"`
+	JWT        JWTConfig   `yaml:"jwt"`
+	HTTP       HttpConfig  `yaml:"http"`
+	TraceAgent string      `yaml:"traceAgent"`
 }
 
-var AppEngine *AppConfig
-
-func NewAppConfig(file string) (*AppConfig, error) {
-	data, err := ioutil.ReadFile(file)
-	if err != nil {
-		return nil, err
-	}
-	var app AppConfig
-	if err := yaml.Unmarshal(data, &app); err != nil {
-		return nil, err
-	}
-	return &app, nil
+func (o *AppConfig) Flags(fs *pflag.FlagSet) {
+	o.MySQL.AddFlags(fs)
+	o.Redis.AddFlags(fs)
+	o.Log.AddFlags(fs)
 }

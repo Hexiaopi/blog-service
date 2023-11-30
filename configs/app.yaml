@@ -1,28 +1,31 @@
-LogLevel: debug
-ServiceName: blog-service
-ServicePort: 8080
-ContextTimeout: 10s
-DefaultPageSize: 10
-MaxPageSize: 10
-DataBase:
-  dbType: mysql
+http:
+  host: 0.0.0.0
+  port: 8080
+  timeout: 10s
+
+mysql:
   username: root
-  password:
-  dbname: blog_service
+  password: 930619
+  database: blog_service
   host: 127.0.0.1
   port: 3306
   charset: utf8
-  parseTime: True
-  maxIdleConn: 10
-  maxOpenConn: 30
-  connMaxLifeTime: 1h
-JWT:
-  Secret: hexiaopi
-  Issuer: blog
-  Expire: 1h
-TraceAgent: 127.0.0.1:6831
-Redis:
+  max-idle-connections: 10
+  max-open-connections: 30
+  max-connection-life-time: 1h
+  log-level: 1
+
+redis:
   addr: "localhost:6379"
   username: ""
   password: ""
   db: 0
+
+jwt:
+  Secret: hexiaopi
+  Issuer: blog
+  Expire: 1h
+
+traceAgent: 127.0.0.1:6831
+
+

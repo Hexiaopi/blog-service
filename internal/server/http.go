@@ -2,44 +2,17 @@ package server
 
 import (
 	"context"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/hexiaopi/blog-service/internal/config"
 	"github.com/hexiaopi/blog-service/internal/routers"
+	"github.com/hexiaopi/blog-service/pkg/app"
+	"github.com/hexiaopi/blog-service/pkg/server/http"
 )
 
 func Run() {
 	router := routers.NewRouter()
-	s := &http.Server{
-		Addr:           ":8080",
-		Handler:        router,
-		ReadTimeout:    time.Second * 30,
-		WriteTimeout:   time.Second * 30,
-		MaxHeaderBytes: 1 << 20,
+	httpServer := http.NewServer(router, config.Logger, http.WithServerHost(config.AppEngine.HTTP.Host), http.WithServerPort(config.AppEngine.HTTP.Port))
+	if err := app.NewApp(app.WithServer(httpServer)).Run(context.Background()); err != nil {
+		config.Logger.Sugar().Errorf("start http server err:%v", err)
 	}
-
-	go func() {
-		log.Println("Starting Server...")
-		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("s.ListenAndServe err: %v", err)
-		}
-	}()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("Shutting down Server...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := s.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
-	}
-
-	log.Println("Server exit.")
 }

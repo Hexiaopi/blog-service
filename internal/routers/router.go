@@ -45,7 +45,7 @@ func NewRouter() *gin.Engine {
 	apiRouter.Use(middleware.RequestId())
 	apiRouter.Use(middleware.Logger())
 	apiRouter.Use(middleware.Metrics())
-	apiRouter.Use(middleware.Timeout())
+	apiRouter.Use(middleware.Timeout(config.AppEngine.HTTP.Timeout))
 	apiRouter.Use(middleware.Tracer())
 
 	sysRouter := apiRouter.Group("/sys")

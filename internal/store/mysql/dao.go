@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
 )
 
@@ -68,4 +69,22 @@ func (ds *datastore) Close() error {
 	}
 
 	return db.Close()
+}
+
+func (ds *datastore) Migration() error {
+	if err := ds.db.AutoMigrate(
+		&model.Article{},
+		&model.ArticleTag{},
+		&model.Tag{},
+		&model.Captcha{},
+		&model.Config{},
+		&model.OperationLog{},
+		&model.Resource{},
+		&model.Role{},
+		&model.UserRole{},
+		&model.User{},
+	); err != nil {
+		return err
+	}
+	return nil
 }

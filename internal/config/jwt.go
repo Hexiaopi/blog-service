@@ -2,8 +2,8 @@ package config
 
 import "time"
 
-type JWTSetting struct {
-	Secret string        `yaml:"Secret"`
-	Issuer string        `yaml:"Issuer"`
-	Expire time.Duration `yaml:"Expire"`
+type JWTConfig struct {
+	Secret string        `yaml:"secret"`
+	Issuer string        `yaml:"issuer"`
+	Expire time.Duration `yaml:"expire"`
 }

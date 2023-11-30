@@ -1,98 +1,34 @@
 package config
 
 import (
-	"context"
-	"strconv"
-
 	"github.com/go-redis/redis/v8"
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
-	tracerLog "github.com/opentracing/opentracing-go/log"
+	"github.com/spf13/pflag"
+
+	redisPkg "github.com/hexiaopi/blog-service/pkg/redis"
 )
 
 var RedisEngine *redis.Client
 
-type RedisSetting struct {
+type RedisConfig struct {
 	Addr     string `yaml:"addr"`
 	UserName string `yaml:"username"`
 	PassWord string `yaml:"password"`
 	DB       int    `yaml:"db"`
 }
 
-func NewCacheEngine(set *RedisSetting) (*redis.Client, error) {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     set.Addr,
-		Username: set.UserName,
-		Password: set.PassWord,
-		DB:       set.DB,
-	})
-	hook := NewHook(Tracer)
-	rdb.AddHook(hook)
-	return rdb, nil
+func (o *RedisConfig) AddFlags(fs *pflag.FlagSet) {
+	pflag.StringVar(&o.Addr, "redis.addr", o.Addr, "Redis server addr")
+	pflag.StringVar(&o.UserName, "redis.username", o.UserName, "Redis server username")
+	pflag.StringVar(&o.PassWord, "redis.password", o.PassWord, "Redis server password")
+	pflag.IntVar(&o.DB, "redis.db", o.DB, "Redis server db")
 }
 
-type RedisTracingHook struct {
-	tracer opentracing.Tracer
-}
-
-var _ redis.Hook = RedisTracingHook{}
-
-// NewHook creates a new go-redis hook instance and that will collect spans using the provided tracer.
-func NewHook(tracer opentracing.Tracer) redis.Hook {
-	return &RedisTracingHook{
-		tracer: tracer,
+func (o *RedisConfig) NewClient() (*redis.Client, error) {
+	conf := &redisPkg.Config{
+		Addr:     o.Addr,
+		UserName: o.UserName,
+		PassWord: o.PassWord,
+		DB:       o.DB,
 	}
-}
-
-func (hook RedisTracingHook) createSpan(ctx context.Context, operationName string) (opentracing.Span, context.Context) {
-	span := opentracing.SpanFromContext(ctx)
-	if span != nil {
-		childSpan := hook.tracer.StartSpan(operationName, opentracing.ChildOf(span.Context()))
-		return childSpan, opentracing.ContextWithSpan(ctx, childSpan)
-	}
-
-	return opentracing.StartSpanFromContextWithTracer(ctx, hook.tracer, operationName)
-}
-
-func (hook RedisTracingHook) BeforeProcess(ctx context.Context, cmd redis.Cmder) (context.Context, error) {
-	span, ctx := hook.createSpan(ctx, "redis")
-	span.SetTag("db.type", "redis")
-	span.LogFields(tracerLog.String("cmd", cmd.String()))
-	return ctx, nil
-}
-
-func (hook RedisTracingHook) AfterProcess(ctx context.Context, cmd redis.Cmder) error {
-	span := opentracing.SpanFromContext(ctx)
-	defer span.Finish()
-
-	if err := cmd.Err(); err != nil {
-		recordError(ctx, "db.error", span, err)
-	}
-	return nil
-}
-
-func (hook RedisTracingHook) BeforeProcessPipeline(ctx context.Context, cmds []redis.Cmder) (context.Context, error) {
-	span, ctx := hook.createSpan(ctx, "pipeline")
-	span.SetTag("db.type", "redis")
-	span.SetTag("db.redis.num_cmd", len(cmds))
-	return ctx, nil
-}
-
-func (hook RedisTracingHook) AfterProcessPipeline(ctx context.Context, cmds []redis.Cmder) error {
-	span := opentracing.SpanFromContext(ctx)
-	defer span.Finish()
-
-	for i, cmd := range cmds {
-		if err := cmd.Err(); err != nil {
-			recordError(ctx, "db.error"+strconv.Itoa(i), span, err)
-		}
-	}
-	return nil
-}
-
-func recordError(ctx context.Context, errorTag string, span opentracing.Span, err error) {
-	if err != redis.Nil {
-		span.SetTag(string(ext.Error), true)
-		span.SetTag(errorTag, err.Error())
-	}
+	return redisPkg.New(conf)
 }

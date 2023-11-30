@@ -2,8 +2,6 @@ package main
 
 import (
 	"log"
-	"math/rand"
-	"time"
 
 	"github.com/spf13/cobra"
 	_ "go.uber.org/automaxprocs"
@@ -21,24 +19,21 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	cobra.OnInitialize(config.Init)
+	config.Init(rootCmd)
 }
 
 // @title Blog Service API
 // @version 1.0
 // @description This is a blog server restful api docs.
-
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 // @host      localhost:8080
 // @BasePath  /
-
 // @securityDefinitions.apikey JWT
 // @in header
 // @name Authorization
 func main() {
-	rand.Seed(time.Now().UTC().UnixNano())
 	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("server run err:%v", err)
 	}
 }
