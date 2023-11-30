@@ -37,6 +37,9 @@ func (c *SystemController) Get(ctx *gin.Context) (res interface{}, err error) {
 		//app.ToResponseCode(ctx.Writer, retcode.GetSystemConfigFail)
 		return nil, retcode.GetSystemConfigFail
 	}
+	if config == nil {
+		return nil, retcode.GetSystemConfigFail
+	}
 	//app.ToResponseData(ctx.Writer, config.Value)
 	return config.Value, nil
 }

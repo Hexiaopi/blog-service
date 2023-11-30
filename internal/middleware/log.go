@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/global"
+	"github.com/hexiaopi/blog-service/pkg/log"
 )
 
 type ResponseWithRecorder struct {
@@ -33,7 +33,7 @@ func (rec *ResponseWithRecorder) Write(d []byte) (n int, err error) {
 }
 
 // Logger 日志记录
-func Logger(skippers ...SkipperFunc) gin.HandlerFunc {
+func Logger(logger *log.Logger, skippers ...SkipperFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if SkipHandler(c, skippers...) {
 			c.Next()
@@ -45,12 +45,12 @@ func Logger(skippers ...SkipperFunc) gin.HandlerFunc {
 		rdr := ioutil.NopCloser(bytes.NewBuffer(buf))
 		c.Request.Body = rdr //rewrite
 
-		log.WithFields(log.Fields{
-			XRequestIDKey:     c.GetString(XRequestIDKey),
-			global.Path:       c.Request.URL.Path,
-			global.QueryParam: c.Request.URL.RawQuery,
-			global.Method:     c.Request.Method,
-		}).Infof("receive request body:%d ", len(buf))
+		logger.Logger.Sugar().Infow("receive request",
+			XRequestIDKey, c.GetString(XRequestIDKey),
+			global.Path, c.Request.URL.Path,
+			global.QueryParam, c.Request.URL.RawQuery,
+			global.Method, c.Request.Method,
+		)
 
 		//记录返回包
 		wc := &ResponseWithRecorder{
@@ -62,12 +62,13 @@ func Logger(skippers ...SkipperFunc) gin.HandlerFunc {
 		c.Next()
 
 		defer func() { //日志记录扫尾工作
-			log.WithFields(log.Fields{
-				XRequestIDKey: c.GetString(XRequestIDKey),
-				global.Path:   c.Request.URL.Path,
-				global.Status: wc.statusCode,
-				global.ResPkg: wc.body.String(),
-			}).Infof("done use time:%s", time.Since(start).String())
+			logger.Logger.Sugar().Infow("done",
+				XRequestIDKey, c.GetString(XRequestIDKey),
+				global.Path, c.Request.URL.Path,
+				global.Status, wc.statusCode,
+				global.ResPkg, wc.body.String(),
+				"use time", time.Since(start).String(),
+			)
 		}()
 	}
 }

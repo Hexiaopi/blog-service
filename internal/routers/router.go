@@ -43,7 +43,7 @@ func NewRouter() *gin.Engine {
 
 	apiRouter := router.Group("/api")
 	apiRouter.Use(middleware.RequestId())
-	apiRouter.Use(middleware.Logger())
+	apiRouter.Use(middleware.Logger(config.Logger))
 	apiRouter.Use(middleware.Metrics())
 	apiRouter.Use(middleware.Timeout(config.AppEngine.HTTP.Timeout))
 	apiRouter.Use(middleware.Tracer())

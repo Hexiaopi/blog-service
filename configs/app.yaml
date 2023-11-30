@@ -9,11 +9,21 @@ mysql:
   database: blog_service
   host: 127.0.0.1
   port: 3306
-  charset: utf8
+  charset: utf8mb4
   max-idle-connections: 10
   max-open-connections: 30
   max-connection-life-time: 1h
   log-level: 1
+
+log:
+  file-name: logs/app.log
+  log-level: debug
+  max-size: 30 
+  max-backup: 3
+  max-age: 7 
+  compress: true
+  encoding: json
+  dev: prod
 
 redis:
   addr: "localhost:6379"
