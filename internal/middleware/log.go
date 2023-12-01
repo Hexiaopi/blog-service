@@ -13,7 +13,7 @@ import (
 )
 
 type ResponseWithRecorder struct {
-	http.ResponseWriter
+	gin.ResponseWriter
 	statusCode int
 	body       bytes.Buffer
 }
@@ -50,6 +50,7 @@ func Logger(logger log.Logger, skippers ...SkipperFunc) gin.HandlerFunc {
 			log.String(global.Path, c.Request.URL.Path),
 			log.String(global.QueryParam, c.Request.URL.RawQuery),
 			log.String(global.Method, c.Request.Method),
+			log.String(global.ReqPkg, string(buf)),
 		)
 
 		//记录返回包
@@ -58,6 +59,7 @@ func Logger(logger log.Logger, skippers ...SkipperFunc) gin.HandlerFunc {
 			statusCode:     http.StatusOK,
 			body:           bytes.Buffer{},
 		}
+		c.Writer = wc
 
 		c.Next()
 
