@@ -11,15 +11,18 @@ import (
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type UserController struct {
-	srv service.Service
+	srv    service.Service
+	logger log.Logger
 }
 
-func NewUserController(store store.Factory) *UserController {
+func NewUserController(store store.Factory, logger log.Logger) *UserController {
 	return &UserController{
-		srv: service.NewService(store, nil),
+		srv:    service.NewService(store, nil, logger),
+		logger: logger,
 	}
 }
 

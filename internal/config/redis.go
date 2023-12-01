@@ -10,10 +10,10 @@ import (
 var RedisEngine *redis.Client
 
 type RedisConfig struct {
-	Addr     string `yaml:"addr"`
-	UserName string `yaml:"username"`
-	PassWord string `yaml:"password"`
-	DB       int    `yaml:"db"`
+	Addr     string `mapstructure:"addr"`
+	UserName string `mapstructure:"username"`
+	PassWord string `mapstructure:"password"`
+	DB       int    `mapstructure:"db"`
 }
 
 func (o *RedisConfig) AddFlags(fs *pflag.FlagSet) {

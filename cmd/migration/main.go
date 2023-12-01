@@ -1,9 +1,10 @@
 package main
 
 import (
+	"log"
+
 	"github.com/hexiaopi/blog-service/internal/config"
 	dao "github.com/hexiaopi/blog-service/internal/store/mysql"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +20,9 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	config.Init(rootCmd)
+	if err := config.Init(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {

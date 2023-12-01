@@ -9,14 +9,14 @@ import (
 var Logger log.Logger
 
 type LogConfig struct {
-	FileName  string `yaml:"file-name"`
-	LogLevel  string `yaml:"log-level"`
-	MaxSize   int    `yaml:"max-size"`
-	MaxBackup int    `yaml:"max-backup"`
-	MaxAge    int    `yaml:"max-age"`
-	Compress  bool   `yaml:"compress"`
-	Encoding  string `yaml:"encoding"`
-	Env       string `yaml:"env"`
+	FileName  string `mapstructure:"file-name"`
+	LogLevel  string `mapstructure:"log-level"`
+	MaxSize   int    `mapstructure:"max-size"`
+	MaxBackup int    `mapstructure:"max-backup"`
+	MaxAge    int    `mapstructure:"max-age"`
+	Compress  bool   `mapstructure:"compress"`
+	Encoding  string `mapstructure:"encoding"`
+	Env       string `mapstructure:"env"`
 }
 
 func (o *LogConfig) AddFlags(fs *pflag.FlagSet) {

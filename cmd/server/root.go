@@ -19,7 +19,9 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	config.Init(rootCmd)
+	if err := config.Init(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // @title Blog Service API

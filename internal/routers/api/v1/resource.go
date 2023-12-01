@@ -10,15 +10,18 @@ import (
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type ResourceController struct {
-	srv service.Service
+	srv    service.Service
+	logger log.Logger
 }
 
-func NewResourceController(store store.Factory) *ResourceController {
+func NewResourceController(store store.Factory, logger log.Logger) *ResourceController {
 	return &ResourceController{
-		srv: service.NewService(store, nil),
+		srv:    service.NewService(store, nil, logger),
+		logger: logger,
 	}
 }
 

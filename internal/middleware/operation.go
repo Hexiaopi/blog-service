@@ -5,20 +5,22 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type Operation struct {
-	srv service.Service
+	srv    service.Service
+	logger log.Logger
 }
 
-func NewOperation(store store.Factory) *Operation {
+func NewOperation(store store.Factory, logger log.Logger) *Operation {
 	return &Operation{
-		srv: service.NewService(store, nil),
+		srv:    service.NewService(store, nil, logger),
+		logger: logger,
 	}
 }
 
@@ -50,7 +52,7 @@ func (op *Operation) RecordOperation(skippers ...SkipperFunc) gin.HandlerFunc {
 				operation.Error = c.Errors.String()
 			}
 			if err := op.srv.Operations().Create(c.Request.Context(), &operation); err != nil {
-				log.Errorf("record operation log err:%v", err)
+				op.logger.Errorf("record operation log err:%v", err)
 			}
 		} else {
 			c.Next()

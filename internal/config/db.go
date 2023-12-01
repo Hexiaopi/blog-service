@@ -12,16 +12,16 @@ import (
 var DBEngine *gorm.DB
 
 type MySQLConfig struct {
-	Host                  string        `yaml:"host"`
-	Port                  string        `yaml:"port"`
-	UserName              string        `yaml:"username"`
-	PassWord              string        `yaml:"password"`
-	DataBase              string        `yaml:"database"`
-	Charset               string        `yaml:"charset"`
-	MaxIdleConnections    int           `yaml:"max-idle-connections"`
-	MaxOpenConnections    int           `yaml:"max-open-connections"`
-	MaxConnectionLifeTime time.Duration `yaml:"max-connection-life-time"`
-	LogLevel              int           `yaml:"log-level"`
+	Host                  string        `mapstructure:"host"`
+	Port                  string        `mapstructure:"port"`
+	UserName              string        `mapstructure:"username"`
+	PassWord              string        `mapstructure:"password"`
+	DataBase              string        `mapstructure:"database"`
+	Charset               string        `mapstructure:"charset"`
+	MaxIdleConnections    int           `mapstructure:"max-idle-connections"`
+	MaxOpenConnections    int           `mapstructure:"max-open-connections"`
+	MaxConnectionLifeTime time.Duration `mapstructure:"max-connection-life-time"`
+	LogLevel              int           `mapstructure:"log-level"`
 }
 
 func (o *MySQLConfig) AddFlags(fs *pflag.FlagSet) {

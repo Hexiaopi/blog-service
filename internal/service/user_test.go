@@ -9,6 +9,7 @@ import (
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/pkg/auth"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 func TestUserService_CheckAuth(t *testing.T) {
@@ -25,7 +26,7 @@ func TestUserService_CheckAuth(t *testing.T) {
 	)
 	mockFactory := store.NewMockFactory(ctrl)
 	mockFactory.EXPECT().Users().Return(userStore).AnyTimes()
-	userSrv := NewUserService(mockFactory)
+	userSrv := NewUserService(mockFactory, log.Std)
 	if err := userSrv.CheckAuth(
 		context.Background(),
 		&AuthRequest{
@@ -47,7 +48,7 @@ func TestUserService_Get(t *testing.T) {
 	)
 	mockFactory := store.NewMockFactory(ctrl)
 	mockFactory.EXPECT().Users().Return(userStore).AnyTimes()
-	userSrv := NewUserService(mockFactory)
+	userSrv := NewUserService(mockFactory, log.Std)
 	user, err := userSrv.Get(context.Background(), "admin")
 	if err != nil {
 		t.Fatal(err)
@@ -70,7 +71,7 @@ func TestUserService_List(t *testing.T) {
 	mockFactory := store.NewMockFactory(ctrl)
 	mockFactory.EXPECT().Users().Return(userStore).AnyTimes()
 
-	userSrv := NewUserService(mockFactory)
+	userSrv := NewUserService(mockFactory, log.Std)
 	users, total, err := userSrv.List(context.Background(), &ListUserRequest{})
 	if err != nil {
 		t.Fatal(err)
@@ -88,7 +89,7 @@ func TestUserService_Create(t *testing.T) {
 	userStore.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil)
 	mockFactory := store.NewMockFactory(ctrl)
 	mockFactory.EXPECT().Users().Return(userStore).AnyTimes()
-	userSrv := NewUserService(mockFactory)
+	userSrv := NewUserService(mockFactory, log.Std)
 	if err := userSrv.Create(
 		context.Background(),
 		&CreateUserRequest{
@@ -120,7 +121,7 @@ func TestUserService_Update(t *testing.T) {
 	mockFactory.EXPECT().Users().Return(userStore).AnyTimes()
 	mockFactory.EXPECT().UserRole().Return(userRoleStore).AnyTimes()
 	mockFactory.EXPECT().Tx(gomock.Any(), gomock.Any()).Return(nil)
-	userSrv := NewUserService(mockFactory)
+	userSrv := NewUserService(mockFactory, log.Std)
 	if err := userSrv.Update(
 		context.Background(),
 		&UpdateUserRequest{

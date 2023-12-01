@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/retcode"
@@ -12,12 +11,10 @@ import (
 
 // 全局错误
 func PathNotFound(ctx *gin.Context) {
-	log.Errorf("request path:%s not found!", ctx.Request.RequestURI)
 	app.ToResponseCode(ctx.Writer, retcode.RequestPathNotFound)
 }
 
 func MethodNotAllow(ctx *gin.Context) {
-	log.Errorf("request path:%s method:%s not allowed!", ctx.Request.RequestURI, ctx.Request.Method)
 	app.ToResponseCode(ctx.Writer, retcode.RequestMethodNotAllow)
 }
 

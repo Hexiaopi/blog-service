@@ -32,9 +32,9 @@ redis:
   db: 0
 
 jwt:
-  Secret: hexiaopi
-  Issuer: blog
-  Expire: 1h
+  secret: hexiaopi
+  issuer: blog
+  expire: 1h
 
 traceAgent: 127.0.0.1:6831
 

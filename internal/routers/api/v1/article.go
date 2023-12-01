@@ -12,15 +12,18 @@ import (
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type ArticleController struct {
-	srv service.Service
+	srv    service.Service
+	logger log.Logger
 }
 
-func NewArticleController(store store.Factory, cache cache.Factory) *ArticleController {
+func NewArticleController(store store.Factory, cache cache.Factory, logger log.Logger) *ArticleController {
 	return &ArticleController{
-		srv: service.NewService(store, cache),
+		srv:    service.NewService(store, cache, logger),
+		logger: logger,
 	}
 }
 

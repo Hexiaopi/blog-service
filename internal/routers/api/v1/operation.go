@@ -12,15 +12,18 @@ import (
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type OperationController struct {
-	srv service.Service
+	srv    service.Service
+	logger log.Logger
 }
 
-func NewOperationController(store store.Factory) *OperationController {
+func NewOperationController(store store.Factory, logger log.Logger) *OperationController {
 	return &OperationController{
-		srv: service.NewService(store, nil),
+		srv:    service.NewService(store, nil, logger),
+		logger: logger,
 	}
 }
 

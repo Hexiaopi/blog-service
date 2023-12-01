@@ -10,7 +10,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-type ZapLogger struct {
+type zapLogger struct {
 	zapLogger *zap.Logger
 }
 
@@ -23,6 +23,12 @@ type Config struct {
 	Compress  bool
 	Encoding  string
 	Env       string
+}
+
+var Std Logger
+
+func init() {
+	Std = New(&Config{LogLevel: "error", Encoding: "console", Env: "dev"})
 }
 
 func New(conf *Config) Logger {
@@ -85,9 +91,9 @@ func New(conf *Config) Logger {
 		level,
 	)
 	if conf.Env != "prod" {
-		return &ZapLogger{zap.New(core, zap.Development(), zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))}
+		return &zapLogger{zap.New(core, zap.Development(), zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zap.ErrorLevel))}
 	}
-	return &ZapLogger{zap.New(core, zap.AddCaller(), zap.AddStacktrace(zap.InfoLevel))}
+	return &zapLogger{zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zap.ErrorLevel))}
 }
 
 func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {

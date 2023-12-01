@@ -37,8 +37,8 @@ func NewRouter() *gin.Engine {
 	router.NoRoute(middleware.PathNotFound)
 	router.Use(middleware.Recovery())
 
-	loginController := sys.NewLoginController(storeIns)
-	systemController := sys.NewSystemController(storeIns)
+	loginController := sys.NewLoginController(storeIns, config.Logger)
+	systemController := sys.NewSystemController(storeIns, config.Logger)
 	captchaController := sys.NewCaptchaController()
 
 	apiRouter := router.Group("/api")
@@ -58,10 +58,10 @@ func NewRouter() *gin.Engine {
 
 	apiV1 := apiRouter.Group("/v1")
 	apiV1.Use(middleware.JWT())
-	apiV1.Use(middleware.NewOperation(storeIns).RecordOperation(middleware.PathContainSkipper("operation")))
+	apiV1.Use(middleware.NewOperation(storeIns, config.Logger).RecordOperation(middleware.PathContainSkipper("operation")))
 	{
 		apiV1.GET("/user", app.Wrap(loginController.Info))
-		userController := v1.NewUserController(storeIns)
+		userController := v1.NewUserController(storeIns, config.Logger)
 		{
 			apiV1.GET("/users", app.WrapList(userController.List))
 			apiV1.POST("/user", app.Wrap(userController.Create))
@@ -69,7 +69,7 @@ func NewRouter() *gin.Engine {
 			apiV1.DELETE("/user", app.Wrap(userController.Delete))
 		}
 
-		articleController := v1.NewArticleController(storeIns, cacheIns)
+		articleController := v1.NewArticleController(storeIns, cacheIns, config.Logger)
 		{
 			apiV1.GET("/articles", app.WrapList(articleController.List))
 			apiV1.POST("/article", app.Wrap(articleController.Create))
@@ -77,21 +77,21 @@ func NewRouter() *gin.Engine {
 			apiV1.PUT("/article", app.Wrap(articleController.Update))
 			apiV1.DELETE("/article", app.Wrap(articleController.Delete))
 		}
-		tagController := v1.NewTagController(storeIns)
+		tagController := v1.NewTagController(storeIns, config.Logger)
 		{
 			apiV1.GET("/tags", app.WrapList(tagController.List))
 			apiV1.POST("/tag", app.Wrap(tagController.Create))
 			apiV1.PUT("/tag", app.Wrap(tagController.Update))
 			apiV1.DELETE("/tag", app.Wrap(tagController.Delete))
 		}
-		roleController := v1.NewRoleController(storeIns)
+		roleController := v1.NewRoleController(storeIns, config.Logger)
 		{
 			apiV1.GET("/roles", app.WrapList(roleController.List))
 			apiV1.POST("/role", app.Wrap(roleController.Create))
 			apiV1.PUT("/role", app.Wrap(roleController.Update))
 			apiV1.DELETE("/role", app.Wrap(roleController.Delete))
 		}
-		resourceController := v1.NewResourceController(storeIns)
+		resourceController := v1.NewResourceController(storeIns, config.Logger)
 		{
 			apiV1.GET("/resources", app.WrapList(resourceController.List))
 			apiV1.POST("/resource", app.Wrap(resourceController.Create))
@@ -99,7 +99,7 @@ func NewRouter() *gin.Engine {
 			apiV1.PUT("/resource", app.Wrap(resourceController.Update))
 			apiV1.DELETE("/resource", app.Wrap(resourceController.Delete))
 		}
-		operationController := v1.NewOperationController(storeIns)
+		operationController := v1.NewOperationController(storeIns, config.Logger)
 		{
 			apiV1.GET("/operations", app.WrapList(operationController.List))
 			apiV1.POST("/operation", operationController.Create)

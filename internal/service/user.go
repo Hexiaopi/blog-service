@@ -5,10 +5,9 @@ import (
 	"errors"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type UserSrv interface {
@@ -21,14 +20,16 @@ type UserSrv interface {
 }
 
 type UserService struct {
-	store store.Factory
+	store  store.Factory
+	logger log.Logger
 }
 
 var _ UserSrv = (*UserService)(nil)
 
-func NewUserService(factory store.Factory) *UserService {
+func NewUserService(factory store.Factory, logger log.Logger) *UserService {
 	return &UserService{
-		store: factory,
+		store:  factory,
+		logger: logger,
 	}
 }
 
@@ -41,9 +42,10 @@ type AuthRequest struct {
 }
 
 func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error {
+	svc.logger.Debugf("user check auth request:%+v", param)
 	user, err := svc.store.Users().Get(ctx, param.UserName)
 	if err != nil {
-		log.Errorf("user store get err:%v", err)
+		svc.logger.Errorf("user store get err:%v", err)
 		return err
 	}
 	if user == nil {
@@ -51,16 +53,17 @@ func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error
 	}
 	param.UserId = user.ID
 	if err := user.Compare(param.PassWord); err != nil {
-		log.Errorf("user compare password err:%v", err)
+		svc.logger.Errorf("user compare password err:%v", err)
 		return err
 	}
 	return nil
 }
 
 func (svc *UserService) Get(ctx context.Context, name string) (*model.User, error) {
+	svc.logger.Debugf("user get request:%s", name)
 	user, err := svc.store.Users().Get(ctx, name)
 	if err != nil {
-		log.Errorf("user store get err:%v", err)
+		svc.logger.Errorf("user store get err:%v", err)
 		return nil, err
 	}
 	if user == nil {
@@ -75,9 +78,10 @@ type ListUserRequest struct {
 }
 
 func (svc *UserService) List(ctx context.Context, param *ListUserRequest) ([]model.User, int64, error) {
+	svc.logger.Debugf("user list request:%+v", param)
 	users, err := svc.store.Users().List(ctx, &param.ListOption)
 	if err != nil {
-		log.Errorf("user store list err:%v", err)
+		svc.logger.Errorf("user store list err:%v", err)
 		return nil, 0, err
 	}
 	for i := range users {
@@ -85,7 +89,7 @@ func (svc *UserService) List(ctx context.Context, param *ListUserRequest) ([]mod
 	}
 	total, err := svc.store.Users().Count(ctx, &param.ListOption)
 	if err != nil {
-		log.Errorf("user store count err:%v", err)
+		svc.logger.Errorf("user store count err:%v", err)
 		return nil, 0, err
 	}
 	return users, total, nil
@@ -96,8 +100,9 @@ type CreateUserRequest struct {
 }
 
 func (svc *UserService) Create(ctx context.Context, param *CreateUserRequest) error {
+	svc.logger.Debugf("user create request:%+v", param)
 	if err := svc.store.Users().Create(ctx, &param.User); err != nil {
-		log.Errorf("user store create err:%v", err)
+		svc.logger.Errorf("user store create err:%v", err)
 		return err
 	}
 	return nil
@@ -108,9 +113,10 @@ type UpdateUserRequest struct {
 }
 
 func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) error {
+	svc.logger.Debugf("user update request:%+v", param)
 	user, err := svc.store.Users().Get(ctx, param.User.Name)
 	if err != nil {
-		log.Errorf("user store get err:%v", err)
+		svc.logger.Errorf("user store get err:%v", err)
 		return err
 	}
 	if user == nil {
@@ -129,7 +135,7 @@ func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) er
 	}
 	return svc.store.Tx(ctx, func(ctx context.Context, factory store.Factory) error {
 		if err := factory.Users().Update(ctx, &param.User); err != nil {
-			log.Errorf("user store update err:%v", err)
+			svc.logger.Errorf("user store update err:%v", err)
 			return err
 		}
 		for k, v := range roleExist {
@@ -142,7 +148,7 @@ func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) er
 					RoleId:     k,
 					CreateTime: time.Now(),
 				}); err != nil {
-					log.Errorf("user role create err:%v", err)
+					svc.logger.Errorf("user role create err:%v", err)
 					return err
 				}
 			}
@@ -151,7 +157,7 @@ func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) er
 					UserId: user.ID,
 					RoleId: k,
 				}); err != nil {
-					log.Errorf("user role delete err:%v", err)
+					svc.logger.Errorf("user role delete err:%v", err)
 					return err
 				}
 			}
@@ -165,8 +171,9 @@ type DeleteUserRequest struct {
 }
 
 func (svc *UserService) Delete(ctx context.Context, param *DeleteUserRequest) error {
+	svc.logger.Debugf("user delete request:%+v", param)
 	if err := svc.store.Users().Delete(ctx, param.Id); err != nil {
-		log.Errorf("user store delete err:%v", err)
+		svc.logger.Errorf("user store delete err:%v", err)
 		return err
 	}
 	return nil

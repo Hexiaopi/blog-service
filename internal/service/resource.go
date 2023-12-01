@@ -4,10 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type ResourceSrv interface {
@@ -19,14 +18,16 @@ type ResourceSrv interface {
 }
 
 type ResourceService struct {
-	store store.Factory
+	store  store.Factory
+	logger log.Logger
 }
 
 var _ ResourceSrv = (*ResourceService)(nil)
 
-func NewResourceService(factory store.Factory) *ResourceService {
+func NewResourceService(factory store.Factory, logger log.Logger) *ResourceService {
 	return &ResourceService{
-		store: factory,
+		store:  factory,
+		logger: logger,
 	}
 }
 
@@ -34,10 +35,11 @@ type ResourceRequest struct {
 	model.OneOption
 }
 
-func (svc *ResourceService) Get(ctx context.Context, request *ResourceRequest) (*model.Resource, error) {
-	resource, err := svc.store.Resources().Get(ctx, request.Id)
+func (svc *ResourceService) Get(ctx context.Context, param *ResourceRequest) (*model.Resource, error) {
+	svc.logger.Debugf("resource get request:%+v", param)
+	resource, err := svc.store.Resources().Get(ctx, param.Id)
 	if err != nil {
-		log.Errorf("resource store get err:%v", err)
+		svc.logger.Errorf("resource store get err:%v", err)
 		return nil, err
 	}
 	resource.Base64 = "data:image/png;base64," + base64.StdEncoding.EncodeToString(resource.Blob)
@@ -49,9 +51,10 @@ type ResourceListRequest struct {
 }
 
 func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest) ([]model.Resource, int64, error) {
+	svc.logger.Debugf("resource list request:%+v", param)
 	resources, err := svc.store.Resources().List(ctx, &param.ListOption)
 	if err != nil {
-		log.Errorf("resource store list err:%v", err)
+		svc.logger.Errorf("resource store list err:%v", err)
 		return nil, 0, err
 	}
 	for i := range resources {
@@ -60,7 +63,7 @@ func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest
 	}
 	count, err := svc.store.Resources().Count(ctx, &param.ListOption)
 	if err != nil {
-		log.Errorf("resource store count err:%v", err)
+		svc.logger.Errorf("resource store count err:%v", err)
 		return nil, 0, err
 	}
 	return resources, count, nil
@@ -71,8 +74,9 @@ type CreateResourceRequest struct {
 }
 
 func (svc *ResourceService) Create(ctx context.Context, param *CreateResourceRequest) error {
+	svc.logger.Debugf("resource create request:%+v", param)
 	if err := svc.store.Resources().Create(ctx, &param.Resource); err != nil {
-		log.Errorf("resource store create err:%v", err)
+		svc.logger.Errorf("resource store create err:%v", err)
 		return err
 	}
 	return nil
@@ -83,17 +87,19 @@ type UpdateResourceRequest struct {
 }
 
 func (svc *ResourceService) Update(ctx context.Context, param *UpdateResourceRequest) error {
+	svc.logger.Debugf("resource update request:%+v", param)
 	err := svc.store.Resources().Update(ctx, &param.Resource)
 	if err != nil {
-		log.Errorf("resource store update err:%v", err)
+		svc.logger.Errorf("resource store update err:%v", err)
 		return err
 	}
 	return nil
 }
 
 func (svc *ResourceService) Delete(ctx context.Context, id int) error {
+	svc.logger.Debugf("resource delete request:%d", id)
 	if err := svc.store.Resources().Delete(ctx, id); err != nil {
-		log.Errorf("resource store delete err:%v", err)
+		svc.logger.Errorf("resource store delete err:%v", err)
 		return err
 	}
 	return nil

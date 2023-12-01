@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/hexiaopi/blog-service/internal/app"
 	"github.com/hexiaopi/blog-service/internal/model"
@@ -13,15 +12,18 @@ import (
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
+	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type LoginController struct {
-	srv service.Service
+	srv    service.Service
+	logger log.Logger
 }
 
-func NewLoginController(store store.Factory) *LoginController {
+func NewLoginController(store store.Factory, logger log.Logger) *LoginController {
 	return &LoginController{
-		srv: service.NewService(store, nil),
+		srv:    service.NewService(store, nil, logger),
+		logger: logger,
 	}
 }
 
@@ -61,20 +63,20 @@ func (c *LoginController) Login(ctx *gin.Context) (res interface{}, err error) {
 		Cid:      req.Cid,
 	}
 	if err := c.srv.Users().CheckAuth(ctx.Request.Context(), &param); err != nil {
-		log.Errorf("check user auth err:%v", err)
+		c.logger.Errorf("check user auth err:%v", err)
 		//app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
 		return nil, retcode.RequestAuthCheckFail
 	}
 
 	config, err := c.srv.Systems().Get(ctx.Request.Context(), &service.SystemGetRequest{OneOption: model.OneOption{Name: "EnableLoginCaptcha"}})
 	if err != nil {
-		log.Errorf("get system config err:%v", err)
+		c.logger.Errorf("get system config err:%v", err)
 		//app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
 		return nil, retcode.RequestAuthCheckFail
 	}
 	if config != nil && config.Value == "1" {
 		if !captcha.Verify(param.Cid, param.Captcha) {
-			log.Errorf("check user auth err:%v", err)
+			c.logger.Errorf("check user auth err:%v", err)
 			//app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)
 			return nil, retcode.RequestAuthCheckFail
 		}
