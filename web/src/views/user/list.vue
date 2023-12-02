@@ -84,7 +84,7 @@
       @pagination="getList" />
 
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="30%">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px"
         style="width: 400px; margin-left:50px;">
         <el-form-item label="用户名称" prop="name">
@@ -143,8 +143,8 @@ export default {
     },
     statusDisplayFilter (status) {
       const statusMap = {
-        1: '无效',
-        0: '有效'
+        0: '无效',
+        1: '有效'
       }
       return statusMap[status]
     }
@@ -168,7 +168,7 @@ export default {
         name: '',
         password: '',
         avatar: '',
-        state: 0,
+        state: 1,
         roles: [],
       },
       roles: [],

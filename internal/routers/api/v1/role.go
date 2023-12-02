@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -47,7 +47,7 @@ func (c *RoleController) List(ctx *gin.Context) (res interface{}, total int64, e
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
-	param := service.ListRoleRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
+	param := service.ListRoleRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	roles, total, err := c.srv.Roles().List(ctx.Request.Context(), &param)
 	if err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.GetTagsFail)
@@ -122,7 +122,7 @@ func (c *RoleController) Update(ctx *gin.Context) (res interface{}, err error) {
 // @Router /api/v1/role [delete]
 func (c *RoleController) Delete(ctx *gin.Context) (res interface{}, err error) {
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
-	param := service.DeleteRoleRequest{OneOption: model.OneOption{Id: id}}
+	param := service.DeleteRoleRequest{OneOption: entity.OneOption{Id: id}}
 	if err := c.srv.Roles().Delete(ctx.Request.Context(), &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.DeleteTagFail)
 		return nil, retcode.DeleteRoleFail

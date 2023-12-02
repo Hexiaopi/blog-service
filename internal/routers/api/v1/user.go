@@ -2,12 +2,12 @@ package v1
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -43,11 +43,11 @@ func NewUserController(store store.Factory, logger log.Logger) *UserController {
 func (c *UserController) List(ctx *gin.Context) (res interface{}, total int64, err error) {
 	values := ctx.Request.URL.Query()
 	name := values.Get("name")
-	//state, _ := strconv.Atoi(values.Get("state"))
+	state, _ := strconv.Atoi(values.Get("state"))
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
-	param := service.ListUserRequest{ListOption: model.ListOption{Name: name, Limit: limit, Page: page, Sort: sort}}
+	param := service.ListUserRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	users, total, err := c.srv.Users().List(ctx.Request.Context(), &param)
 	if err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.GetUsersFail)
@@ -70,7 +70,7 @@ func (c *UserController) List(ctx *gin.Context) (res interface{}, total int64, e
 // @Router /api/v1/user [post]
 func (c *UserController) Create(ctx *gin.Context) (res interface{}, err error) {
 	var param service.CreateUserRequest
-	data, _ := ioutil.ReadAll(ctx.Request.Body)
+	data, _ := io.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return nil, retcode.RequestUnMarshalError
@@ -97,7 +97,7 @@ func (c *UserController) Create(ctx *gin.Context) (res interface{}, err error) {
 // @Router /api/v1/user [put]
 func (c *UserController) Update(ctx *gin.Context) (res interface{}, err error) {
 	var param service.UpdateUserRequest
-	data, _ := ioutil.ReadAll(ctx.Request.Body)
+	data, _ := io.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return nil, retcode.RequestUnMarshalError
@@ -122,7 +122,7 @@ func (c *UserController) Update(ctx *gin.Context) (res interface{}, err error) {
 // @Router /api/v1/user [delete]
 func (c *UserController) Delete(ctx *gin.Context) (res interface{}, err error) {
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
-	param := service.DeleteUserRequest{OneOption: model.OneOption{Id: id}}
+	param := service.DeleteUserRequest{OneOption: entity.OneOption{Id: id}}
 	if err := c.srv.Users().Delete(ctx.Request.Context(), &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.DeleteUserFail)
 		return nil, retcode.DeleteUserFail

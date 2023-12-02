@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/store"
 	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type RoleSrv interface {
-	List(ctx context.Context, param *ListRoleRequest) ([]model.Role, int64, error)
+	List(ctx context.Context, param *ListRoleRequest) ([]entity.Role, int64, error)
 	Create(ctx context.Context, param *CreateRoleRequest) error
 	Update(ctx context.Context, param *UpdateRoleRequest) error
 	Delete(ctx context.Context, param *DeleteRoleRequest) error
@@ -30,26 +30,29 @@ func NewRoleService(factory store.Factory, logger log.Logger) *RoleService {
 }
 
 type ListRoleRequest struct {
-	model.ListOption
+	entity.ListOption
 }
 
-func (svc *RoleService) List(ctx context.Context, param *ListRoleRequest) ([]model.Role, int64, error) {
+func (svc *RoleService) List(ctx context.Context, param *ListRoleRequest) ([]entity.Role, int64, error) {
 	svc.logger.Debugf("role list request:%+v", param)
-	roles, err := svc.store.Roles().List(ctx, &param.ListOption)
-	if err != nil {
-		svc.logger.Errorf("role store list err:%v", err)
-		return nil, 0, err
-	}
 	total, err := svc.store.Roles().Count(ctx, &param.ListOption)
 	if err != nil {
 		svc.logger.Errorf("role store count err:%v", err)
+		return nil, 0, err
+	}
+	if total == 0 {
+		return nil, 0, err
+	}
+	roles, err := svc.store.Roles().List(ctx, &param.ListOption)
+	if err != nil {
+		svc.logger.Errorf("role store list err:%v", err)
 		return nil, 0, err
 	}
 	return roles, total, nil
 }
 
 type CreateRoleRequest struct {
-	model.Role
+	entity.Role
 }
 
 func (svc *RoleService) Create(ctx context.Context, param *CreateRoleRequest) error {
@@ -62,7 +65,7 @@ func (svc *RoleService) Create(ctx context.Context, param *CreateRoleRequest) er
 }
 
 type UpdateRoleRequest struct {
-	model.Role
+	entity.Role
 }
 
 func (svc *RoleService) Update(ctx context.Context, param *UpdateRoleRequest) error {
@@ -75,7 +78,7 @@ func (svc *RoleService) Update(ctx context.Context, param *UpdateRoleRequest) er
 }
 
 type DeleteRoleRequest struct {
-	model.OneOption
+	entity.OneOption
 }
 
 func (svc *RoleService) Delete(ctx context.Context, param *DeleteRoleRequest) error {

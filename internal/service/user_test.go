@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/pkg/auth"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -93,11 +94,11 @@ func TestUserService_Create(t *testing.T) {
 	if err := userSrv.Create(
 		context.Background(),
 		&CreateUserRequest{
-			model.User{
+			entity.User{
 				ID:       1,
 				Name:     "admin",
 				PassWord: "123456",
-				Roles: []model.Role{
+				Roles: []entity.Role{
 					{ID: 1, Name: "admin"},
 				},
 			}}); err != nil {
@@ -125,10 +126,10 @@ func TestUserService_Update(t *testing.T) {
 	if err := userSrv.Update(
 		context.Background(),
 		&UpdateUserRequest{
-			model.User{
+			entity.User{
 				ID:   1,
 				Name: "admin",
-				Roles: []model.Role{
+				Roles: []entity.Role{
 					{ID: 2, Name: "test"},
 				},
 			}}); err != nil {

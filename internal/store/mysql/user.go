@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
 )
@@ -21,35 +22,32 @@ func NewUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{db: db}
 }
 
-func (dao *UserDao) Get(ctx context.Context, name string) (*model.User, error) {
+func (dao *UserDao) Get(ctx context.Context, name string) (*entity.User, error) {
 	var user model.User
-	err := dao.db.WithContext(ctx).Where("name = ?", name).Preload("Roles").First(&user).Error
+	err := dao.db.WithContext(ctx).Where("name = ?", name).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
 	}
-	return &user, nil
+	return entity.ToEntityUser(&user), nil
 }
 
-func (dao *UserDao) Create(ctx context.Context, user *model.User) error {
-	if err := user.EncryptPassword(); err != nil {
-		return err
+func (dao *UserDao) Create(ctx context.Context, user *entity.User) (int, error) {
+	u := user.ToModel()
+	u.CreateTime = time.Now()
+	u.UpdateTime = time.Now()
+	if err := dao.db.WithContext(ctx).Create(u).Error; err != nil {
+		return 0, err
 	}
-	user.CreateTime = time.Now()
-	user.UpdateTime = time.Now()
-	return dao.db.WithContext(ctx).Omit("Roles").Create(user).Error
+	return u.ID, nil
 }
 
-func (dao *UserDao) Update(ctx context.Context, user *model.User) error {
-	user.UpdateTime = time.Now()
-	if user.PassWord != "" {
-		if err := user.EncryptPassword(); err != nil {
-			return err
-		}
-	}
-	return dao.db.WithContext(ctx).Omit("Roles").Updates(user).Error
+func (dao *UserDao) Update(ctx context.Context, user *entity.User) error {
+	u := user.ToModel()
+	u.UpdateTime = time.Now()
+	return dao.db.WithContext(ctx).Updates(u).Error
 }
 
 func (dao *UserDao) Delete(ctx context.Context, id int) error {
@@ -57,7 +55,7 @@ func (dao *UserDao) Delete(ctx context.Context, id int) error {
 	return dao.db.WithContext(ctx).Delete(&user).Error
 }
 
-func (dao *UserDao) List(ctx context.Context, opt *model.ListOption) ([]model.User, error) {
+func (dao *UserDao) List(ctx context.Context, opt *entity.ListOption) ([]entity.User, error) {
 	query := dao.db.WithContext(ctx)
 	if opt.Page >= 0 && opt.Limit > 0 {
 		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
@@ -71,17 +69,18 @@ func (dao *UserDao) List(ctx context.Context, opt *model.ListOption) ([]model.Us
 	users := make([]model.User, 0)
 	if err := query.Model(&model.User{}).
 		Where("state = ?", opt.State).
-		Preload("Roles").
 		Find(&users).
 		Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
+		return nil, err
 	}
-	return users, nil
+	result := make([]entity.User, 0, len(users))
+	for _, user := range users {
+		result = append(result, *entity.ToEntityUser(&user))
+	}
+	return result, nil
 }
 
-func (dao *UserDao) Count(ctx context.Context, opt *model.ListOption) (int64, error) {
+func (dao *UserDao) Count(ctx context.Context, opt *entity.ListOption) (int64, error) {
 	query := dao.db.WithContext(ctx)
 	var count int64
 	if opt.Name != "" {
@@ -94,9 +93,7 @@ func (dao *UserDao) Count(ctx context.Context, opt *model.ListOption) (int64, er
 		Where("state = ?", opt.State).
 		Count(&count).
 		Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return 0, nil
-		}
+		return 0, err
 	}
 	return count, nil
 }

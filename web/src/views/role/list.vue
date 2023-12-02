@@ -127,7 +127,7 @@ export default {
         page: 1,
         limit: 10,
         name: undefined,
-        state: 0,
+        state: 1,
         sort: '+id'
       },
       stateOptions: [0, 1],
