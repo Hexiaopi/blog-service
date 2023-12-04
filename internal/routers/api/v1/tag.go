@@ -2,12 +2,12 @@ package v1
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -47,7 +47,7 @@ func (c *TagController) List(ctx *gin.Context) (res interface{}, total int64, er
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
-	param := service.TagListRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
+	param := service.TagListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	tags, total, err := c.srv.Tags().List(ctx.Request.Context(), &param)
 	if err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.GetTagsFail)
@@ -70,7 +70,7 @@ func (c *TagController) List(ctx *gin.Context) (res interface{}, total int64, er
 // @Router /api/v1/tag [post]
 func (c *TagController) Create(ctx *gin.Context) (res interface{}, err error) {
 	var param service.CreateTagRequest
-	data, _ := ioutil.ReadAll(ctx.Request.Body)
+	data, _ := io.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return nil, retcode.RequestUnMarshalError
@@ -97,7 +97,7 @@ func (c *TagController) Create(ctx *gin.Context) (res interface{}, err error) {
 // @Router /api/v1/tag [put]
 func (c *TagController) Update(ctx *gin.Context) (res interface{}, err error) {
 	var param service.UpdateTagRequest
-	data, _ := ioutil.ReadAll(ctx.Request.Body)
+	data, _ := io.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return nil, retcode.RequestUnMarshalError
@@ -122,7 +122,7 @@ func (c *TagController) Update(ctx *gin.Context) (res interface{}, err error) {
 // @Router /api/v1/tag [delete]
 func (c *TagController) Delete(ctx *gin.Context) (res interface{}, err error) {
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
-	param := service.DeleteTagRequest{OneOption: model.OneOption{Id: id}}
+	param := service.DeleteTagRequest{OneOption: entity.OneOption{Id: id}}
 	if err := c.srv.Tags().Delete(ctx.Request.Context(), &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.DeleteTagFail)
 		return nil, retcode.DeleteTagFail

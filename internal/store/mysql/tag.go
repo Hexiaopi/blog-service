@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
 )
@@ -20,13 +21,14 @@ func NewTagDao(db *gorm.DB) *TagDao {
 	return &TagDao{db: db}
 }
 
-func (dao *TagDao) Create(ctx context.Context, tag *model.Tag) error {
-	tag.CreateTime = time.Now()
-	tag.UpdateTime = time.Now()
-	return dao.db.WithContext(ctx).Create(tag).Error
+func (dao *TagDao) Create(ctx context.Context, tag *entity.Tag) error {
+	t := tag.ToModel()
+	t.CreateTime = time.Now()
+	t.UpdateTime = time.Now()
+	return dao.db.WithContext(ctx).Create(&tag).Error
 }
 
-func (dao *TagDao) Get(ctx context.Context, id int) (*model.Tag, error) {
+func (dao *TagDao) Get(ctx context.Context, id int) (*entity.Tag, error) {
 	var tag model.Tag
 	if err := dao.db.WithContext(ctx).First(&tag, id).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -34,12 +36,14 @@ func (dao *TagDao) Get(ctx context.Context, id int) (*model.Tag, error) {
 		}
 		return nil, err
 	}
-	return &tag, nil
+	result := entity.ToEntityTag(&tag)
+	return result, nil
 }
 
-func (dao *TagDao) Update(ctx context.Context, tag *model.Tag) error {
-	tag.UpdateTime = time.Now()
-	return dao.db.WithContext(ctx).Updates(tag).Error
+func (dao *TagDao) Update(ctx context.Context, tag *entity.Tag) error {
+	t := tag.ToModel()
+	t.UpdateTime = time.Now()
+	return dao.db.WithContext(ctx).Updates(&tag).Error
 }
 
 func (dao *TagDao) Delete(ctx context.Context, id int) error {
@@ -47,12 +51,12 @@ func (dao *TagDao) Delete(ctx context.Context, id int) error {
 	return dao.db.WithContext(ctx).Delete(&tag).Error
 }
 
-func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag, error) {
+func (dao *TagDao) List(ctx context.Context, opt *entity.ListOption) ([]entity.Tag, error) {
 	query := dao.db.WithContext(ctx)
 	if opt.Page >= 0 && opt.Limit > 0 {
 		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
 	}
-	var tags []model.Tag
+	var tags []entity.Tag
 	var err error
 	if opt.Name != "" {
 		query = query.Where("name = ?", opt.Name)
@@ -70,7 +74,7 @@ func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var tag model.Tag
+		var tag entity.Tag
 		if err := rows.Scan(&tag.ID, &tag.Name, &tag.Desc, &tag.State, &tag.CreateTime, &tag.UpdateTime, &tag.Operator, &tag.ArticleTotal); err != nil {
 			return nil, err
 		}
@@ -79,7 +83,7 @@ func (dao *TagDao) List(ctx context.Context, opt *model.ListOption) ([]model.Tag
 	return tags, nil
 }
 
-func (dao *TagDao) Count(ctx context.Context, opt *model.ListOption) (int64, error) {
+func (dao *TagDao) Count(ctx context.Context, opt *entity.ListOption) (int64, error) {
 	query := dao.db.WithContext(ctx)
 	var err error
 	var total int64

@@ -2,7 +2,7 @@ package v1
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -70,7 +70,7 @@ func (c *RoleController) List(ctx *gin.Context) (res interface{}, total int64, e
 // @Router /api/v1/role [post]
 func (c *RoleController) Create(ctx *gin.Context) (res interface{}, err error) {
 	var param service.CreateRoleRequest
-	data, _ := ioutil.ReadAll(ctx.Request.Body)
+	data, _ := io.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return nil, retcode.RequestUnMarshalError
@@ -97,7 +97,7 @@ func (c *RoleController) Create(ctx *gin.Context) (res interface{}, err error) {
 // @Router /api/v1/role [put]
 func (c *RoleController) Update(ctx *gin.Context) (res interface{}, err error) {
 	var param service.UpdateRoleRequest
-	data, _ := ioutil.ReadAll(ctx.Request.Body)
+	data, _ := io.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return nil, retcode.RequestUnMarshalError

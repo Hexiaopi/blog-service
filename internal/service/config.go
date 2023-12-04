@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/store"
 	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type SystemSrv interface {
-	Get(ctx context.Context, param *SystemGetRequest) (*model.Config, error)
+	Get(ctx context.Context, param *SystemGetRequest) (*entity.Config, error)
 }
 
 type SystemService struct {
@@ -27,10 +27,10 @@ func NewSystemService(factory store.Factory, logger log.Logger) *SystemService {
 }
 
 type SystemGetRequest struct {
-	model.OneOption
+	entity.OneOption
 }
 
-func (svc *SystemService) Get(ctx context.Context, param *SystemGetRequest) (*model.Config, error) {
+func (svc *SystemService) Get(ctx context.Context, param *SystemGetRequest) (*entity.Config, error) {
 	svc.logger.Debugf("system get request:%+v", param)
 	sc, err := svc.store.Systems().Get(ctx, param.Name)
 	if err != nil {

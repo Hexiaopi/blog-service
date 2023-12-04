@@ -1,12 +1,12 @@
 package v1
 
 import (
-	"io/ioutil"
+	"io"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -35,7 +35,7 @@ func NewResourceController(store store.Factory, logger log.Logger) *ResourceCont
 // @param sort query string false "排序方式"
 // @param page query integer false "页码"
 // @param limit query integer false "页面大小"
-// @Success 200 {object} app.ListResponse{data=[]model.Tag} "成功"
+// @Success 200 {object} app.ListResponse{data=[]entity.Resource} "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resources [get]
@@ -46,7 +46,7 @@ func (c *ResourceController) List(ctx *gin.Context) (res interface{}, total int6
 	page, _ := strconv.Atoi(values.Get("page"))
 	limit, _ := strconv.Atoi(values.Get("limit"))
 	sort := values.Get("sort")
-	param := service.ResourceListRequest{ListOption: model.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
+	param := service.ResourceListRequest{ListOption: entity.ListOption{Name: name, State: uint8(state), Limit: limit, Page: page, Sort: sort}}
 	resources, total, err := c.srv.Resources().List(ctx.Request.Context(), &param)
 	if err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.GetResourcesFail)
@@ -63,13 +63,13 @@ func (c *ResourceController) List(ctx *gin.Context) (res interface{}, total int6
 // @Produce  json
 // @Security JWT
 // @Param id path integer true "资源ID"
-// @Success 200 {object} app.CommResponse{data=model.Resource} "成功"
+// @Success 200 {object} app.CommResponse{data=entity.Resource} "成功"
 // @Failure 400 {object} app.ErrResponse "请求错误"
 // @Failure 500 {object} app.ErrResponse "内部错误"
 // @Router /api/v1/resource/{id} [get]
 func (c *ResourceController) Get(ctx *gin.Context) (res interface{}, err error) {
 	id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
-	param := service.ResourceRequest{OneOption: model.OneOption{Id: id}}
+	param := service.ResourceRequest{OneOption: entity.OneOption{Id: id}}
 	resource, err := c.srv.Resources().Get(ctx.Request.Context(), &param)
 	if err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.GetResourceFail)
@@ -96,7 +96,7 @@ func (c *ResourceController) Create(ctx *gin.Context) (res interface{}, err erro
 		//app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
 		return nil, retcode.RequestIllegal
 	}
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		// app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
 		return nil, retcode.RequestIllegal
@@ -104,7 +104,7 @@ func (c *ResourceController) Create(ctx *gin.Context) (res interface{}, err erro
 	stateValue := ctx.Request.FormValue("state")
 	state, _ := strconv.Atoi(stateValue)
 	param := service.CreateResourceRequest{
-		Resource: model.Resource{
+		Resource: entity.Resource{
 			Name:  fileHeader.Filename,
 			Blob:  data,
 			Type:  fileHeader.Header.Get("Content-Type"),
@@ -138,7 +138,7 @@ func (c *ResourceController) Update(ctx *gin.Context) (res interface{}, err erro
 		//app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
 		return nil, retcode.RequestIllegal
 	}
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.RequestIllegal)
 		return nil, retcode.RequestIllegal
@@ -147,7 +147,7 @@ func (c *ResourceController) Update(ctx *gin.Context) (res interface{}, err erro
 	stateValue := ctx.Request.FormValue("state")
 	state, _ := strconv.Atoi(stateValue)
 	param := service.UpdateResourceRequest{
-		Resource: model.Resource{
+		Resource: entity.Resource{
 			ID:    id,
 			Name:  fileHeader.Filename,
 			Blob:  data,

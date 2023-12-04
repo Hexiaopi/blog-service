@@ -2,7 +2,7 @@ package v1
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -75,7 +75,7 @@ func (c *OperationController) List(ctx *gin.Context) (res interface{}, total int
 // @Router /api/v1/operation [post]
 func (c *OperationController) Create(ctx *gin.Context) {
 	var param service.CreateOperationRequest
-	data, _ := ioutil.ReadAll(ctx.Request.Body)
+	data, _ := io.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return
@@ -101,7 +101,7 @@ func (c *OperationController) Create(ctx *gin.Context) {
 // @Router /api/v1/operation [put]
 func (c *OperationController) Update(ctx *gin.Context) {
 	var param service.UpdateOperationRequest
-	data, _ := ioutil.ReadAll(ctx.Request.Body)
+	data, _ := io.ReadAll(ctx.Request.Body)
 	if err := json.Unmarshal(data, &param); err != nil {
 		app.ToResponseCode(ctx.Writer, retcode.RequestUnMarshalError)
 		return

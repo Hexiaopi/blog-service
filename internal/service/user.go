@@ -50,7 +50,6 @@ func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error
 	if user == nil {
 		return errors.New("user not exists")
 	}
-	param.UserId = user.ID
 	if err := user.Compare(param.PassWord); err != nil {
 		svc.logger.Errorf("user compare password err:%v", err)
 		return err
@@ -151,37 +150,19 @@ func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) er
 		svc.logger.Errorf("user encrypt password err:%v", err)
 		return nil
 	}
-	roleExist := make(map[int]string)
-	for _, role := range user.Roles {
-		roleExist[role.ID] = "delete" //默认删除
-	}
-	for _, role := range param.Roles {
-		if _, ok := roleExist[role.ID]; ok {
-			roleExist[role.ID] = "exist" //原本角色
-		} else {
-			roleExist[role.ID] = "create" //新的角色
-		}
-	}
 	return svc.store.Tx(ctx, func(ctx context.Context, factory store.Factory) error {
 		if err := factory.Users().Update(ctx, &param.User); err != nil {
 			svc.logger.Errorf("user store update err:%v", err)
 			return err
 		}
-		for k, v := range roleExist {
-			if v == "exist" {
-				continue
-			}
-			if v == "create" {
-				if err := factory.UserRole().Create(ctx, user.ID, k); err != nil {
-					svc.logger.Errorf("user role create err:%v", err)
-					return err
-				}
-			}
-			if v == "delete" {
-				if err := factory.UserRole().Delete(ctx, user.ID, k); err != nil {
-					svc.logger.Errorf("user role delete err:%v", err)
-					return err
-				}
+		if err := factory.UserRole().DeleteByUser(ctx, user.ID); err != nil {
+			svc.logger.Errorf("user delete role err:%v", err)
+			return err
+		}
+		for _, role := range param.Roles {
+			if err := factory.UserRole().Create(ctx, user.ID, role.ID); err != nil {
+				svc.logger.Errorf("user role create err:%v", err)
+				return err
 			}
 		}
 		return nil
@@ -194,9 +175,15 @@ type DeleteUserRequest struct {
 
 func (svc *UserService) Delete(ctx context.Context, param *DeleteUserRequest) error {
 	svc.logger.Debugf("user delete request:%+v", param)
-	if err := svc.store.Users().Delete(ctx, param.Id); err != nil {
-		svc.logger.Errorf("user store delete err:%v", err)
-		return err
-	}
-	return nil
+	return svc.store.Tx(ctx, func(ctx context.Context, factory store.Factory) error {
+		if err := factory.Users().Delete(ctx, param.Id); err != nil {
+			svc.logger.Errorf("user store delete err:%v", err)
+			return err
+		}
+		if err := factory.UserRole().DeleteByUser(ctx, param.Id); err != nil {
+			svc.logger.Errorf("user role delete err:%v", err)
+			return err
+		}
+		return nil
+	})
 }

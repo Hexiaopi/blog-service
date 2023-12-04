@@ -39,6 +39,12 @@ func (dao *UserRoleDao) Delete(ctx context.Context, userId, roleId int) error {
 		Delete(&model.UserRole{}).Error
 }
 
+func (dao *UserRoleDao) DeleteByUser(ctx context.Context, userId int) error {
+	return dao.db.WithContext(ctx).
+		Where("user_id = ?", userId).
+		Delete(&model.UserRole{}).Error
+}
+
 func (dao *UserRoleDao) ListUserRole(ctx context.Context, userId int) ([]entity.Role, error) {
 	roles := make([]model.Role, 0)
 	if err := dao.db.WithContext(ctx).Model(&model.Role{}).

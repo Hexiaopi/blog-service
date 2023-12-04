@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/hexiaopi/blog-service/internal/app"
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/pkg/captcha"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
@@ -68,7 +68,7 @@ func (c *LoginController) Login(ctx *gin.Context) (res interface{}, err error) {
 		return nil, retcode.RequestAuthCheckFail
 	}
 
-	config, err := c.srv.Systems().Get(ctx.Request.Context(), &service.SystemGetRequest{OneOption: model.OneOption{Name: "EnableLoginCaptcha"}})
+	config, err := c.srv.Systems().Get(ctx.Request.Context(), &service.SystemGetRequest{OneOption: entity.OneOption{Name: "EnableLoginCaptcha"}})
 	if err != nil {
 		c.logger.Errorf("get system config err:%v", err)
 		//app.ToResponseCode(ctx.Writer, retcode.RequestAuthCheckFail)

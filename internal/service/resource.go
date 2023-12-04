@@ -4,14 +4,14 @@ import (
 	"context"
 	"encoding/base64"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/store"
 	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type ResourceSrv interface {
-	Get(ctx context.Context, request *ResourceRequest) (*model.Resource, error)
-	List(ctx context.Context, param *ResourceListRequest) ([]model.Resource, int64, error)
+	Get(ctx context.Context, request *ResourceRequest) (*entity.Resource, error)
+	List(ctx context.Context, param *ResourceListRequest) ([]entity.Resource, int64, error)
 	Create(ctx context.Context, param *CreateResourceRequest) error
 	Update(ctx context.Context, param *UpdateResourceRequest) error
 	Delete(ctx context.Context, id int) error
@@ -32,10 +32,10 @@ func NewResourceService(factory store.Factory, logger log.Logger) *ResourceServi
 }
 
 type ResourceRequest struct {
-	model.OneOption
+	entity.OneOption
 }
 
-func (svc *ResourceService) Get(ctx context.Context, param *ResourceRequest) (*model.Resource, error) {
+func (svc *ResourceService) Get(ctx context.Context, param *ResourceRequest) (*entity.Resource, error) {
 	svc.logger.Debugf("resource get request:%+v", param)
 	resource, err := svc.store.Resources().Get(ctx, param.Id)
 	if err != nil {
@@ -47,10 +47,10 @@ func (svc *ResourceService) Get(ctx context.Context, param *ResourceRequest) (*m
 }
 
 type ResourceListRequest struct {
-	model.ListOption
+	entity.ListOption
 }
 
-func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest) ([]model.Resource, int64, error) {
+func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest) ([]entity.Resource, int64, error) {
 	svc.logger.Debugf("resource list request:%+v", param)
 	resources, err := svc.store.Resources().List(ctx, &param.ListOption)
 	if err != nil {
@@ -70,7 +70,7 @@ func (svc *ResourceService) List(ctx context.Context, param *ResourceListRequest
 }
 
 type CreateResourceRequest struct {
-	model.Resource
+	entity.Resource
 }
 
 func (svc *ResourceService) Create(ctx context.Context, param *CreateResourceRequest) error {
@@ -83,7 +83,7 @@ func (svc *ResourceService) Create(ctx context.Context, param *CreateResourceReq
 }
 
 type UpdateResourceRequest struct {
-	model.Resource
+	entity.Resource
 }
 
 func (svc *ResourceService) Update(ctx context.Context, param *UpdateResourceRequest) error {

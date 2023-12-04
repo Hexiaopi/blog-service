@@ -3,7 +3,7 @@ package sys
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/retcode"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
@@ -34,7 +34,7 @@ func NewSystemController(store store.Factory, logger log.Logger) *SystemControll
 func (c *SystemController) Get(ctx *gin.Context) (res interface{}, err error) {
 	values := ctx.Request.URL.Query()
 	name := values.Get("name")
-	param := service.SystemGetRequest{OneOption: model.OneOption{Name: name}}
+	param := service.SystemGetRequest{OneOption: entity.OneOption{Name: name}}
 	config, err := c.srv.Systems().Get(ctx.Request.Context(), &param)
 	if err != nil {
 		//app.ToResponseCode(ctx.Writer, retcode.GetSystemConfigFail)

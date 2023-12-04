@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/store"
 	log "github.com/hexiaopi/blog-service/pkg/logger"
 )
 
 type TagSrv interface {
-	List(ctx context.Context, param *TagListRequest) ([]model.Tag, int64, error)
+	List(ctx context.Context, param *TagListRequest) ([]entity.Tag, int64, error)
 	Create(ctx context.Context, param *CreateTagRequest) error
 	Update(ctx context.Context, param *UpdateTagRequest) error
 	Delete(ctx context.Context, param *DeleteTagRequest) error
@@ -30,26 +30,29 @@ func NewTagService(factory store.Factory, logger log.Logger) *TagService {
 }
 
 type TagListRequest struct {
-	model.ListOption
+	entity.ListOption
 }
 
-func (svc *TagService) List(ctx context.Context, param *TagListRequest) ([]model.Tag, int64, error) {
+func (svc *TagService) List(ctx context.Context, param *TagListRequest) ([]entity.Tag, int64, error) {
 	svc.logger.Debugf("tag list request:%+v", param)
-	tags, err := svc.store.Tags().List(ctx, &param.ListOption)
-	if err != nil {
-		svc.logger.Errorf("tag store list err:%v", err)
-		return nil, 0, err
-	}
 	total, err := svc.store.Tags().Count(ctx, &param.ListOption)
 	if err != nil {
 		svc.logger.Errorf("tag store count err:%v", err)
+		return nil, 0, err
+	}
+	if total == 0 {
+		return nil, 0, nil
+	}
+	tags, err := svc.store.Tags().List(ctx, &param.ListOption)
+	if err != nil {
+		svc.logger.Errorf("tag store list err:%v", err)
 		return nil, 0, err
 	}
 	return tags, total, nil
 }
 
 type CreateTagRequest struct {
-	model.Tag
+	entity.Tag
 }
 
 func (svc *TagService) Create(ctx context.Context, param *CreateTagRequest) error {
@@ -62,7 +65,7 @@ func (svc *TagService) Create(ctx context.Context, param *CreateTagRequest) erro
 }
 
 type UpdateTagRequest struct {
-	model.Tag
+	entity.Tag
 }
 
 func (svc *TagService) Update(ctx context.Context, param *UpdateTagRequest) error {
@@ -75,7 +78,7 @@ func (svc *TagService) Update(ctx context.Context, param *UpdateTagRequest) erro
 }
 
 type DeleteTagRequest struct {
-	model.OneOption
+	entity.OneOption
 }
 
 func (svc *TagService) Delete(ctx context.Context, param *DeleteTagRequest) error {

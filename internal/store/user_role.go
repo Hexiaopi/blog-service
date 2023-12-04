@@ -9,5 +9,6 @@ import (
 type UserRoleStore interface {
 	Create(ctx context.Context, userId, roleId int) error
 	Delete(ctx context.Context, userId, roleId int) error
+	DeleteByUser(ctx context.Context, userId int) error
 	ListUserRole(ctx context.Context, userId int) ([]entity.Role, error)
 }
