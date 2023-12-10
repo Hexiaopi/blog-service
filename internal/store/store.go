@@ -28,3 +28,5 @@ func SetClient(factory Factory) {
 }
 
 type TxFunc = func(ctx context.Context, factory Factory) error
+
+type Option func(*Factory)

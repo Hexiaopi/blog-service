@@ -102,9 +102,6 @@ func NewRouter() *gin.Engine {
 		operationController := v1.NewOperationController(storeIns, config.Logger)
 		{
 			apiV1.GET("/operations", app.WrapList(operationController.List))
-			apiV1.POST("/operation", operationController.Create)
-			apiV1.PUT("/operation", operationController.Update)
-			apiV1.DELETE("/operation", operationController.Delete)
 		}
 	}
 	return router

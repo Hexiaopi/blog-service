@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/service"
 	"github.com/hexiaopi/blog-service/internal/store"
 	log "github.com/hexiaopi/blog-service/pkg/logger"
@@ -38,13 +38,15 @@ func (op *Operation) RecordOperation(skippers ...SkipperFunc) gin.HandlerFunc {
 			c.Next()
 
 			operation := service.CreateOperationRequest{
-				OperationLog: model.OperationLog{
-					UserId:    c.GetInt("userid"),
+				OperationLog: entity.OperationLog{
 					UserAgent: c.Request.UserAgent(),
 					IP:        c.RemoteIP(),
 					Object:    strings.Split(object, "/")[0],
 					Action:    c.Request.Method,
 					Result:    "Success",
+					User: entity.User{
+						ID: c.GetInt("userid"),
+					},
 				},
 			}
 			if len(c.Errors) > 0 {

@@ -7,7 +7,8 @@ import (
 )
 
 type UserStore interface {
-	Get(ctx context.Context, username string) (*entity.User, error)
+	GetByName(ctx context.Context, username string) (*entity.User, error)
+	GetById(ctx context.Context, id int) (*entity.User, error)
 	Create(ctx context.Context, user *entity.User) (int, error)
 	Update(ctx context.Context, user *entity.User) error
 	Delete(ctx context.Context, id int) error

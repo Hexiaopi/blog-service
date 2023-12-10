@@ -22,9 +22,13 @@ func NewUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{db: db}
 }
 
-func (dao *UserDao) Get(ctx context.Context, name string) (*entity.User, error) {
+func (dao *UserDao) Get(ctx context.Context, opts ...Option) (*entity.User, error) {
 	var user model.User
-	err := dao.db.WithContext(ctx).Where("name = ?", name).First(&user).Error
+	db := dao.db.WithContext(ctx)
+	for _, opt := range opts {
+		opt(db)
+	}
+	err := db.First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -32,6 +36,14 @@ func (dao *UserDao) Get(ctx context.Context, name string) (*entity.User, error) 
 		return nil, err
 	}
 	return entity.ToEntityUser(&user), nil
+}
+
+func (dao *UserDao) GetById(ctx context.Context, id int) (*entity.User, error) {
+	return dao.Get(ctx, WithId(id))
+}
+
+func (dao *UserDao) GetByName(ctx context.Context, name string) (*entity.User, error) {
+	return dao.Get(ctx, WithName(name))
 }
 
 func (dao *UserDao) Create(ctx context.Context, user *entity.User) (int, error) {

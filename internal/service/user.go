@@ -42,7 +42,7 @@ type AuthRequest struct {
 
 func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error {
 	svc.logger.Debugf("user check auth request:%+v", param)
-	user, err := svc.store.Users().Get(ctx, param.UserName)
+	user, err := svc.store.Users().GetByName(ctx, param.UserName)
 	if err != nil {
 		svc.logger.Errorf("user store get err:%v", err)
 		return err
@@ -54,12 +54,13 @@ func (svc *UserService) CheckAuth(ctx context.Context, param *AuthRequest) error
 		svc.logger.Errorf("user compare password err:%v", err)
 		return err
 	}
+	param.UserId = user.ID //jwt 使用
 	return nil
 }
 
 func (svc *UserService) Get(ctx context.Context, name string) (*entity.User, error) {
 	svc.logger.Debugf("user get request:%s", name)
-	user, err := svc.store.Users().Get(ctx, name)
+	user, err := svc.store.Users().GetByName(ctx, name)
 	if err != nil {
 		svc.logger.Errorf("user store get err:%v", err)
 		return nil, err
@@ -138,7 +139,7 @@ type UpdateUserRequest struct {
 
 func (svc *UserService) Update(ctx context.Context, param *UpdateUserRequest) error {
 	svc.logger.Debugf("user update request:%+v", param)
-	user, err := svc.store.Users().Get(ctx, param.User.Name)
+	user, err := svc.store.Users().GetByName(ctx, param.User.Name)
 	if err != nil {
 		svc.logger.Errorf("user store get err:%v", err)
 		return err

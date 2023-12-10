@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/store"
 )
@@ -21,12 +22,13 @@ func NewOperationDao(db *gorm.DB) *OperationDao {
 	return &OperationDao{db: db}
 }
 
-func (dao *OperationDao) Create(ctx context.Context, log *model.OperationLog) error {
-	log.CreateTime = time.Now()
-	return dao.db.WithContext(ctx).Create(log).Error
+func (dao *OperationDao) Create(ctx context.Context, log *entity.OperationLog) error {
+	l := log.ToModel()
+	l.CreateTime = time.Now()
+	return dao.db.WithContext(ctx).Create(&l).Error
 }
 
-func (dao *OperationDao) Get(ctx context.Context, id int) (*model.OperationLog, error) {
+func (dao *OperationDao) Get(ctx context.Context, id int) (*entity.OperationLog, error) {
 	var log model.OperationLog
 	if err := dao.db.WithContext(ctx).First(&log, id).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -34,11 +36,13 @@ func (dao *OperationDao) Get(ctx context.Context, id int) (*model.OperationLog, 
 		}
 		return nil, err
 	}
-	return &log, nil
+	result := entity.ToEntityOperation(&log)
+	return result, nil
 }
 
-func (dao *OperationDao) Update(ctx context.Context, log *model.OperationLog) error {
-	return dao.db.WithContext(ctx).Updates(log).Error
+func (dao *OperationDao) Update(ctx context.Context, log *entity.OperationLog) error {
+	l := log.ToModel()
+	return dao.db.WithContext(ctx).Updates(l).Error
 }
 
 func (dao *OperationDao) Delete(ctx context.Context, id int) error {
@@ -46,7 +50,7 @@ func (dao *OperationDao) Delete(ctx context.Context, id int) error {
 	return dao.db.WithContext(ctx).Delete(&log).Error
 }
 
-func (dao *OperationDao) List(ctx context.Context, opt *model.ListOption) ([]model.OperationLog, error) {
+func (dao *OperationDao) List(ctx context.Context, opt *entity.ListOption) ([]model.OperationLog, error) {
 	query := dao.db.WithContext(ctx)
 	if opt.Page >= 0 && opt.Limit > 0 {
 		query = query.Offset(opt.GetPageOffset()).Limit(opt.Limit)
@@ -68,7 +72,6 @@ func (dao *OperationDao) List(ctx context.Context, opt *model.ListOption) ([]mod
 		query = query.Order(opt.GetSortType())
 	}
 	if err := query.Model(&model.OperationLog{}).
-		Preload("User").
 		Find(&logs).
 		Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -78,7 +81,7 @@ func (dao *OperationDao) List(ctx context.Context, opt *model.ListOption) ([]mod
 	return logs, nil
 }
 
-func (dao *OperationDao) Count(ctx context.Context, opt *model.ListOption) (int64, error) {
+func (dao *OperationDao) Count(ctx context.Context, opt *entity.ListOption) (int64, error) {
 	query := dao.db.WithContext(ctx)
 	var total int64
 	if opt.Object != "" {
