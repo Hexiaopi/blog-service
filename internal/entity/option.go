@@ -10,15 +10,16 @@ type OneOption struct {
 }
 
 type ListOption struct {
-	Name   string `json:"name"`
-	UserId int    `json:"user_id"`
-	Object string `json:"object"`
-	Action string `json:"action"`
-	Result string `json:"result"`
-	Sort   string `json:"sort"`
-	State  uint8  `json:"state"`
-	Page   int    `json:"page"`
-	Limit  int    `json:"limit"`
+	Name     string `json:"name"`
+	UserId   int    `json:"user_id"`
+	Object   string `json:"object"`
+	Action   string `json:"action"`
+	Result   string `json:"result"`
+	Sort     string `json:"sort"`
+	State    uint8  `json:"state"`
+	Page     int    `json:"page"`
+	Limit    int    `json:"limit"`
+	ParentId int    `json:"parent_id"`
 }
 
 func (option ListOption) GetPageOffset() int {

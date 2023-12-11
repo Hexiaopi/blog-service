@@ -2,7 +2,7 @@ package store
 
 import "context"
 
-//go:generate mockgen -self_package=github.com/hexiaopi/blog-service/internal/store -destination mock_store.go -package store github.com/hexiaopi/blog-service/internal/store Factory,ArticleStore,TagStore,UserStore,RoleStore,SystemConfigStore,ResourceStore,OperationStore,UserRoleStore
+//go:generate mockgen -self_package=github.com/hexiaopi/blog-service/internal/store -destination mock_store.go -package store github.com/hexiaopi/blog-service/internal/store Factory,ArticleStore,TagStore,UserStore,RoleStore,SystemConfigStore,ResourceStore,OperationStore,UserRoleStore,SysRestStore
 
 var client Factory
 
@@ -15,6 +15,7 @@ type Factory interface {
 	Resources() ResourceStore
 	Operations() OperationStore
 	UserRole() UserRoleStore
+	SysRests() SysRestStore
 	Close() error
 	Tx(ctx context.Context, f TxFunc) error
 }

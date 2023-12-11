@@ -103,6 +103,13 @@ func NewRouter() *gin.Engine {
 		{
 			apiV1.GET("/operations", app.WrapList(operationController.List))
 		}
+		restController := v1.NewRestController(storeIns, config.Logger)
+		{
+			apiV1.GET("/rests", app.WrapList(restController.List))
+			apiV1.POST("/rest", app.Wrap(restController.Create))
+			apiV1.PUT("/rest", app.Wrap(restController.Update))
+			apiV1.DELETE("/rest", app.Wrap(restController.Delete))
+		}
 	}
 	return router
 }

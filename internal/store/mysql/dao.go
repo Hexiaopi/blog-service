@@ -52,6 +52,10 @@ func (ds *datastore) UserRole() store.UserRoleStore {
 	return NewUserRoleDao(ds.db)
 }
 
+func (ds *datastore) SysRests() store.SysRestStore {
+	return NewSysRestDao(ds.db)
+}
+
 func (ds *datastore) Tx(ctx context.Context, f store.TxFunc) error {
 	return ds.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		dao := NewDao(tx)

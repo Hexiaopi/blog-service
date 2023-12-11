@@ -114,6 +114,7 @@ export default {
         'resource': '资源',
         'user': '用户',
         'role': '角色',
+        'rest': '接口'
       }
       return objectMap[object]
     },
