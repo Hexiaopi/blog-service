@@ -24,7 +24,7 @@
       </el-table-column>
       <el-table-column label="请求方法" align="center" min-width="100px">
         <template slot-scope="scope">
-          {{ scope.row.method }}
+          <el-tag v-if="scope.row.method!==''" :type="scope.row.method | methodFilter">{{ scope.row.method }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="create_time" label="创建时间" min-width="100px">
@@ -96,13 +96,14 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusTypeFilter (status) {
-      const statusMap = {
-        1: 'success',
-        0: 'gray',
-        2: 'danger'
+    methodFilter (method) {
+      const methodMap = {
+        'GET': 'gray',
+        'POST': 'success',
+        'PUT': 'warning',
+        'DELETE': 'danger'
       }
-      return statusMap[status]
+      return methodMap[method]
     },
   },
   data () {

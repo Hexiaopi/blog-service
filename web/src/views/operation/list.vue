@@ -149,7 +149,7 @@ export default {
         result: '',
         sort: '+id'
       },
-      objectOptions: ['article', 'tag', 'resource', 'user'],
+      objectOptions: ['article', 'tag', 'resource', 'user', 'role', 'rest'],
       actionOptions: ['POST', 'PUT', 'DELETE'],
       sortOptions: [{ label: 'ID升序', key: '+id' }, { label: 'ID降序', key: '-id' }],
       temp: {
