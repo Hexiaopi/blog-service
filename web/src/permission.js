@@ -1,4 +1,4 @@
-import router from './router'
+import router, { constantRoutes } from './router'
 import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
@@ -20,6 +20,8 @@ router.beforeEach(async(to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
+  next()
+
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -32,9 +34,11 @@ router.beforeEach(async(to, from, next) => {
       } else {
         try {
           // get user info
-          await store.dispatch('user/getInfo')
-
-          next()
+          const {roles} = await store.dispatch('user/getInfo')
+          const accessRoutes = await store.dispatch('permission/generateRoutes',roles)
+          router.options.roters = constantRoutes.concat(accessRoutes)
+          router.addRoutes(accessRoutes)
+          next({...to,replace:true})
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')

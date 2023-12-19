@@ -16,6 +16,7 @@ type Factory interface {
 	Operations() OperationStore
 	UserRole() UserRoleStore
 	SysRests() SysRestStore
+	SysMenus() SysMenuStore
 	Close() error
 	Tx(ctx context.Context, f TxFunc) error
 }

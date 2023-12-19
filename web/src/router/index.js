@@ -54,130 +54,13 @@ export const constantRoutes = [
       meta: { title: '仪表板', icon: 'dashboard' }
     }]
   },
-  {
-    path: '/article',
-    component: Layout,
-    redirect: '/article/list',
-    meta: { title: '文章', icon: 'el-icon-collection' },
-    children: [
-      {
-        path: 'list',
-        name: 'Article',
-        component: () => import('@/views/article/list'),
-        meta: { title: '文章列表', icon: 'el-icon-document' }
-      },
-      {
-        path: 'create',
-        name: 'CreateArticle',
-        component: () => import('@/views/article/create'),
-        meta: { title: '创建文章', icon: 'el-icon-document' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/article/edit'),
-        name: 'EditArticle',
-        meta: { title: '编辑文章', noCache: true, activeMenu: '/article/list' },
-        hidden: true
-      }
-    ]
-  },
-  {
-    path: '/tag',
-    component: Layout,
-    redirect: '/tag/list',
-    meta: { title: '标签', icon: 'el-icon-collection' },
-    children: [
-      {
-        path: 'list',
-        name: 'Tag',
-        component: () => import('@/views/tag/list'),
-        meta: { title: '标签列表', icon: 'el-icon-collection-tag' }
-      }
-    ]
-  },
-  {
-    path: '/resource',
-    component: Layout,
-    redirect: '/resource/list',
-    meta: { title: '资源', icon: 'el-icon-suitcase' },
-    children: [
-      {
-        path: 'list',
-        name: 'Resource',
-        component: () => import('@/views/resource/list'),
-        meta: { title: '资源列表', icon: 'el-icon-files' }
-      }
-    ]
-  },
-  {
-    path: '/system',
-    component: Layout,
-    redirect: '/system/user',
-    meta: { title: '系统管理', icon: 'el-icon-setting' },
-    children: [
-      {
-        path: 'user',
-        name: 'User',
-        component: () => import('@/views/user/list'),
-        meta: { title: '用户列表', icon: 'el-icon-user' }
-      },
-      {
-        path: 'role',
-        name: 'Role',
-        component: () => import('@/views/role/list'),
-        meta: { title: '角色列表', icon: 'el-icon-s-custom' }
-      },
-      {
-        path: 'rest',
-        name: 'REst',
-        component: () => import('@/views/rest/list'),
-        meta: { title: '接口列表', icon: 'el-icon-position' }
-      }
-    ]
-  },
-  {
-    path: '/log',
-    component: Layout,
-    redirect: '/log/operation',
-    meta: { title: '日志管理', icon: 'el-icon-video-camera-solid' },
-    children: [
-      {
-        path: 'operation',
-        name: 'Operation',
-        component: () => import('@/views/operation/list'),
-        meta: { title: '操作日志', icon: 'el-icon-edit' }
-      }
-    ]
-  },
-  {
-    path: '/plan',
-    component: Layout,
-    redirect: '/plan/kanban',
-    name: 'Plan',
-    meta: { title: '计划', icon: 'el-icon-collection' },
-    children: [
-      {
-        path: 'kanban',
-        name: 'PlanKanBan',
-        component: () => import('@/views/plan/kanban'),
-        meta: { title: '计划看板', icon: 'el-icon-collection-tag' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://github.com/Hexiaopi/blog-service',
-        meta: { title: '额外链接', icon: 'link' }
-      }
-    ]
-  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
+]
+
+export const asyncRoutes = [
+  // { path: '*', redirect: '/404', hidden: true}
 ]
 
 const createRouter = () => new Router({

@@ -15,6 +15,7 @@ type Service interface {
 	Resources() ResourceSrv
 	Operations() OperationSrv
 	Rests() SysRestSrv
+	Menus() SysMenuSrv
 }
 
 type service struct {
@@ -53,6 +54,10 @@ func (s *service) Operations() OperationSrv {
 
 func (s *service) Rests() SysRestSrv {
 	return NewSysRestService(s.store, s.logger)
+}
+
+func (s *service) Menus() SysMenuSrv {
+	return NewSysMenuService(s.store, s.logger)
 }
 
 func NewService(store store.Factory, cache cache.Factory, logger log.Logger) Service {

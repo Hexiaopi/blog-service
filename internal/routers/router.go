@@ -110,6 +110,10 @@ func NewRouter() *gin.Engine {
 			apiV1.PUT("/rest", app.Wrap(restController.Update))
 			apiV1.DELETE("/rest", app.Wrap(restController.Delete))
 		}
+		menuController := v1.NewMenuController(storeIns, config.Logger)
+		{
+			apiV1.GET("/menu/tree", app.WrapList(menuController.List))
+		}
 	}
 	return router
 }
