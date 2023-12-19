@@ -7,7 +7,6 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/hexiaopi/blog-service/internal/entity"
-	"github.com/hexiaopi/blog-service/internal/model"
 	"github.com/hexiaopi/blog-service/internal/pkg/auth"
 	"github.com/hexiaopi/blog-service/internal/store"
 	log "github.com/hexiaopi/blog-service/pkg/logger"
@@ -21,8 +20,8 @@ func TestUserService_CheckAuth(t *testing.T) {
 		t.Fatal(err)
 	}
 	userStore := store.NewMockUserStore(ctrl)
-	userStore.EXPECT().Get(gomock.Any(), gomock.Any()).Return(
-		&model.User{ID: 1, Name: "admin", PassWord: password},
+	userStore.EXPECT().GetByName(gomock.Any(), gomock.Any()).Return(
+		&entity.User{ID: 1, Name: "admin", PassWord: password},
 		nil,
 	)
 	mockFactory := store.NewMockFactory(ctrl)
@@ -43,8 +42,8 @@ func TestUserService_Get(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	userStore := store.NewMockUserStore(ctrl)
-	userStore.EXPECT().Get(gomock.Any(), gomock.Any()).Return(
-		&model.User{ID: 1, Name: "admin", PassWord: "xxx"},
+	userStore.EXPECT().GetByName(gomock.Any(), gomock.Any()).Return(
+		&entity.User{ID: 1, Name: "admin", PassWord: "xxx"},
 		nil,
 	)
 	mockFactory := store.NewMockFactory(ctrl)
@@ -65,7 +64,7 @@ func TestUserService_List(t *testing.T) {
 	userStore.EXPECT().Count(gomock.Any(), gomock.Any()).Return(
 		int64(1), nil)
 	userStore.EXPECT().List(gomock.Any(), gomock.Any()).Return(
-		[]model.User{
+		[]entity.User{
 			{ID: 1, Name: "admin"},
 		}, nil)
 
@@ -111,12 +110,12 @@ func TestUserService_Update(t *testing.T) {
 	defer ctrl.Finish()
 
 	userStore := store.NewMockUserStore(ctrl)
-	userStore.EXPECT().Get(gomock.Any(), gomock.Any()).Return(&model.User{ID: 1, Name: "admin", Roles: []model.Role{{ID: 1, Name: "admin"}}}, nil)
+	userStore.EXPECT().GetByName(gomock.Any(), gomock.Any()).Return(&entity.User{ID: 1, Name: "admin", Roles: []entity.Role{{ID: 1, Name: "admin"}}}, nil)
 	userStore.EXPECT().Update(gomock.Any(), gomock.Any()).AnyTimes().Return(nil) //todo why anytime
 
 	userRoleStore := store.NewMockUserRoleStore(ctrl)
-	userRoleStore.EXPECT().Create(gomock.Any(), gomock.Any()).AnyTimes().Return(nil) //todo why anytime
-	userRoleStore.EXPECT().Delete(gomock.Any(), gomock.Any()).AnyTimes().Return(nil) //todo why anytime
+	userRoleStore.EXPECT().Create(gomock.Any(), gomock.Any(), gomock.Any()).AnyTimes().Return(nil) //todo why anytime
+	userRoleStore.EXPECT().Delete(gomock.Any(), gomock.Any(), gomock.Any()).AnyTimes().Return(nil) //todo why anytime
 
 	mockFactory := store.NewMockFactory(ctrl)
 	mockFactory.EXPECT().Users().Return(userStore).AnyTimes()
