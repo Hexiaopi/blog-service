@@ -107,7 +107,7 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    objectFilter (object) {
+    objectFilter(object) {
       const objectMap = {
         'article': '文章',
         'tag': '标签',
@@ -118,7 +118,7 @@ export default {
       }
       return objectMap[object]
     },
-    actionFilter (action) {
+    actionFilter(action) {
       const actionMap = {
         'POST': '创建',
         'PUT': '修改',
@@ -126,7 +126,7 @@ export default {
       }
       return actionMap[action]
     },
-    actionDisplayFilter (action) {
+    actionDisplayFilter(action) {
       const actionMap = {
         'POST': 'success',
         'PUT': 'gray',
@@ -135,7 +135,7 @@ export default {
       return actionMap[action]
     },
   },
-  data () {
+  data() {
     return {
       list: null,
       total: 0,
@@ -161,11 +161,11 @@ export default {
       },
     }
   },
-  created () {
+  created() {
     this.getList()
   },
   methods: {
-    getList () {
+    getList() {
       this.listLoading = true
       listOperation(this.listQuery).then(response => {
         this.list = response.data
@@ -173,17 +173,17 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter () {
+    handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
-    sortChange (data) {
+    sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
     },
-    sortByID (order) {
+    sortByID(order) {
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
       } else {
@@ -191,7 +191,7 @@ export default {
       }
       this.handleFilter()
     },
-    resetTemp () {
+    resetTemp() {
       this.temp = {
         id: undefined,
         object: '',
@@ -200,7 +200,7 @@ export default {
         result: '',
       }
     },
-    handleDelete (row, index) {
+    handleDelete(row, index) {
       deleteOperation(row.id).then(() => {
         this.$notify({
           title: 'Success',

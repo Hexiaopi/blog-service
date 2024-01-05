@@ -133,7 +133,7 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusTypeFilter (status) {
+    statusTypeFilter(status) {
       const statusMap = {
         1: 'success',
         0: 'gray',
@@ -141,7 +141,7 @@ export default {
       }
       return statusMap[status]
     },
-    statusDisplayFilter (status) {
+    statusDisplayFilter(status) {
       const statusMap = {
         0: '无效',
         1: '有效'
@@ -149,7 +149,7 @@ export default {
       return statusMap[status]
     }
   },
-  data () {
+  data() {
     return {
       list: null,
       total: 0,
@@ -185,17 +185,17 @@ export default {
       },
     }
   },
-  created () {
+  created() {
     this.getList()
     this.getRoles()
   },
   methods: {
-    getRoles () {
+    getRoles() {
       listRole({}).then(response => {
         this.roles = response.data
       })
     },
-    getList () {
+    getList() {
       this.listLoading = true
       listUser(this.listQuery).then(response => {
         this.list = response.data
@@ -203,17 +203,17 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter () {
+    handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
-    sortChange (data) {
+    sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
     },
-    sortByID (order) {
+    sortByID(order) {
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
       } else {
@@ -221,7 +221,7 @@ export default {
       }
       this.handleFilter()
     },
-    resetTemp () {
+    resetTemp() {
       this.temp = {
         id: undefined,
         name: '',
@@ -230,14 +230,14 @@ export default {
         roles: [],
       }
     },
-    showPwd () {
+    showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
       } else {
         this.passwordType = 'password'
       }
     },
-    handleCreate () {
+    handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -245,7 +245,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData () {
+    createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           createUser(this.temp).then(() => {
@@ -261,7 +261,7 @@ export default {
         }
       })
     },
-    handleUpdate (row) {
+    handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -269,7 +269,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData () {
+    updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
@@ -287,7 +287,7 @@ export default {
         }
       })
     },
-    handleDelete (row) {
+    handleDelete(row) {
       deleteUser(row.id).then(() => {
         this.$notify({
           title: 'Success',

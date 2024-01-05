@@ -3,45 +3,50 @@
     <div class="filter-container">
       <el-input v-model="listQuery.name" placeholder="名称" style="width: 200px;" class="filter-item"
         @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.state" placeholder="状态" style="width: 90px" class="filter-item"
-        @change="handleFilter">
-        <el-option v-for="item in stateOptions" :key="item" :label="item | statusDisplayFilter" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus"
+        @click="handleCreate(0)">
         添加
       </el-button>
     </div>
     <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" board fit highlight-current-row
-      style="width: 100%;" @sort-change="sortChange">
-      <el-table-column align="center" label="ID" min-width="50px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="标签名称" align="center" width="100px">
+      style="width: 100%;" row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+      <el-table-column label="名称" align="center" width="100px">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="标签描述" align="center" min-width="100px">
+      <el-table-column label="标题" align="center" width="100px">
         <template slot-scope="scope">
-          {{ scope.row.desc }}
+          {{ scope.row.meta.title }}
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" width="100">
+      <el-table-column label="图标" align="center" width="100px">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.state | statusTypeFilter">{{ scope.row.state | statusDisplayFilter }}</el-tag>
+          <i :class="scope.row.meta.icon"></i>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="article_total" label="文章数" min-width="100px">
+
+      <el-table-column label="路径" align="center" min-width="100px">
         <template slot-scope="scope">
-          <el-tag>{{ scope.row.article_total }}</el-tag>
+          {{ scope.row.path }}
+        </template>
+      </el-table-column>
+      <el-table-column label="重定向" align="center" min-width="100px">
+        <template slot-scope="scope">
+          {{ scope.row.redirect }}
+        </template>
+      </el-table-column>
+      <el-table-column label="组件" align="center" min-width="100px">
+        <template slot-scope="scope">
+          {{ scope.row.component }}
+        </template>
+      </el-table-column>
+      <el-table-column label="顺序" align="center" min-width="100px">
+        <template slot-scope="scope">
+          {{ scope.row.order }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="create_time" label="创建时间" min-width="100px">
@@ -56,10 +61,13 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button v-if="row.parent_id == 0" type="primary" icon="el-icon-plus" size="mini" @click="handleCreate(row.id)">
+            新增
+          </el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button v-if="row.state != 2" size="mini" type="danger" @click="handleDelete(row, $index)">
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDelete(row, $index)">
             删除
           </el-button>
         </template>
@@ -72,17 +80,43 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px"
-        style="width: 400px; margin-left:50px;">
-        <el-form-item label="标签名称" prop="title">
-          <el-input v-model="temp.name" />
+        style="width: 500px; margin-left:50px;">
+        <el-form-item label="名称">
+          <el-input v-model="temp.name"></el-input>
         </el-form-item>
-        <el-form-item label="标签描述">
-          <el-input v-model="temp.desc" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" placeholder="请输入" />
+        <el-form-item label="路径">
+          <el-input v-model="temp.path"></el-input>
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="temp.state" class="filter-item" placeholder="请选择">
-            <el-option v-for="item in stateOptions" :key="item" :label="item | statusDisplayFilter" :value="item" />
+        <el-form-item label="重定向">
+          <el-input v-model="temp.redirect"></el-input>
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="temp.title"></el-input>
+        </el-form-item>
+        <el-form-item label="图标">
+          <el-select v-model="temp.icon" filterable placeholder="请选择">
+            <el-option v-for="item in elementIcons" :key="item" :label="item" :value="item">
+              <i :class="item">{{ item }}</i>
+            </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="组件">
+          <el-input v-model="temp.component"></el-input>
+        </el-form-item>
+        <el-form-item label="顺序">
+          <el-input-number v-model="temp.order"></el-input-number>
+        </el-form-item>
+        <el-form-item label="展示">
+          <el-radio-group v-model="temp.show">
+            <el-radio :label="0">不展示</el-radio>
+            <el-radio :label="1">展示</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="隐藏">
+          <el-radio-group v-model="temp.hidden">
+            <el-radio :label="0">不隐藏</el-radio>
+            <el-radio :label="1">隐藏</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -98,30 +132,17 @@
 </template>
 
 <script>
-import { listTag, createTag, updateTag, deleteTag } from '@/api/tag'
+import { listMenuTree, createMenu, updateMenu, deleteMenu } from '@/api/menu'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import elementIcons from './element-icons'
 
 export default {
-  name: "Tag",
-  components: { Pagination },
+  name: "Menu",
+  components: { Pagination, elementIcons },
   directives: { waves },
   filters: {
-    statusTypeFilter(status) {
-      const statusMap = {
-        1: 'success',
-        0: 'gray',
-        2: 'danger'
-      }
-      return statusMap[status]
-    },
-    statusDisplayFilter(status) {
-      const statusMap = {
-        1: '有效',
-        0: '无效'
-      }
-      return statusMap[status]
-    }
+
   },
   data() {
     return {
@@ -132,16 +153,19 @@ export default {
         page: 1,
         limit: 10,
         name: undefined,
-        state: 1,
-        sort: '+id'
       },
-      stateOptions: [0, 1],
-      sortOptions: [{ label: 'ID升序', key: '+id' }, { label: 'ID降序', key: '-id' }],
       temp: {
-        id: undefined,
+        id: 0,
         name: '',
-        desc: '',
-        state: 1
+        path: '',
+        redirect: '',
+        title: '',
+        icon: '',
+        component: '',
+        order: 0,
+        show: true,
+        hidden: false,
+        parent_id: 0,
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -150,18 +174,22 @@ export default {
         create: '创建'
       },
       rules: {
-        name: [{ required: true, message: 'type is required', trigger: 'change' }],
-        state: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        name: [{ required: true, message: 'name is required', trigger: 'change' }],
+        path: [{ required: true, message: 'path is required', trigger: 'blur' }],
       },
+      elementIcons
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    generateElementIconCode(symbol) {
+      return `<i class="el-icon-${symbol}" />`
+    },
     getList() {
       this.listLoading = true
-      listTag(this.listQuery).then(response => {
+      listMenuTree(this.listQuery).then(response => {
         this.list = response.data
         this.total = response.total
         this.listLoading = false
@@ -171,30 +199,26 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
-    },
     resetTemp() {
       this.temp = {
-        id: undefined,
+        id: 0,
         name: '',
-        desc: '',
-        state: 1
+        path: '',
+        redirect: '',
+        title: '',
+        icon: '',
+        component: '',
+        order: 0,
+        show: true,
+        hidden: false,
+        parent_id: 0,
       }
     },
-    handleCreate() {
+    handleCreate(id) {
       this.resetTemp()
+      if (id > 0) {
+        this.temp.parent_id = id
+      }
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -204,8 +228,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createTag(this.temp).then(() => {
-            this.list.unshift(this.temp)
+          createMenu(this.temp).then(() => {
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -213,12 +236,15 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.getList();
           })
         }
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
+      this.temp.title = row.meta.title
+      this.temp.icon = row.meta.icon
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -229,9 +255,8 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          updateTag(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
+          updateMenu(tempData).then(() => {
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
@@ -244,14 +269,14 @@ export default {
       })
     },
     handleDelete(row, index) {
-      deleteTag(row.id).then(() => {
+      deleteMenu(row.id).then(() => {
         this.$notify({
           title: 'Success',
           message: '删除成功',
           type: 'success',
           duration: 2000
         })
-        this.list.splice(index, 1)
+        this.getList()
       })
     },
   }

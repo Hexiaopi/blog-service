@@ -92,6 +92,34 @@ func (mr *MockFactoryMockRecorder) Resources() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Resources", reflect.TypeOf((*MockFactory)(nil).Resources))
 }
 
+// RoleMenus mocks base method.
+func (m *MockFactory) RoleMenus() RoleMenuStore {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RoleMenus")
+	ret0, _ := ret[0].(RoleMenuStore)
+	return ret0
+}
+
+// RoleMenus indicates an expected call of RoleMenus.
+func (mr *MockFactoryMockRecorder) RoleMenus() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RoleMenus", reflect.TypeOf((*MockFactory)(nil).RoleMenus))
+}
+
+// RoleRests mocks base method.
+func (m *MockFactory) RoleRests() RoleRestStore {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RoleRests")
+	ret0, _ := ret[0].(RoleRestStore)
+	return ret0
+}
+
+// RoleRests indicates an expected call of RoleRests.
+func (mr *MockFactoryMockRecorder) RoleRests() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RoleRests", reflect.TypeOf((*MockFactory)(nil).RoleRests))
+}
+
 // Roles mocks base method.
 func (m *MockFactory) Roles() RoleStore {
 	m.ctrl.T.Helper()
@@ -1117,6 +1145,64 @@ func (m *MockSysMenuStore) EXPECT() *MockSysMenuStoreMockRecorder {
 	return m.recorder
 }
 
+// Count mocks base method.
+func (m *MockSysMenuStore) Count(arg0 context.Context, arg1 *entity.ListOption) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Count", arg0, arg1)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Count indicates an expected call of Count.
+func (mr *MockSysMenuStoreMockRecorder) Count(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Count", reflect.TypeOf((*MockSysMenuStore)(nil).Count), arg0, arg1)
+}
+
+// Create mocks base method.
+func (m *MockSysMenuStore) Create(arg0 context.Context, arg1 *model.SysMenu) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockSysMenuStoreMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockSysMenuStore)(nil).Create), arg0, arg1)
+}
+
+// Delete mocks base method.
+func (m *MockSysMenuStore) Delete(arg0 context.Context, arg1 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockSysMenuStoreMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockSysMenuStore)(nil).Delete), arg0, arg1)
+}
+
+// Get mocks base method.
+func (m *MockSysMenuStore) Get(arg0 context.Context, arg1 int) (*model.SysMenu, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", arg0, arg1)
+	ret0, _ := ret[0].(*model.SysMenu)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockSysMenuStoreMockRecorder) Get(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockSysMenuStore)(nil).Get), arg0, arg1)
+}
+
 // List mocks base method.
 func (m *MockSysMenuStore) List(arg0 context.Context, arg1 *entity.ListOption) ([]model.SysMenu, error) {
 	m.ctrl.T.Helper()
@@ -1130,4 +1216,18 @@ func (m *MockSysMenuStore) List(arg0 context.Context, arg1 *entity.ListOption) (
 func (mr *MockSysMenuStoreMockRecorder) List(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockSysMenuStore)(nil).List), arg0, arg1)
+}
+
+// Update mocks base method.
+func (m *MockSysMenuStore) Update(arg0 context.Context, arg1 *model.SysMenu) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockSysMenuStoreMockRecorder) Update(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockSysMenuStore)(nil).Update), arg0, arg1)
 }

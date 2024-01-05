@@ -89,6 +89,8 @@ func NewRouter() *gin.Engine {
 			apiV1.GET("/roles", app.WrapList(roleController.List))
 			apiV1.POST("/role", app.Wrap(roleController.Create))
 			apiV1.PUT("/role", app.Wrap(roleController.Update))
+			apiV1.PUT("/role/:id/menu", app.Wrap(roleController.UpdateMenu))
+			apiV1.PUT("/role/:id/rest", app.Wrap(roleController.UpdateRest))
 			apiV1.DELETE("/role", app.Wrap(roleController.Delete))
 		}
 		resourceController := v1.NewResourceController(storeIns, config.Logger)
@@ -112,7 +114,11 @@ func NewRouter() *gin.Engine {
 		}
 		menuController := v1.NewMenuController(storeIns, config.Logger)
 		{
-			apiV1.GET("/menu/tree", app.WrapList(menuController.List))
+			apiV1.GET("/menu/tree", app.WrapList(menuController.Tree))
+			apiV1.GET("/menus", app.WrapList(menuController.List))
+			apiV1.POST("/menu", app.Wrap(menuController.Create))
+			apiV1.PUT("/menu", app.Wrap(menuController.Update))
+			apiV1.DELETE("/menu", app.Wrap(menuController.Delete))
 		}
 	}
 	return router

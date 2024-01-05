@@ -9,7 +9,7 @@ type SysMenu struct {
 	Title      string    `gorm:"title" json:"title"`
 	Icon       string    `gorm:"icon" json:"icon"`
 	Component  string    `gorm:"component" json:"component"`
-	Order      int       `gorm:"order" json:"order"`
+	Sort       int       `gorm:"order" json:"sort"`
 	Redirect   string    `gorm:"redirect" json:"redirect"`
 	Hidden     bool      `gorm:"hidden" json:"is_hidden"`
 	ParentId   int       `gorm:"parent_id" json:"parent_id"`

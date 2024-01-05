@@ -6,11 +6,11 @@ GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
 GIT_STATE = $(shell [ -z $(git status --porcelain 2>/dev/null) ] && echo "dirty" || echo "clean")
 BUILD_DATE = $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 
-LDFLAGS = -X github.com/hexiaopi/blog-service/cmd/version.gitVersion=$(GIT_VERSION) \
-	-X github.com/hexiaopi/blog-service/cmd/version.gitCommit=$(GIT_COMMIT) \
-	-X github.com/hexiaopi/blog-service/cmd/version.gitBranch=$(GIT_BRANCH) \
-	-X github.com/hexiaopi/blog-service/cmd/version.gitTreeState=$(GIT_STATE) \
-	-X github.com/hexiaopi/blog-service/cmd/version.buildDate=$(BUILD_DATE)
+LDFLAGS = -X github.com/hexiaopi/blog-service/cmd/server/version.gitVersion=$(GIT_VERSION) \
+	-X github.com/hexiaopi/blog-service/cmd/server/version.gitCommit=$(GIT_COMMIT) \
+	-X github.com/hexiaopi/blog-service/cmd/server/version.gitBranch=$(GIT_BRANCH) \
+	-X github.com/hexiaopi/blog-service/cmd/server/version.gitTreeState=$(GIT_STATE) \
+	-X github.com/hexiaopi/blog-service/cmd/server/version.buildDate=$(BUILD_DATE)
 
 PKGS = $(shell go list ./...)
 GOFILES = $(shell find . -name "*.go" -type f -not -path "./vendor/*")
@@ -22,6 +22,9 @@ help: ## display the help
 
 build: ## build server
 	go build -ldflags "$(LDFLAGS)" -o bin/blog cmd/*.go
+
+generate: ## generate server
+	go generate ./...
 
 run: ## run server
 	go run cmd/root.go

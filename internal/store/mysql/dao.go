@@ -60,6 +60,14 @@ func (ds *datastore) SysMenus() store.SysMenuStore {
 	return NewSysMenuDao(ds.db)
 }
 
+func (ds *datastore) RoleMenus() store.RoleMenuStore {
+	return NewRoleMenuDao(ds.db)
+}
+
+func (ds *datastore) RoleRests() store.RoleRestStore {
+	return NewRoleRestDao(ds.db)
+}
+
 func (ds *datastore) Tx(ctx context.Context, f store.TxFunc) error {
 	return ds.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		dao := NewDao(tx)
@@ -84,7 +92,6 @@ func (ds *datastore) Migration() error {
 		&model.Article{},
 		&model.ArticleTag{},
 		&model.Tag{},
-		&model.Captcha{},
 		&model.Config{},
 		&model.OperationLog{},
 		&model.Resource{},
@@ -92,6 +99,8 @@ func (ds *datastore) Migration() error {
 		&model.UserRole{},
 		&model.User{},
 		&model.Resource{},
+		&model.RoleMenu{},
+		&model.RoleRest{},
 	); err != nil {
 		return err
 	}

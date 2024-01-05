@@ -85,7 +85,7 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusTypeFilter (status) {
+    statusTypeFilter(status) {
       const statusMap = {
         1: 'success',
         2: 'danger',
@@ -93,7 +93,7 @@ export default {
       }
       return statusMap[status]
     },
-    statusDisplayFilter (status) {
+    statusDisplayFilter(status) {
       const statusMap = {
         1: '发布',
         2: '草稿',
@@ -102,7 +102,7 @@ export default {
       return statusMap[status]
     }
   },
-  data () {
+  data() {
     return {
       list: null,
       total: 0,
@@ -118,11 +118,11 @@ export default {
       sortOptions: [{ label: 'ID升序', key: '+id' }, { label: 'ID降序', key: '-id' }],
     }
   },
-  created () {
+  created() {
     this.getList()
   },
   methods: {
-    getList () {
+    getList() {
       this.listLoading = true
       listArticle(this.listQuery).then(response => {
         this.list = response.data
@@ -130,17 +130,17 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter () {
+    handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
-    sortChange (data) {
+    sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
     },
-    sortByID (order) {
+    sortByID(order) {
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
       } else {

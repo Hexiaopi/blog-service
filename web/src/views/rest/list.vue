@@ -6,12 +6,13 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate(0)">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus"
+        @click="handleCreate(0)">
         添加
       </el-button>
     </div>
     <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" board fit highlight-current-row
-      style="width: 100%;" row-key="id" :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+      style="width: 100%;" row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
       <el-table-column label="接口名称" align="center" width="150px">
         <template slot-scope="scope">
           {{ scope.row.name }}
@@ -24,7 +25,7 @@
       </el-table-column>
       <el-table-column label="请求方法" align="center" min-width="100px">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.method!==''" :type="scope.row.method | methodFilter">{{ scope.row.method }}</el-tag>
+          <el-tag v-if="scope.row.method !== ''" :type="scope.row.method | methodFilter">{{ scope.row.method }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="create_time" label="创建时间" min-width="100px">
@@ -39,7 +40,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button v-if="row.parent_id==0" type="primary" icon="el-icon-plus" size="mini" @click="handleCreate(row.id)">
+          <el-button v-if="row.parent_id == 0" type="primary" icon="el-icon-plus" size="mini" @click="handleCreate(row.id)">
             新增
           </el-button>
           <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)">
@@ -96,7 +97,7 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    methodFilter (method) {
+    methodFilter(method) {
       const methodMap = {
         'GET': 'gray',
         'POST': 'success',
@@ -106,7 +107,7 @@ export default {
       return methodMap[method]
     },
   },
-  data () {
+  data() {
     return {
       list: null,
       total: 0,
@@ -123,7 +124,7 @@ export default {
         method: '',
         parent_id: 0,
       },
-      methods: ['GET','POST','PUT','DELETE'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -137,11 +138,11 @@ export default {
       },
     }
   },
-  created () {
+  created() {
     this.getList()
   },
   methods: {
-    getList () {
+    getList() {
       this.listLoading = true
       listRest(this.listQuery).then(response => {
         this.list = response.data
@@ -149,11 +150,11 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter () {
+    handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
-    resetTemp () {
+    resetTemp() {
       this.temp = {
         id: 0,
         name: '',
@@ -162,9 +163,9 @@ export default {
         parent_id: 0
       }
     },
-    handleCreate (id) {
+    handleCreate(id) {
       this.resetTemp()
-      if (id >0) {
+      if (id > 0) {
         this.temp.parent_id = id
         this.method = 'GET'
       }
@@ -174,7 +175,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData () {
+    createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           createRest(this.temp).then(() => {
@@ -190,7 +191,7 @@ export default {
         }
       })
     },
-    handleUpdate (row) {
+    handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -198,7 +199,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData () {
+    updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
@@ -215,7 +216,7 @@ export default {
         }
       })
     },
-    handleDelete (row, index) {
+    handleDelete(row, index) {
       deleteRest(row.id).then(() => {
         this.$notify({
           title: 'Success',

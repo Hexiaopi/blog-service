@@ -54,7 +54,7 @@ import { getSystemConfig, getCaptcha } from '@/api/sys'
 
 export default {
   name: 'Login',
-  data () {
+  data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
         callback(new Error('请输入正确的用户名'))
@@ -96,11 +96,11 @@ export default {
       immediate: true
     }
   },
-  mounted () {
+  mounted() {
     this.getLoginCaptcha()
   },
   methods: {
-    getLoginCaptcha () {
+    getLoginCaptcha() {
       getSystemConfig("EnableLoginCaptcha").then(response => {
         if (response.data == '1') {
           this.enableLoginCaptcha = true;
@@ -108,13 +108,13 @@ export default {
         }
       })
     },
-    getCaptcha () {
+    getCaptcha() {
       getCaptcha().then(response => {
         this.captchaImage = response.data.captcha;
         this.loginForm.cid = response.data.cid;
       })
     },
-    showPwd () {
+    showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
       } else {
@@ -124,7 +124,7 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin () {
+    handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true

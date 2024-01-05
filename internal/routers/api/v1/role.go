@@ -110,6 +110,64 @@ func (c *RoleController) Update(ctx *gin.Context) (res interface{}, err error) {
 	return nil, nil
 }
 
+// @Summary 修改角色菜单
+// @Description 修改角色菜单
+// @Tags Role
+// @Produce json
+// @Accept json
+// @Security JWT
+// @Param id path integer true "角色ID"
+// @param UpdateRoleRequest body service.UpdateRoleMenuRequest true "修改角色菜单"
+// @Success 200 {object} app.CommResponse "成功"
+// @Failure 400 {object} app.ErrResponse "请求错误"
+// @Failure 500 {object} app.ErrResponse "内部错误"
+// @Router /api/v1/role/:id/menu [put]
+func (c *RoleController) UpdateMenu(ctx *gin.Context) (res interface{}, err error) {
+	var param service.UpdateRoleMenuRequest
+	data, _ := io.ReadAll(ctx.Request.Body)
+	if err := json.Unmarshal(data, &param); err != nil {
+		return nil, retcode.RequestUnMarshalError
+	}
+	roleId := ctx.Param("id")
+	param.RoleId, err = strconv.Atoi(roleId)
+	if err != nil {
+		return nil, retcode.RequestIllegal
+	}
+	if err := c.srv.Roles().UpdateMenu(ctx.Request.Context(), &param); err != nil {
+		return nil, retcode.UpdateRoleFail
+	}
+	return nil, nil
+}
+
+// @Summary 修改角色接口
+// @Description 修改角色接口
+// @Tags Role
+// @Produce json
+// @Accept json
+// @Security JWT
+// @Param id path integer true "角色ID"
+// @param UpdateRoleRequest body service.UpdateRoleRestRequest true "修改角色接口"
+// @Success 200 {object} app.CommResponse "成功"
+// @Failure 400 {object} app.ErrResponse "请求错误"
+// @Failure 500 {object} app.ErrResponse "内部错误"
+// @Router /api/v1/role/:id/rest [put]
+func (c *RoleController) UpdateRest(ctx *gin.Context) (res interface{}, err error) {
+	var param service.UpdateRoleRestRequest
+	data, _ := io.ReadAll(ctx.Request.Body)
+	if err := json.Unmarshal(data, &param); err != nil {
+		return nil, retcode.RequestUnMarshalError
+	}
+	roleId := ctx.Param("id")
+	param.RoleId, err = strconv.Atoi(roleId)
+	if err != nil {
+		return nil, retcode.RequestIllegal
+	}
+	if err := c.srv.Roles().UpdateRest(ctx.Request.Context(), &param); err != nil {
+		return nil, retcode.UpdateRoleFail
+	}
+	return nil, nil
+}
+
 // @Summary 删除角色
 // @Description 删除角色
 // @Tags Role

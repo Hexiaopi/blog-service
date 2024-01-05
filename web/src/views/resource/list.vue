@@ -105,7 +105,7 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusTypeFilter (status) {
+    statusTypeFilter(status) {
       const statusMap = {
         1: 'success',
         0: 'gray',
@@ -113,7 +113,7 @@ export default {
       }
       return statusMap[status]
     },
-    statusDisplayFilter (status) {
+    statusDisplayFilter(status) {
       const statusMap = {
         1: '有效',
         0: '无效'
@@ -121,7 +121,7 @@ export default {
       return statusMap[status]
     }
   },
-  data () {
+  data() {
     return {
       list: null,
       total: 0,
@@ -156,11 +156,11 @@ export default {
       },
     }
   },
-  created () {
+  created() {
     this.getList()
   },
   methods: {
-    getList () {
+    getList() {
       this.listLoading = true
       listResource(this.listQuery).then(response => {
         this.list = response.data
@@ -168,17 +168,17 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter () {
+    handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
-    sortChange (data) {
+    sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
     },
-    sortByID (order) {
+    sortByID(order) {
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
       } else {
@@ -186,7 +186,7 @@ export default {
       }
       this.handleFilter()
     },
-    resetTemp () {
+    resetTemp() {
       this.temp = {
         id: 0,
         name: '',
@@ -197,7 +197,7 @@ export default {
         state: 1
       }
     },
-    handleCreate () {
+    handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -205,7 +205,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    handleUpdate (row) {
+    handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -213,7 +213,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    handleDelete (row, index) {
+    handleDelete(row, index) {
       deleteResource(row.id).then(() => {
         this.$notify({
           title: 'Success',
@@ -224,15 +224,15 @@ export default {
         this.list.splice(index, 1)
       })
     },
-    handleImageSuccess (file) {
+    handleImageSuccess(file) {
       this.temp.blob = file.files.file;
     },
-    beforeImageUpload (file) {
+    beforeImageUpload(file) {
       this.temp.size = file.size;
       this.temp.type = file.type;
       return true
     },
-    submitUpload (content) {
+    submitUpload(content) {
       const formData = new FormData()
       formData.append('file', content.file)
       formData.append('state', this.temp.state)

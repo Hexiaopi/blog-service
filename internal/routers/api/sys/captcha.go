@@ -3,7 +3,7 @@ package sys
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/hexiaopi/blog-service/internal/model"
+	"github.com/hexiaopi/blog-service/internal/entity"
 	"github.com/hexiaopi/blog-service/internal/pkg/captcha"
 )
 
@@ -25,7 +25,7 @@ func NewCaptchaController() *CaptchaController {
 // @Router /api/sys/captcha [get]
 func (c *CaptchaController) Get(ctx *gin.Context) (res interface{}, err error) {
 	id, base := captcha.Generate()
-	captcha := model.Captcha{
+	captcha := entity.Captcha{
 		Captcha: base,
 		Cid:     id,
 	}

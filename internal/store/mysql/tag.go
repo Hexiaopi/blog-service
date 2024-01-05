@@ -25,7 +25,7 @@ func (dao *TagDao) Create(ctx context.Context, tag *entity.Tag) error {
 	t := tag.ToModel()
 	t.CreateTime = time.Now()
 	t.UpdateTime = time.Now()
-	return dao.db.WithContext(ctx).Create(&tag).Error
+	return dao.db.WithContext(ctx).Create(&t).Error
 }
 
 func (dao *TagDao) Get(ctx context.Context, id int) (*entity.Tag, error) {
@@ -43,7 +43,7 @@ func (dao *TagDao) Get(ctx context.Context, id int) (*entity.Tag, error) {
 func (dao *TagDao) Update(ctx context.Context, tag *entity.Tag) error {
 	t := tag.ToModel()
 	t.UpdateTime = time.Now()
-	return dao.db.WithContext(ctx).Updates(&tag).Error
+	return dao.db.WithContext(ctx).Updates(&t).Error
 }
 
 func (dao *TagDao) Delete(ctx context.Context, id int) error {

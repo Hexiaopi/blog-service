@@ -11,6 +11,8 @@ type Role struct {
 	Name       string `json:"name"`
 	Desc       string `json:"desc"`
 	State      uint8  `json:"state"`
+	MenuIds    []int  `json:"menu_ids"`
+	RestIds    []int  `json:"rest_ids"`
 	CreateTime string `json:"create_time"`
 	UpdateTime string `json:"update_time"`
 }

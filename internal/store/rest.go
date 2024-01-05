@@ -8,8 +8,8 @@ import (
 )
 
 type SysRestStore interface {
-	Create(ctx context.Context, sysApi *model.SysRest) error
-	Update(ctx context.Context, sysApi *model.SysRest) error
+	Create(ctx context.Context, sysRest *model.SysRest) error
+	Update(ctx context.Context, sysRest *model.SysRest) error
 	Delete(ctx context.Context, id int) error
 	Get(ctx context.Context, id int) (*model.SysRest, error)
 	List(ctx context.Context, opt *entity.ListOption) ([]model.SysRest, error)

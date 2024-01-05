@@ -51,8 +51,14 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
+          </el-button> -->
+          <el-button type="primary" size="mini" @click="handleMenu(row)">
+            菜单权限
+          </el-button>
+          <el-button type="primary" size="mini" @click="handleRest(row)">
+            接口权限
           </el-button>
           <el-button v-if="row.state != 2" size="mini" type="danger" @click="handleDelete(row, $index)">
             删除
@@ -89,11 +95,47 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="菜单权限" :visible.sync="dialogMenuVisible">
+      <el-form ref="menuForm" :model="temp" label-position="left" label-width="70px"
+        style="width: 400px; margin-left:50px;">
+        <el-tree :data="menus" ref="menuTree" show-checkbox node-key="id" :default-checked-keys="temp.menu_ids"
+          default-expand-all :expand-on-click-node="false" :props="defaultMenuProps">
+        </el-tree>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogMenuVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="updateRoleMenu()">
+          确认
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="接口权限" :visible.sync="dialogRestVisible">
+      <el-form ref="restForm" :model="temp" label-position="left" label-width="70px"
+        style="width: 400px; margin-left:50px;">
+        <el-tree :data="rests" ref="restTree" show-checkbox node-key="id" :default-checked-keys="temp.rest_ids"
+          default-expand-all :expand-on-click-node="false" :props="defaultRestProps">
+        </el-tree>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogRestVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="updateRoleRest()">
+          确认
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listRole, createRole, updateRole, deleteRole } from '@/api/role'
+import { listRole, createRole, updateRole, updateRoleMenu, updateRoleRest, deleteRole } from '@/api/role'
+import { listMenu } from '@/api/menu'
+import { listRest } from '@/api/rest'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -102,7 +144,7 @@ export default {
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusTypeFilter (status) {
+    statusTypeFilter(status) {
       const statusMap = {
         1: 'success',
         0: 'gray',
@@ -110,7 +152,7 @@ export default {
       }
       return statusMap[status]
     },
-    statusDisplayFilter (status) {
+    statusDisplayFilter(status) {
       const statusMap = {
         1: '有效',
         0: '无效'
@@ -118,7 +160,7 @@ export default {
       return statusMap[status]
     }
   },
-  data () {
+  data() {
     return {
       list: null,
       total: 0,
@@ -136,9 +178,22 @@ export default {
         id: undefined,
         name: '',
         desc: '',
-        state: 1
+        state: 1,
+        menu_ids: undefined,
       },
       dialogFormVisible: false,
+      menus: [],
+      dialogMenuVisible: false,
+      defaultMenuProps: {
+        children: 'children',
+        label: 'title'
+      },
+      rests: [],
+      dialogRestVisible: false,
+      defaultRestProps: {
+        children: 'children',
+        label: 'name'
+      },
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -148,13 +203,17 @@ export default {
         name: [{ required: true, message: 'name is required', trigger: 'change' }],
         state: [{ required: true, message: 'state is required', trigger: 'blur' }]
       },
+
+
     }
   },
-  created () {
+  created() {
     this.getList()
+    this.getMenuList()
+    this.getRestList()
   },
   methods: {
-    getList () {
+    getList() {
       this.listLoading = true
       listRole(this.listQuery).then(response => {
         this.list = response.data
@@ -162,17 +221,27 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter () {
+    getMenuList() {
+      listMenu().then(response => {
+        this.menus = response.data
+      })
+    },
+    getRestList() {
+      listRest().then(response => {
+        this.rests = response.data
+      })
+    },
+    handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
-    sortChange (data) {
+    sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
     },
-    sortByID (order) {
+    sortByID(order) {
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
       } else {
@@ -180,15 +249,16 @@ export default {
       }
       this.handleFilter()
     },
-    resetTemp () {
+    resetTemp() {
       this.temp = {
         id: undefined,
         name: '',
         desc: '',
-        state: 1
+        state: 1,
+        menu_ids: undefined,
       }
     },
-    handleCreate () {
+    handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -196,7 +266,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData () {
+    createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           createRole(this.temp).then(() => {
@@ -212,15 +282,16 @@ export default {
         }
       })
     },
-    handleUpdate (row) {
-      this.temp = Object.assign({}, row) // copy obj
+    handleUpdate(row) {
+      this.resetTemp()
+      this.temp = Object.assign({}, row)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData () {
+    updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
@@ -238,14 +309,40 @@ export default {
         }
       })
     },
-    handleDelete (row, index) {
-      deleteRole(row.id).then(() => {
+    handleMenu(row) {
+      this.resetTemp()
+      this.temp = Object.assign({}, row)
+      console.log(this.temp)
+      this.dialogMenuVisible = true
+    },
+    updateRoleMenu() {
+      let menuIds = this.$refs.menuTree.getCheckedKeys()
+      updateRoleMenu(this.temp.id, { "menu_ids": menuIds }).then(() => {
+        this.dialogMenuVisible = false
         this.$notify({
           title: 'Success',
-          message: '删除成功',
+          message: '更新成功',
           type: 'success',
           duration: 2000
         })
+      })
+    },
+    handleRest(row) {
+      this.resetTemp()
+      this.temp = Object.assign({}, row)
+      console.log(this.temp)
+      this.dialogRestVisible = true
+    },
+    updateRoleRest() {
+      let restIds = this.$refs.restTree.getCheckedKeys()
+      updateRoleRest(this.temp.id, { "rest_ids": restIds }).then(() => {
+        this.dialogRestVisible = false
+        this.$notify({ title: 'Success', message: '更新成功', type: 'success', duration: 2000 })
+      })
+    },
+    handleDelete(row, index) {
+      deleteRole(row.id).then(() => {
+        this.$notify({ title: 'Success', message: '删除成功', type: 'success', duration: 2000 })
         this.list.splice(index, 1)
       })
     },
