@@ -310,9 +310,12 @@ export default {
       })
     },
     handleMenu(row) {
+      this.resetTemp()
+      this.temp = Object.assign({}, row)
       this.dialogMenuVisible = true
       this.$nextTick(() => {
-        this.$refs.menuTree.setCheckedKeys(row.menu_ids)
+        this.$refs['menuForm'].clearValidate()
+        //this.$refs.menuTree.setCheckedKeys(row.menu_ids)
       })
     },
     updateRoleMenu() {
@@ -325,12 +328,16 @@ export default {
           type: 'success',
           duration: 2000
         })
+        this.getList()
       })
     },
     handleRest(row) {
+      this.resetTemp()
+      this.temp = Object.assign({}, row)
       this.dialogRestVisible = true
       this.$nextTick(() => {
-        this.$refs.restTree.setCheckedKeys(row.rest_ids)
+        this.$refs['restForm'].clearValidate()
+        //this.$refs.restTree.setCheckedKeys(row.rest_ids)
       })
     },
     updateRoleRest() {
@@ -339,6 +346,7 @@ export default {
         this.dialogRestVisible = false
         this.$notify({ title: 'Success', message: '更新成功', type: 'success', duration: 2000 })
       })
+      this.getList()
     },
     handleDelete(row, index) {
       deleteRole(row.id).then(() => {
