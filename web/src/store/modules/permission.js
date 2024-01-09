@@ -14,9 +14,8 @@ const componentsMap = {
   '/views/rest/list': () => import('@/views/rest/list'),
   '/views/menu/list': () => import('@/views/menu/list'),
   '/views/operation/list': () => import('@/views/operation/list'),
-  '/views/plan/kanban': () => import('@/views/plan/kanban'),
+  '/views/plan/kanban': () => import('@/views/plan/kanban')
 }
-
 
 export function getAsyncRoutes(routes) {
   const res = []
@@ -24,7 +23,7 @@ export function getAsyncRoutes(routes) {
   routes.forEach(item => {
     const newItem = {}
     if (item.component) {
-      if (item.component == 'Layout') {
+      if (item.component === 'Layout') {
         newItem.component = Layout
       } else {
         newItem['component'] = componentsMap[item.component]
@@ -32,7 +31,7 @@ export function getAsyncRoutes(routes) {
     }
 
     for (const key in item) {
-      if (keys.includes(key)) {
+      if (keys.includes(key) && key !== 'component') {
         newItem[key] = item[key]
       }
     }
@@ -59,11 +58,12 @@ const mutations = {
 
 const actions = {
   generateRoutes({ commit }, roles) {
-    return new Promise(async resolve => {
-      const routes = await listMenuTree({ sort: "+sort" }) // 获取到后台路由
-      const asyncRoutes = getAsyncRoutes(routes.data) // 对路由格式进行处理
-      commit('SET_ROUTES', asyncRoutes)
-      resolve(asyncRoutes)
+    return new Promise(resolve => {
+      listMenuTree({ sort: '+sort' }).then(routes => {
+        const asyncRoutes = getAsyncRoutes(routes.data) // 对路由格式进行处理
+        commit('SET_ROUTES', asyncRoutes)
+        resolve(asyncRoutes)
+      }) // 获取到后台路由
     })
   }
 }

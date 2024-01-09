@@ -310,13 +310,13 @@ export default {
       })
     },
     handleMenu(row) {
-      this.resetTemp()
-      this.temp = Object.assign({}, row)
-      console.log(this.temp)
       this.dialogMenuVisible = true
+      this.$nextTick(() => {
+        this.$refs.menuTree.setCheckedKeys(row.menu_ids)
+      })
     },
     updateRoleMenu() {
-      let menuIds = this.$refs.menuTree.getCheckedKeys()
+      const menuIds = this.$refs.menuTree.getCheckedKeys()
       updateRoleMenu(this.temp.id, { "menu_ids": menuIds }).then(() => {
         this.dialogMenuVisible = false
         this.$notify({
@@ -328,13 +328,13 @@ export default {
       })
     },
     handleRest(row) {
-      this.resetTemp()
-      this.temp = Object.assign({}, row)
-      console.log(this.temp)
       this.dialogRestVisible = true
+      this.$nextTick(() => {
+        this.$refs.restTree.setCheckedKeys(row.rest_ids)
+      })
     },
     updateRoleRest() {
-      let restIds = this.$refs.restTree.getCheckedKeys()
+      const restIds = this.$refs.restTree.getCheckedKeys()
       updateRoleRest(this.temp.id, { "rest_ids": restIds }).then(() => {
         this.dialogRestVisible = false
         this.$notify({ title: 'Success', message: '更新成功', type: 'success', duration: 2000 })
