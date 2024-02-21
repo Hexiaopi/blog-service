@@ -1,9 +1,9 @@
 .PHONY: base build run test clean swagger init ui
 
-GIT_VERSION = $(shell describe --tags 2>/dev/null)
-GIT_COMMIT = $(shell git rev-parse --short HEAD 2>/dev/null)
-GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null)
-GIT_STATE = $(shell [ -z $(git status --porcelain 2>/dev/null) ] && echo "dirty" || echo "clean")
+GIT_VERSION = $(shell git describe --tags)
+GIT_COMMIT = $(shell git rev-parse --short HEAD)
+GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+GIT_STATE = $(shell [ -z $(git status --porcelain) ] && echo "dirty" || echo "clean")
 BUILD_DATE = $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 
 LDFLAGS = -X github.com/hexiaopi/blog-service/cmd/server/version.gitVersion=$(GIT_VERSION) \
@@ -16,6 +16,9 @@ PKGS = $(shell go list ./...)
 GOFILES = $(shell find . -name "*.go" -type f -not -path "./vendor/*")
 
 base: clean test swagger fmt build
+
+version: 
+	@echo '"$(GIT_VERSION)"
 
 help: ## display the help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
