@@ -52,6 +52,6 @@ func Metrics() gin.HandlerFunc {
 		c.Next()
 		duration := time.Since(start)
 		HttpRequestLatency.WithLabelValues(path, method).Observe(duration.Seconds())
-		HttpRequestCounter.WithLabelValues(path, method, strconv.Itoa(wc.statusCode))
+		HttpRequestCounter.WithLabelValues(path, method, strconv.Itoa(wc.statusCode)).Inc()
 	}
 }
