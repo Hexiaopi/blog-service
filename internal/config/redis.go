@@ -24,11 +24,11 @@ func (o *RedisConfig) AddFlags(fs *pflag.FlagSet) {
 }
 
 func (o *RedisConfig) NewClient() (*redis.Client, error) {
-	conf := &redisPkg.Config{
-		Addr:     o.Addr,
-		UserName: o.UserName,
-		PassWord: o.PassWord,
-		DB:       o.DB,
-	}
-	return redisPkg.New(conf)
+	return redisPkg.New(
+		redisPkg.WithAddr(o.Addr),
+		redisPkg.WithUserName(o.UserName),
+		redisPkg.WithPassWord(o.PassWord),
+		redisPkg.WithDB(o.DB),
+		redisPkg.WithTrace(Tracer),
+	)
 }

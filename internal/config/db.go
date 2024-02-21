@@ -49,5 +49,5 @@ func (o *MySQLConfig) NewClient() (*gorm.DB, error) {
 		MaxConnectionLifeTime: o.MaxConnectionLifeTime,
 		LogLevel:              o.LogLevel,
 	}
-	return mysql.New(conf)
+	return mysql.New(conf, &mysql.OpentracingPlugin{})
 }

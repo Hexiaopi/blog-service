@@ -75,3 +75,9 @@ func recordError(ctx context.Context, errorTag string, span opentracing.Span, er
 		span.SetTag(errorTag, err.Error())
 	}
 }
+
+func WithTrace(tracer opentracing.Tracer) Option {
+	return func(conf *Config) {
+		conf.Tracer = tracer
+	}
+}
